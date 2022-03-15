@@ -1,0 +1,32 @@
+{"CityList":
+[
+  {"Name":"上海","Code":"SHA","Coords":{"x":904,"y":1143}},
+  {"Name":"北京","Code":"PEK","Coords":{"x":780,"y":882}},
+  {"Name":"哈尔滨","Code":"HAR","Coords":{"x":1029,"y":687}},
+  {"Name":"东京","Code":"TKY","Coords":{"x":1346,"y":1020}},
+  {"Name":"札幌","Code":"SPR","Coords":{"x":1388,"y":781}},
+  {"Name":"南萨哈林斯克","Code":"YSL","Coords":{"x":1421,"y":646}},
+  {"Name":"台北","Code":"TPE","Coords":{"x":906,"y":1314}},
+  {"Name":"广州","Code":"CAN","Coords":{"x":709,"y":1363}},
+  {"Name":"新加坡","Code":"SGP","Coords":{"x":482,"y":1917}},
+  {"Name":"吉隆坡","Code":"KLL","Coords":{"x":423,"y":1878}},
+  {"Name":"马尼拉","Code":"MNL","Coords":{"x":893,"y":1584}},
+  {"Name":"雅加达","Code":"JKT","Coords":{"x":547,"y":2095}},
+  {"Name":"曼谷","Code":"BKK","Coords":{"x":394,"y":1603}},
+  {"Name":"胡志明","Code":"HCM","Coords":{"x":544,"y":1680}},
+  {"Name":"河内","Code":"HNO","Coords":{"x":523,"y":1420}},
+  {"Name":"成都","Code":"CDU","Coords":{"x":457,"y":1151}},
+  {"Name":"武汉","Code":"WHN","Coords":{"x":732,"y":1159}},
+  {"Name":"乌鲁木齐","Code":"URU","Coords":{"x":80,"y":755}},
+  {"Name":"拉萨","Code":"LAH","Coords":{"x":163,"y":1187}},
+  {"Name":"伊尔库茨克","Code":"IRK","Coords":{"x":507,"y":436}},
+  {"Name":"乌兰巴托","Code":"ULB","Coords":{"x":550,"y":611}},
+  {"Name":"呼和浩特","Code":"HHT","Coords":{"x":666,"y":853}},
+  {"Name":"兰州","Code":"LNZ","Coords":{"x":472,"y":1000}},
+  {"Name":"首尔","Code":"SEO","Coords":{"x":1037,"y":955}},
+  {"Name":"平壤","Code":"PYY","Coords":{"x":1007,"y":910}},
+  {"Name":"海参崴","Code":"VLA","Coords":{"x":1160,"y":778}},
+  {"Name":"北津州","Code":"NKC","Coords":{"x":1373,"y":407}},
+  {"Name":"哈巴罗夫斯克","Code":"KHA","Coords":{"x":1236,"y":591}}
+]
+}

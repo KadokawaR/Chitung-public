@@ -1,0 +1,14 @@
+{"modes":
+[
+  {"code":"15","company":"KHA","attack":9,"speed":3,"money":2},
+  {"code":"19","company":"KHA","attack":8,"speed":5,"money":1},
+  {"code":"31","company":"KHA","attack":7,"speed":5,"money":2},
+  {"code":"9A","company":"INU","attack":3,"speed":3,"money":8},
+  {"code":"7V","company":"INU","attack":1,"speed":4,"money":9},
+  {"code":"2P","company":"INU","attack":4,"speed":3,"money":7},
+  {"code":"B2","company":"TSF","attack":5,"speed":8,"money":1},
+  {"code":"B9","company":"TSF","attack":2,"speed":7,"money":5},
+  {"code":"BX","company":"TSF","attack":4,"speed":9,"money":1},
+  {"code":"NA","company":"KHA","attack":1,"speed":1,"money":1}
+]
+}
