@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  * 一个类似于”今天吃什么“的类
  * 会给用户推送随机加入3-10种配料的披萨
  */
-@Deprecated
+
 public class PizzaPicker implements MessageResponder<MessageEvent> {
 
     static final List<MessageType> TYPES = new ArrayList<>(Arrays.asList(MessageType.FRIEND, MessageType.GROUP));

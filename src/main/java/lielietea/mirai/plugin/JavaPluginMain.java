@@ -2,8 +2,10 @@ package lielietea.mirai.plugin;
 
 
 import lielietea.mirai.plugin.administration.AdminCommandDispatcher;
+import lielietea.mirai.plugin.administration.config.ConfigHandler;
 import lielietea.mirai.plugin.administration.statistics.MPSEHandler.MessagePostSendEventHandler;
 import lielietea.mirai.plugin.core.responder.ResponderCenter;
+import lielietea.mirai.plugin.core.responder.universalrespond.URManager;
 import lielietea.mirai.plugin.utils.Nudge;
 import lielietea.mirai.plugin.utils.ContactUtil;
 import lielietea.mirai.plugin.core.broadcast.BroadcastSystem;
@@ -11,7 +13,6 @@ import lielietea.mirai.plugin.core.game.GameCenter;
 import lielietea.mirai.plugin.core.responder.ResponderManager;
 import lielietea.mirai.plugin.utils.GroupPolice;
 import lielietea.mirai.plugin.utils.IdentityUtil;
-import lielietea.mirai.plugin.utils.multibot.MultiBotHandler;
 import net.mamoe.mirai.console.plugin.jvm.JavaPlugin;
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescriptionBuilder;
 import net.mamoe.mirai.contact.MemberPermission;
@@ -86,7 +87,7 @@ public final class JavaPluginMain extends JavaPlugin {
 
         GlobalEventChannel.INSTANCE.subscribeAlways(GroupMessageEvent.class, event -> {
 
-            if(!MultiBotHandler.canAnswerGroup(event)) return;
+            if(!ConfigHandler.canAnswerGroup()) return;
             if(IdentityUtil.isBot(event)) return;
             if(MessagePostSendEventHandler.botHasTriggeredBreak(event)) return;
 
@@ -96,6 +97,8 @@ public final class JavaPluginMain extends JavaPlugin {
             AdminCommandDispatcher.getInstance().handleMessage(event);
             //GameCenter
             GameCenter.handle(event);
+            //UniversalResponder
+            URManager.handle(event);
 
         });
 
@@ -117,7 +120,7 @@ public final class JavaPluginMain extends JavaPlugin {
         //好友消息
         GlobalEventChannel.INSTANCE.subscribeAlways(FriendMessageEvent.class, event -> {
 
-            if(!MultiBotHandler.canAnswerFriend(event)) return;
+            if(!ConfigHandler.canAnswerFriend()) return;
             if(IdentityUtil.isBot(event)) return;
 
             //ResponderCenter

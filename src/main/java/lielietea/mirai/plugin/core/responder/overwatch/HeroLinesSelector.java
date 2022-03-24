@@ -17,8 +17,8 @@ public class HeroLinesSelector implements MessageResponder<GroupMessageEvent> {
 
     static {
         {
-            REG_PATTERN.add(Pattern.compile("/大招"));
-            REG_PATTERN.add(Pattern.compile("/英雄不朽"));
+            REG_PATTERN.add(Pattern.compile("大招"));
+            REG_PATTERN.add(Pattern.compile("英雄不朽"));
         }
     }
 

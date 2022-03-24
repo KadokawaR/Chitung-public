@@ -18,7 +18,6 @@ import java.util.Random;
 class HeroLinesCluster {
     Multimap<Hero, String> ultimateAbilityHeroLines;
     // 实际上普通台词我们压根就没写
-    // 放着吧，估计也用不上
     Multimap<Hero, String> commonHeroLines;
 
     @SuppressWarnings("rawtypes")

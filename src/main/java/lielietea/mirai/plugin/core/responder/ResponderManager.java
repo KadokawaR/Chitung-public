@@ -26,7 +26,6 @@ import lielietea.mirai.plugin.core.responder.overwatch.HeroLinesSelector;
 import lielietea.mirai.plugin.utils.exception.MessageEventTypeException;
 import lielietea.mirai.plugin.utils.MessageUtil;
 import lielietea.mirai.plugin.utils.StandardTimeUtil;
-import lielietea.mirai.plugin.utils.multibot.MultiBotHandler;
 import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.event.events.*;
 

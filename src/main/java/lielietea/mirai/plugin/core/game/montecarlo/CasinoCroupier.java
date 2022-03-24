@@ -4,6 +4,7 @@ import lielietea.mirai.plugin.core.game.montecarlo.blackjack.BlackJack;
 import lielietea.mirai.plugin.core.game.montecarlo.roulette.Roulette;
 import net.mamoe.mirai.event.events.MessageEvent;
 
+//todo:原始LLT-Bot的这个部分有更新
 public class CasinoCroupier {
 
     private static final CasinoCroupier INSTANCE;

@@ -1,7 +1,7 @@
 package lielietea.mirai.plugin.utils;
 
+import lielietea.mirai.plugin.administration.config.ConfigHandler;
 import lielietea.mirai.plugin.core.responder.help.DisclTemporary;
-import lielietea.mirai.plugin.utils.multibot.MultiBotHandler;
 import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.contact.Friend;
 import net.mamoe.mirai.contact.Group;
@@ -30,9 +30,9 @@ public class ContactUtil {
             event.accept();
             return;
         }
-        if (!MultiBotHandler.canAcceptGroup(event.getBot().getId())) {
-            if(MultiBotHandler.canSendNotice(event.getBot())) {
-                event.getInvitor().sendMessage(MultiBotHandler.rejectInformation(event.getBot().getId()));
+        if (!ConfigHandler.canAddGroup()) {
+            if(ConfigHandler.canAutoAnswer()) {
+                event.getInvitor().sendMessage(ConfigHandler.rejectInformation(event.getBot().getId()));
             }
             event.ignore();
         } else {
@@ -44,7 +44,7 @@ public class ContactUtil {
     // 决定是否接收好友请求
     public static void handleFriendRequest(NewFriendRequestEvent event) {
         if(IdentityUtil.isAdmin(event.getFromId())) event.accept();
-        if (!MultiBotHandler.canAcceptFriend(event.getBot().getId())) {
+        if (!ConfigHandler.canAcceptFriend(event.getBot().getId())) {
             event.reject(false);
             return;
         }
@@ -60,10 +60,10 @@ public class ContactUtil {
         executor.schedule(() -> {
             //管理员判定
             if(!IdentityUtil.isAdmin((event).getInvitor().getId())) {
-                if (!MultiBotHandler.canAcceptGroup(event.getBot().getId())) {
-                    event.getGroup().sendMessage(MultiBotHandler.rejectInformation(event.getBot().getId()));
-                    if(MultiBotHandler.canSendNotice(event.getBot())) {
-                        (event).getInvitor().sendMessage(MultiBotHandler.rejectInformation(event.getBot().getId()));
+                if (!ConfigHandler.canAcceptGroup(event.getBot().getId())) {
+                    event.getGroup().sendMessage(ConfigHandler.rejectInformation(event.getBot().getId()));
+                    if(ConfigHandler.canSendNotice(event.getBot())) {
+                        (event).getInvitor().sendMessage(ConfigHandler.rejectInformation(event.getBot().getId()));
                     }
                     event.getGroup().quit();
                     String content = "由于目前Bot不接受添加群聊，已经从 " + event.getGroup().getName() + "(" + event.getGroup().getId() + ")" + "出逃。";
@@ -73,7 +73,7 @@ public class ContactUtil {
 
                 if (event.getGroup().getMembers().getSize() < 7) {
                     event.getGroup().sendMessage("七筒目前不接受加入7人以下的群聊，将会自动退群。");
-                    if(MultiBotHandler.canSendNotice(event.getBot())) {
+                    if(ConfigHandler.canSendNotice(event.getBot())) {
                         (event).getInvitor().sendMessage("七筒目前不接受加入7人以下的群聊，将会自动退群。");
                     }
                     event.getGroup().quit();
@@ -88,7 +88,7 @@ public class ContactUtil {
                 for(Bot bot:Bot.getInstances()){
                     if (bot.getId()==(event.getBot().getId())) continue;
                     if (nm.getId()==bot.getId()){
-                        if(MultiBotHandler.BotName.get(nm.getId()).ordinal()<MultiBotHandler.BotName.get(bot.getId()).ordinal()) continue;//很重要的判定！两个七筒只有一个退群！
+                        if(ConfigHandler.BotName.get(nm.getId()).ordinal()<ConfigHandler.BotName.get(bot.getId()).ordinal()) continue;//很重要的判定！两个七筒只有一个退群！
                         event.getGroup().sendMessage("检测到其他在线七筒账户在此群聊中，本机器人将自动退群。");
                         executor.schedule(() -> event.getGroup().quit(),15,TimeUnit.SECONDS);
                         return;
@@ -119,8 +119,8 @@ public class ContactUtil {
         }
         executor.schedule(() -> {
 
-                if (!MultiBotHandler.canAcceptGroup(event.getBot().getId())) {
-                    event.getGroup().sendMessage(MultiBotHandler.rejectInformation(event.getBot().getId()));
+                if (!ConfigHandler.canAcceptGroup(event.getBot().getId())) {
+                    event.getGroup().sendMessage(ConfigHandler.rejectInformation(event.getBot().getId()));
                     event.getGroup().quit();
                     String content = "由于目前Bot不接受添加群聊，已经从 " + event.getGroup().getName() + "(" + event.getGroup().getId() + ")" + "出逃。";
                     MessageUtil.notifyDevGroup(content, event.getBot().getId());
@@ -141,7 +141,7 @@ public class ContactUtil {
                 for(Bot bot:Bot.getInstances()){
                     if (bot.getId()==(event.getBot().getId())) continue;
                     if (nm.getId()==bot.getId()){
-                        if(MultiBotHandler.BotName.get(nm.getId()).ordinal()<MultiBotHandler.BotName.get(bot.getId()).ordinal()) continue;//很重要的判定！两个七筒只有一个退群！
+                        if(ConfigHandler.BotName.get(nm.getId()).ordinal()<ConfigHandler.BotName.get(bot.getId()).ordinal()) continue;//很重要的判定！两个七筒只有一个退群！
                         event.getGroup().sendMessage("检测到其他在线七筒账户在此群聊中，本机器人将自动退群。");
                         executor.schedule(() -> event.getGroup().quit(),15,TimeUnit.SECONDS);
                         return;
@@ -178,7 +178,7 @@ public class ContactUtil {
 
     // 处理加为好友事件
     public static void handleAddFriend(FriendAddEvent event) {
-        if(!MultiBotHandler.canSendNotice(event.getBot())) return;
+        if(!ConfigHandler.canSendNotice(event.getBot())) return;
         executor.schedule(() -> {
             event.getFriend().sendMessage(JOIN_GROUP);
             DisclTemporary.send(event.getFriend());
@@ -211,14 +211,14 @@ public class ContactUtil {
 
     // 加群后发送Bot提示
     static void sendNoticeWhenJoinGroup(BotJoinGroupEvent.Active event,boolean containsOldChitung) {
-        if(!MultiBotHandler.canSendNotice(event.getBot())) return;
+        if(!ConfigHandler.canSendNotice(event.getBot())) return;
         String message = "您好，七筒已经加入了您的群" + event.getGroup().getName() + " - " + event.getGroup().getId() + "，请在群聊中输入/help 以获取相关信息。如果七筒过于干扰群内秩序，请将七筒从您的群中移除。";
         if(containsOldChitung) message+="\n\n检测到您的群聊中有已经不再投入使用的七筒账号，可以移除。";
         event.getGroup().getOwner().sendMessage(message);
     }
 
     static void sendNoticeWhenJoinGroup(Group group,boolean containsOldChitung, Bot bot) {
-        if(!MultiBotHandler.canSendNotice(bot)) return;
+        if(!ConfigHandler.canSendNotice(bot)) return;
         String message = "您好，七筒已经加入了您的群" + group.getName() + " - " + group.getId() + "，请在群聊中输入/help 以获取相关信息。如果七筒过于干扰群内秩序，请将七筒从您的群中移除。";
         if(containsOldChitung) message+="\n\n检测到您的群聊中有已经不再投入使用的七筒账号，可以移除。";
         group.getOwner().sendMessage(message);
@@ -247,9 +247,4 @@ public class ContactUtil {
         MessageUtil.notifyDevGroup("七筒已经从 " + event.getGroup().getName() + "（" + event.getGroupId() + "）主动离开。", event.getBot().getId());
     }
 
-    enum JoinGroupSourceType {
-        INVITE,
-        RETRIEVE,
-        ACTIVE
-    }
 }

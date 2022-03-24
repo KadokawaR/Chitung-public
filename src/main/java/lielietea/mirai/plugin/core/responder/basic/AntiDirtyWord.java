@@ -17,10 +17,10 @@ public class AntiDirtyWord implements MessageResponder<MessageEvent> {
 
     static {
         {
-            REG_PATTERN.add(Pattern.compile(".*" + "([日干操艹草滚])([你尼泥])([妈马麻])" + ".*"));
+            REG_PATTERN.add(Pattern.compile(".*" + "([日干操艹草滚槽曹糙])([你尼泥腻妮])([妈马麻码吗玛])" + ".*"));
             REG_PATTERN.add(Pattern.compile(".*" + "([Mm])otherfucker" + ".*"));
             REG_PATTERN.add(Pattern.compile(".*" + "([Ff])uck ([Yy])ou" + ".*"));
-            REG_PATTERN.add(Pattern.compile(".*" + "([Ff])uck" + ".*"));
+            REG_PATTERN.add(Pattern.compile(".*" + "([Ff])(Uu)(Cc)(Kk)" + ".*"));
         }
     }
 
