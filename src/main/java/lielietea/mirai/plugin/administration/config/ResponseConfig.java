@@ -1,4 +1,4 @@
-package lielietea.mirai.plugin.core.responder.universalrespond;
+package lielietea.mirai.plugin.administration.config;
 
 public class ResponseConfig{
     boolean answerFriend;

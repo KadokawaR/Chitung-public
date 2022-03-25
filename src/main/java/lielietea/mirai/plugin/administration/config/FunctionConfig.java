@@ -1,4 +1,4 @@
-package lielietea.mirai.plugin.core.responder.universalrespond;
+package lielietea.mirai.plugin.administration.config;
 
 public class FunctionConfig{
     boolean FursonaPunk;
@@ -15,6 +15,7 @@ public class FunctionConfig{
     boolean LovelyImage;
     boolean FurryGamesIndex;
     boolean FeedBack;
+
     public FunctionConfig(){
         this.FursonaPunk=true;
         this.LotteryWinner=true;

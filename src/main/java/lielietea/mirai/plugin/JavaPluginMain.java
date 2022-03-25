@@ -50,9 +50,7 @@ public final class JavaPluginMain extends JavaPlugin {
         ResponderManager.getINSTANCE().ini();
 
         // 上线事件
-        GlobalEventChannel.INSTANCE.subscribeAlways(BotOnlineEvent.class, event -> {
-            Optional.ofNullable(event.getBot().getGroup(IdentityUtil.DevGroup.DEFAULT.getID())).ifPresent(group -> group.sendMessage("老子来了"));
-        });
+        GlobalEventChannel.INSTANCE.subscribeAlways(BotOnlineEvent.class, event -> Optional.ofNullable(event.getBot().getGroup(IdentityUtil.DevGroup.DEFAULT.getID())).ifPresent(group -> group.sendMessage(ConfigHandler.getINSTANCE().config.getCc().getOnlineText())));
 
         // 处理好友请求
         GlobalEventChannel.INSTANCE.subscribeAlways(NewFriendRequestEvent.class, ContactUtil::handleFriendRequest);

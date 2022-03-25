@@ -1,10 +1,5 @@
 package lielietea.mirai.plugin.administration.config;
 
-import com.google.gson.annotations.SerializedName;
-import lielietea.mirai.plugin.core.responder.universalrespond.CustomizedConfig;
-import lielietea.mirai.plugin.core.responder.universalrespond.FunctionConfig;
-import lielietea.mirai.plugin.core.responder.universalrespond.ResponseConfig;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,8 +16,10 @@ public class Config {
         this.botName = "机器人";
         this.devGroupID = new ArrayList<>();
         this.adminID = new ArrayList<>();
+        this.minimumMembers = 7;
         this.fc = new FunctionConfig();
         this.rc = new ResponseConfig();
+        this.cc = new CustomizedConfig();
     }
 
     public String getBotName() {
