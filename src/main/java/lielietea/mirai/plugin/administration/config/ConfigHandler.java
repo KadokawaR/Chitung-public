@@ -61,11 +61,11 @@ public class ConfigHandler {
         if(!IdentityUtil.isAdmin(event)) return;
         if(!event.getMessage().contentToString().equals("/config")) return;
         MessageChainBuilder mcb = new MessageChainBuilder();
-        mcb.append("addFriend: ").append(String.valueOf(getINSTANCE().config.rc.addFriend)).append("\n");
-        mcb.append("addGroup: ").append(String.valueOf(getINSTANCE().config.rc.addGroup)).append("\n");
-        mcb.append("answerFriend: ").append(String.valueOf(getINSTANCE().config.rc.answerFriend)).append("\n");
-        mcb.append("answerGroup: ").append(String.valueOf(getINSTANCE().config.rc.answerGroup)).append("\n");
-        mcb.append("autoAnswer: ").append(String.valueOf(getINSTANCE().config.rc.autoAnswer)).append("\n");
+        mcb.append("addFriend: ").append(String.valueOf(getINSTANCE().config.getRc().isAddFriend())).append("\n");
+        mcb.append("addGroup: ").append(String.valueOf(getINSTANCE().config.getRc().isAddGroup())).append("\n");
+        mcb.append("answerFriend: ").append(String.valueOf(getINSTANCE().config.getRc().isAnswerFriend())).append("\n");
+        mcb.append("answerGroup: ").append(String.valueOf(getINSTANCE().config.getRc().isAnswerGroup())).append("\n");
+        mcb.append("autoAnswer: ").append(String.valueOf(getINSTANCE().config.getRc().isAutoAnswer())).append("\n");
         event.getSubject().sendMessage(mcb.asMessageChain());
     }
 
@@ -123,22 +123,22 @@ public class ConfigHandler {
     }
 
     public static boolean canAddFriend(){
-        return getINSTANCE().config.rc.addFriend;
+        return getINSTANCE().config.getRc().isAddFriend();
     }
 
     public static boolean canAddGroup(){
-        return getINSTANCE().config.rc.addGroup;
+        return getINSTANCE().config.getRc().isAddGroup();
     }
     public static boolean canAnswerFriend(){
-        return getINSTANCE().config.rc.answerFriend;
+        return getINSTANCE().config.getRc().isAnswerFriend();
     }
 
     public static boolean canAnswerGroup(){
-        return getINSTANCE().config.rc.answerGroup;
+        return getINSTANCE().config.getRc().isAnswerGroup();
     }
 
     public static boolean canAutoAnswer(){
-        return getINSTANCE().config.rc.autoAnswer;
+        return getINSTANCE().config.getRc().isAutoAnswer();
     }
 
     static void reset(MessageEvent event){
