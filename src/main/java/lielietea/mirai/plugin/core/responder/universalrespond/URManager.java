@@ -6,7 +6,6 @@ import lielietea.mirai.plugin.utils.IdentityUtil;
 import lielietea.mirai.plugin.utils.fileutils.Read;
 import lielietea.mirai.plugin.utils.fileutils.Touch;
 import lielietea.mirai.plugin.utils.fileutils.Write;
-import net.mamoe.mirai.event.events.FriendMessageEvent;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
 import net.mamoe.mirai.event.events.MessageEvent;
 
@@ -16,16 +15,16 @@ import java.util.List;
 import java.util.Random;
 
 public class URManager {
-    static String UR_PATH = System.getProperty("user.dir") + File.separator + "data" + File.separator + "URConfig.json";
+    static String UR_PATH = System.getProperty("user.dir") + File.separator + "data" + File.separator + "UniversalResponder.json";
 
     URManager(){}
 
     private static final URManager INSTANCE;
 
     static class URList{
-        List<UniversalRespond> universalRespondList;
+        List<UniversalResponder> universalRespondList;
         URList(){
-            this.universalRespondList = new ArrayList<UniversalRespond>(){{add(new UniversalRespond());}};
+            this.universalRespondList = new ArrayList<UniversalResponder>(){{add(new UniversalResponder());}};
         }
     }
 
@@ -67,7 +66,7 @@ public class URManager {
         Write.cover(jsonString, UR_PATH);
     }
 
-    static int encodeMessageStatus(MessageEvent event, UniversalRespond ur){
+    static int encodeMessageStatus(MessageEvent event, UniversalResponder ur){
         int code = 0;
         //第一位，Group是2 Friend是1
         if(event instanceof GroupMessageEvent){
@@ -172,7 +171,7 @@ public class URManager {
         return MessageResponseKind.DoNotRespond;
     }
 
-    static boolean IDMatch(MessageEvent event, UniversalRespond ur){
+    static boolean IDMatch(MessageEvent event, UniversalResponder ur){
         switch(decodeMessageStatus(encodeMessageStatus(event,ur))){
             case DoNotRespond:
                 return false;
@@ -192,7 +191,7 @@ public class URManager {
         return false;
     }
 
-    static boolean contentMatch(String string,UniversalRespond ur){
+    static boolean contentMatch(String string, UniversalResponder ur){
         switch(ur.getTriggerKind()){
             case Equal:
                 for(String pattern:ur.getPattern()){
@@ -208,14 +207,14 @@ public class URManager {
         return false;
     }
 
-    static boolean kindMatch(MessageEvent event,UniversalRespond ur){
+    static boolean kindMatch(MessageEvent event, UniversalResponder ur){
         if(ur.getMessageKind().equals(MessageKind.Any)) return true;
         if(ur.getListResponceKind().equals(MessageKind.Any)) return true;
         return (ur.getMessageKind().equals(ur.getListResponceKind()));
     }
 
     static void respond(MessageEvent event){
-        for(UniversalRespond ur:getINSTANCE().urList.universalRespondList) {
+        for(UniversalResponder ur:getINSTANCE().urList.universalRespondList) {
             if(!kindMatch(event,ur)) continue;
             if(!contentMatch(event.getMessage().contentToString(),ur)) continue;
             if(!IDMatch(event,ur)) continue;

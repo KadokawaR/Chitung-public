@@ -3,9 +3,9 @@ package lielietea.mirai.plugin.core.responder.universalrespond;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UniversalRespond {
+public class UniversalResponder {
     private MessageKind messageKind;
-    private MessageKind listResponceKind;
+    private MessageKind listResponseKind;
     private ListKind listKind;
     private List<Long> userList;
 
@@ -13,14 +13,14 @@ public class UniversalRespond {
     private List<String> pattern;
     private List<String> answer;
 
-    UniversalRespond(){
+    UniversalResponder(){
         this.messageKind=MessageKind.Any;
-        this.listResponceKind=MessageKind.Any;
+        this.listResponseKind =MessageKind.Any;
         this.listKind=ListKind.Black;
-        this.userList=new ArrayList<Long>(){{add(0L);}};
+        this.userList=new ArrayList<>();
         this.triggerKind=TriggerKind.Equal;
-        this.pattern=new ArrayList<String>(){{add("");}};
-        this.answer=new ArrayList<String>(){{add("");}};
+        this.pattern=new ArrayList<>();
+        this.answer=new ArrayList<>();
     }
 
     public MessageKind getMessageKind() {
@@ -72,10 +72,10 @@ public class UniversalRespond {
     }
 
     public MessageKind getListResponceKind() {
-        return listResponceKind;
+        return listResponseKind;
     }
 
     public void setListResponceKind(MessageKind listResponceKind) {
-        this.listResponceKind = listResponceKind;
+        this.listResponseKind = listResponceKind;
     }
 }
