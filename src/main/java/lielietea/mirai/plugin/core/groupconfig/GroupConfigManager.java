@@ -17,6 +17,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 public class GroupConfigManager {
     static String UR_PATH = System.getProperty("user.dir") + File.separator + "data" + File.separator + "GroupConfig.json";
@@ -37,7 +38,7 @@ public class GroupConfigManager {
         initialize();
     }
 
-    public GroupConfigs groupConfigs;
+    GroupConfigs groupConfigs;
 
     public static GroupConfigManager getINSTANCE() {
         return INSTANCE;
@@ -54,9 +55,10 @@ public class GroupConfigManager {
         } else {
             writeRecord();
         }
+        updateConfigList();
     }
 
-    public static void readRecord(){
+    static void readRecord(){
         try {
             getINSTANCE().groupConfigs = new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(UR_PATH)))), GroupConfigs.class);
         } catch (IOException e) {
@@ -64,29 +66,30 @@ public class GroupConfigManager {
         }
     }
 
-    public static void writeRecord(){
+    static void writeRecord(){
         String jsonString = new GsonBuilder().setPrettyPrinting().create().toJson(getINSTANCE().groupConfigs);
         Write.cover(jsonString, UR_PATH);
     }
 
-    public static Integer getGroupIndex(long groupID){
+    static Integer getGroupIndex(long groupID){
         for(int i=0;i<getINSTANCE().groupConfigs.groupConfigList.size();i++){
             if(getINSTANCE().groupConfigs.groupConfigList.get(i).getGroupID()==groupID) return i;
         }
         return null;
     }
 
-    public static boolean containsGroup(long groupID){
+    static boolean containsGroup(long groupID){
         return getGroupIndex(groupID)!=null;
     }
 
-    public static void addGroupConfig(long groupID){
+    static void addGroupConfig(long groupID){
+        if(containsGroup(groupID)) return;
         getINSTANCE().groupConfigs.groupConfigList.add(new GroupConfig(groupID));
         writeRecord();
         readRecord();
     }
 
-    public static void addGroupConfig(List<Long> groupID){
+    static void addGroupConfig(List<Long> groupID){
         for(Long ID:groupID){
             if(!containsGroup(ID)) getINSTANCE().groupConfigs.groupConfigList.add(new GroupConfig(ID));
         }
@@ -94,7 +97,7 @@ public class GroupConfigManager {
         readRecord();
     }
 
-    public static void deleteGroupConfig(long groupID){
+    static void deleteGroupConfig(long groupID){
         if(containsGroup(groupID)){
             getINSTANCE().groupConfigs.groupConfigList.remove(Objects.requireNonNull(getGroupIndex(groupID)).intValue());
         }
@@ -102,7 +105,7 @@ public class GroupConfigManager {
         readRecord();
     }
 
-    public static void deleteGroupConfig(List<Long> groupID){
+    static void deleteGroupConfig(List<Long> groupID){
         for(Long ID:groupID){
             if(containsGroup(ID)){
                 getINSTANCE().groupConfigs.groupConfigList.remove(Objects.requireNonNull(getGroupIndex(ID)).intValue());
@@ -112,16 +115,46 @@ public class GroupConfigManager {
         readRecord();
     }
 
-    public static void updateConfigList(Event event){
+     static void updateConfigList(){
+        List<Long> mutualList = new ArrayList<>();
+        List<Long> botGroupList = new ArrayList<>();
+        List<Long> configGroupList = new ArrayList<>();
         List<Long> addList = new ArrayList<>();
         List<Long> deleteList = new ArrayList<>();
-        ContactList<Group> groupList = Bot.getInstances().get(0).getGroups();
-        for(GroupConfig gc:getINSTANCE().groupConfigs.groupConfigList){
-            
+        ContactList<Group> groupList = new ContactList<>();
+
+        for(Bot bot:Bot.getInstances()){
+            groupList.addAll(bot.getGroups());
         }
+
+        for(Group g:groupList){
+            botGroupList.add(g.getId());
+        }
+
+        for(GroupConfig gc:getINSTANCE().groupConfigs.groupConfigList){
+            configGroupList.add(gc.getGroupID());
+        }
+
+        for(GroupConfig gc:getINSTANCE().groupConfigs.groupConfigList){
+            for(Long g:botGroupList){
+                if(g==gc.getGroupID()) mutualList.add(gc.getGroupID());
+            }
+        }
+
+        for(Long g:botGroupList){
+            if(!mutualList.contains(g)) addList.add(g);
+        }
+
+        for(Long g:configGroupList){
+            if(!mutualList.contains(g)) deleteList.add(g);
+        }
+
+        addGroupConfig(addList);
+        deleteGroupConfig(deleteList);
+
     }
 
-    public static GroupConfig readGroupConfig(long groupID){
+    static GroupConfig readGroupConfig(long groupID){
         if(getGroupIndex(groupID)==null) addGroupConfig(groupID);
         return getINSTANCE().groupConfigs.groupConfigList.get(Objects.requireNonNull(getGroupIndex(groupID)));
     }
@@ -130,7 +163,7 @@ public class GroupConfigManager {
     public static void changeGroupConfig(GroupMessageEvent event){
         if(!event.getMessage().contentToString().contains("/close")||event.getMessage().contentToString().contains("/open")) return;
         if(event.getSender().getPermission().equals(MemberPermission.MEMBER)&&(!IdentityUtil.isAdmin(event))) return;
-        if(containsGroup(event.getGroup().getId())) addGroupConfig(event.getGroup().getId());
+        if(!containsGroup(event.getGroup().getId())) addGroupConfig(event.getGroup().getId());
         boolean operation;
         if(event.getMessage().contentToString().contains("/close")){
             operation = false;
@@ -166,11 +199,65 @@ public class GroupConfigManager {
         }
     }
 
-    public static boolean groupConfigResponceStatus(GroupMessageEvent event){
-        if(readGroupConfig(event.getGroup().getId())!=null){
-
+    public static void resetGroupConfig(GroupMessageEvent event){
+        if(!event.getMessage().contentToString().equals("/default")) return;
+        if(event.getSender().getPermission().equals(MemberPermission.MEMBER)&&(!IdentityUtil.isAdmin(event))) return;
+        if(containsGroup(event.getGroup().getId())){
+            getINSTANCE().groupConfigs.groupConfigList.remove(Objects.requireNonNull(getGroupIndex(event.getGroup().getId())).intValue());
         }
+        addGroupConfig(event.getGroup().getId());
     }
 
+    public static boolean globalConfig(GroupMessageEvent event){
+        if(readGroupConfig(event.getGroup().getId())==null) addGroupConfig(event.getGroup().getId());
+        if(!getINSTANCE().groupConfigs.groupConfigList.get(getGroupIndex(event.getGroup().getId())).isGlobal()){
+            return IdentityUtil.isAdmin(event);
+        }
+        return true;
+    }
+
+    public static boolean fishConfig(GroupMessageEvent event){
+        if(readGroupConfig(event.getGroup().getId())==null) addGroupConfig(event.getGroup().getId());
+        return getINSTANCE().groupConfigs.groupConfigList.get(getGroupIndex(event.getGroup().getId())).isFish();
+    }
+
+    public static boolean casinoConfig(GroupMessageEvent event){
+        if(readGroupConfig(event.getGroup().getId())==null) addGroupConfig(event.getGroup().getId());
+        return getINSTANCE().groupConfigs.groupConfigList.get(getGroupIndex(event.getGroup().getId())).isCasino();
+    }
+
+    public static boolean responderConfig(GroupMessageEvent event){
+        if(readGroupConfig(event.getGroup().getId())==null) addGroupConfig(event.getGroup().getId());
+        return getINSTANCE().groupConfigs.groupConfigList.get(getGroupIndex(event.getGroup().getId())).isResponder();
+    }
+
+    public static boolean lotteryConfig(GroupMessageEvent event){
+        if(readGroupConfig(event.getGroup().getId())==null) addGroupConfig(event.getGroup().getId());
+        return getINSTANCE().groupConfigs.groupConfigList.get(getGroupIndex(event.getGroup().getId())).isLottery();
+    }
+
+    public static boolean gameConfig(GroupMessageEvent event){
+        if(readGroupConfig(event.getGroup().getId())==null) addGroupConfig(event.getGroup().getId());
+        return getINSTANCE().groupConfigs.groupConfigList.get(getGroupIndex(event.getGroup().getId())).isGame();
+    }
+
+    public static void addBlockedUser(GroupMessageEvent event){
+        if(event.getSender().getPermission().equals(MemberPermission.MEMBER)&&!IdentityUtil.isAdmin(event)) return;
+        if(!event.getMessage().contentToString().toLowerCase().contains("/blockmember")) return;
+        String message = event.getMessage().contentToString().replace("/blockmember","");
+        message = message.replace(" ","");
+        if(!Pattern.compile("[0-9]*").matcher(message).matches()){
+            event.getGroup().sendMessage("/blockmember 指示器使用错误");
+            return;
+        }
+        long ID = 
+    }
+
+    public static void handle(GroupMessageEvent event){
+        resetGroupConfig(event);
+        changeGroupConfig(event);
+    }
+
+    public void ini(){}
 
 }

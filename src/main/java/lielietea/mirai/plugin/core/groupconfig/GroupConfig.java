@@ -9,7 +9,8 @@ public class GroupConfig {
     private boolean fish;
     private boolean casino;//bank是casino的配套设施
     private boolean responder;
-    private boolean game;//包含fish casino jetpack
+    private boolean lottery;//C4 和 Bummer
+    private boolean game;//包含fish casino mahjong-riddle
     private List<Long> blockedUser;//global 黑名单
 
     GroupConfig(){
@@ -18,6 +19,7 @@ public class GroupConfig {
         this.fish = true;
         this.casino = true;
         this.responder = true;
+        this.lottery = true;
         this.game = true;
         this.blockedUser = new ArrayList<>();
     }
@@ -28,6 +30,7 @@ public class GroupConfig {
         this.fish = true;
         this.casino = true;
         this.responder = true;
+        this.lottery = true;
         this.game = true;
         this.blockedUser = new ArrayList<>();
     }
@@ -86,5 +89,13 @@ public class GroupConfig {
 
     public void setBlockedUser(List<Long> blockedUser) {
         this.blockedUser = blockedUser;
+    }
+
+    public boolean isLottery() {
+        return lottery;
+    }
+
+    public void setLottery(boolean lottery) {
+        this.lottery = lottery;
     }
 }

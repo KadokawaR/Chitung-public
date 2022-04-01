@@ -1,5 +1,6 @@
 package lielietea.mirai.plugin.core.responder;
 
+import lielietea.mirai.plugin.core.groupconfig.GroupConfigManager;
 import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.event.events.MessageEvent;
 

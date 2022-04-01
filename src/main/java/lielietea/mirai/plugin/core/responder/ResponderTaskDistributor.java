@@ -1,5 +1,6 @@
 package lielietea.mirai.plugin.core.responder;
 
+import lielietea.mirai.plugin.administration.config.ConfigHandler;
 import lielietea.mirai.plugin.utils.MessageUtil;
 import lielietea.mirai.plugin.utils.StandardTimeUtil;
 import net.mamoe.mirai.Bot;
@@ -18,7 +19,7 @@ public class ResponderTaskDistributor {
     final static int GROUP_MESSAGE_LIMIT_PER_MIN = 10;
     final static int PERSONAL_MESSAGE_LIMIT_PER_MIN = 5;
     final static int PERSONAL_MESSAGE_LIMIT_PER_DAY = 40;
-    final static int DAILY_MESSAGE_LIMIT = 4800;
+    final static int DAILY_MESSAGE_LIMIT = 4000;
     final static ExecutorService ISOLATED_EXECUTOR = Executors.newSingleThreadExecutor();
     static final CacheThreshold groupThreshold = new CacheThreshold(GROUP_MESSAGE_LIMIT_PER_MIN);
     static final CacheThreshold personalThreshold = new CacheThreshold(PERSONAL_MESSAGE_LIMIT_PER_MIN);
@@ -43,7 +44,7 @@ public class ResponderTaskDistributor {
                                      public void run() {
                                          dailyThreshold.clearCache();
                                          personalDailyThreshold.clearCache();
-                                         MessageUtil.notifyDevGroup(bot.getNick()+"的 ResponderTaskDistributor 每日计数器已经重置。", bot);
+                                         MessageUtil.notifyDevGroup(ConfigHandler.getName(bot) +"的 ResponderTaskDistributor 每日计数器已经重置。", bot);
                                      }
                                  }, StandardTimeUtil.getStandardFirstTime(0, 0, 1),
                 StandardTimeUtil.getPeriodLengthInMS(1, 0, 0, 0));

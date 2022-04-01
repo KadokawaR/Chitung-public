@@ -2,7 +2,6 @@ package lielietea.mirai.plugin.core.game.montecarlo.roulette;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
-import lielietea.mirai.plugin.administration.statistics.GameCenterCount;
 import lielietea.mirai.plugin.core.bank.PumpkinPesoWindow;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
@@ -94,7 +93,6 @@ public class Roulette extends RouletteUtils {
 
         InputStream img = Roulette.class.getResourceAsStream(ROULETTE_INTRO_PATH);
         assert img != null;
-        GameCenterCount.count(GameCenterCount.Functions.RouletteStart);
         event.getSubject().sendMessage(new MessageChainBuilder().append(RouletteRules).append("\n\n").append(Contact.uploadImage(event.getSubject(), img)).asMessageChain());
 
         try {
@@ -256,7 +254,6 @@ public class Roulette extends RouletteUtils {
             if (getINSTANCE().FriendStatusMap.get(event.getSubject().getId()).equals(StatusType.Bet) || getINSTANCE().FriendStatusMap.get(event.getSubject().getId()).equals(StatusType.End))
                 return;
         }
-        GameCenterCount.count(GameCenterCount.Functions.RouletteBet);
 
         Integer bet = null;
 
@@ -509,8 +506,6 @@ public class Roulette extends RouletteUtils {
         } else {
             if (!getINSTANCE().FriendBet.containsKey(event.getSubject().getId())) return;
         }
-
-        GameCenterCount.count(GameCenterCount.Functions.RouletteOperations);
 
         List<RouletteBet> rouletteBetList = processString(event.getMessage().contentToString());
         List<RouletteBet> trueBetList = getDeFactoBets(rouletteBetList);

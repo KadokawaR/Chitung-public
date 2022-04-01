@@ -3,7 +3,8 @@ package lielietea.mirai.plugin;
 
 import lielietea.mirai.plugin.administration.AdminCommandDispatcher;
 import lielietea.mirai.plugin.administration.config.ConfigHandler;
-import lielietea.mirai.plugin.administration.statistics.MPSEHandler.MessagePostSendEventHandler;
+import lielietea.mirai.plugin.core.groupconfig.GroupConfig;
+import lielietea.mirai.plugin.core.groupconfig.GroupConfigManager;
 import lielietea.mirai.plugin.core.responder.ResponderCenter;
 import lielietea.mirai.plugin.core.responder.universalrespond.URManager;
 import lielietea.mirai.plugin.utils.Nudge;
@@ -48,6 +49,9 @@ public final class JavaPluginMain extends JavaPlugin {
 
         GroupPolice.getINSTANCE().ini();
         ResponderManager.getINSTANCE().ini();
+        ConfigHandler.getINSTANCE().ini();
+        GroupConfigManager.getINSTANCE().ini();
+        URManager.getINSTANCE().ini();
 
         // 上线事件
         GlobalEventChannel.INSTANCE.subscribeAlways(BotOnlineEvent.class, event -> Optional.ofNullable(event.getBot().getGroup(IdentityUtil.DevGroup.DEFAULT.getID())).ifPresent(group -> group.sendMessage(ConfigHandler.getINSTANCE().config.getCc().getOnlineText())));
@@ -76,27 +80,32 @@ public final class JavaPluginMain extends JavaPlugin {
         // Bot获得权限
         GlobalEventChannel.INSTANCE.subscribeAlways(BotGroupPermissionChangeEvent.class, event -> {
             if (event.getGroup().getBotPermission().equals(MemberPermission.OWNER) || (event.getGroup().getBotPermission().equals(MemberPermission.ADMINISTRATOR))) {
-                event.getGroup().sendMessage("谢谢，各位将获得更多的乐趣。");
+                event.getGroup().sendMessage(ConfigHandler.getINSTANCE().config.getCc().getPermissionChangedText());
             }
         });
 
         // 群名改变之后发送消息
-        GlobalEventChannel.INSTANCE.subscribeAlways(GroupNameChangeEvent.class, event -> event.getGroup().sendMessage("好名字。"));
+        GlobalEventChannel.INSTANCE.subscribeAlways(GroupNameChangeEvent.class, event -> event.getGroup().sendMessage(ConfigHandler.getINSTANCE().config.getCc().getGroupNameChangedText()));
 
         GlobalEventChannel.INSTANCE.subscribeAlways(GroupMessageEvent.class, event -> {
 
             if(!ConfigHandler.canAnswerGroup()) return;
             if(IdentityUtil.isBot(event)) return;
-            if(MessagePostSendEventHandler.botHasTriggeredBreak(event)) return;
+            if(!GroupConfigManager.globalConfig(event)) return;
 
             //ResponderCenter
-            ResponderCenter.getINSTANCE().handleMessage(event);
+            if(GroupConfigManager.responderConfig(event) && ConfigHandler.getINSTANCE().config.getGroupFC().isResponder()){
+                Nudge.mentionNudge(event);
+                ResponderCenter.getINSTANCE().handleMessage(event);
+            }
             //管理员功能
             AdminCommandDispatcher.getInstance().handleMessage(event);
             //GameCenter
             GameCenter.handle(event);
             //UniversalResponder
-            URManager.handle(event);
+            if(GroupConfigManager.responderConfig(event) && ConfigHandler.getINSTANCE().config.getGroupFC().isResponder()) URManager.handle(event);
+            //群管理功能
+            GroupConfigManager.handle(event);
 
         });
 
@@ -104,12 +113,12 @@ public final class JavaPluginMain extends JavaPlugin {
         GlobalEventChannel.INSTANCE.subscribeAlways(NudgeEvent.class, Nudge::returnNudge);
 
         //群成员入群自动欢迎
-        GlobalEventChannel.INSTANCE.subscribeAlways(MemberJoinEvent.class, memberJoinEvent -> memberJoinEvent.getGroup().sendMessage("欢迎。"));
+        GlobalEventChannel.INSTANCE.subscribeAlways(MemberJoinEvent.class, memberJoinEvent -> memberJoinEvent.getGroup().sendMessage(ConfigHandler.getINSTANCE().config.getCc().getWelcomeText()));
 
 
         //计数
-        GlobalEventChannel.INSTANCE.subscribeAlways(GroupMessagePostSendEvent.class, MessagePostSendEventHandler::handle);
-        GlobalEventChannel.INSTANCE.subscribeAlways(FriendMessagePostSendEvent.class, MessagePostSendEventHandler::handle);
+        GlobalEventChannel.INSTANCE.subscribeAlways(GroupMessagePostSendEvent.class, event -> {return;});
+        GlobalEventChannel.INSTANCE.subscribeAlways(FriendMessagePostSendEvent.class, event -> {return;});
 
         //临时消息
         GlobalEventChannel.INSTANCE.subscribeAlways(StrangerMessageEvent.class, event -> {return;});
@@ -122,14 +131,13 @@ public final class JavaPluginMain extends JavaPlugin {
             if(IdentityUtil.isBot(event)) return;
 
             //ResponderCenter
-            ResponderCenter.getINSTANCE().handleMessage(event);
+            if(ConfigHandler.getINSTANCE().config.getFriendFC().isResponder()) ResponderCenter.getINSTANCE().handleMessage(event);
             //管理员功能
             AdminCommandDispatcher.getInstance().handleMessage(event);
             //GameCenter
             GameCenter.handle(event);
             //广播
             BroadcastSystem.handle(event);
-
         });
     }
 

@@ -6,6 +6,9 @@ import lielietea.mirai.plugin.utils.IdentityUtil;
 import lielietea.mirai.plugin.utils.fileutils.Read;
 import lielietea.mirai.plugin.utils.fileutils.Touch;
 import lielietea.mirai.plugin.utils.fileutils.Write;
+import net.mamoe.mirai.Bot;
+import net.mamoe.mirai.event.events.BotJoinGroupEvent;
+import net.mamoe.mirai.event.events.BotLeaveEvent;
 import net.mamoe.mirai.event.events.MessageEvent;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 
@@ -129,6 +132,7 @@ public class ConfigHandler {
     public static boolean canAddGroup(){
         return getINSTANCE().config.getRc().isAddGroup();
     }
+
     public static boolean canAnswerFriend(){
         return getINSTANCE().config.getRc().isAnswerFriend();
     }
@@ -152,4 +156,22 @@ public class ConfigHandler {
         changeCurrentBotConfig(event);
         reset(event);
     }
+
+    public static String getName(BotJoinGroupEvent event){
+        if(getINSTANCE().config.getBotName().equals("")) return event.getBot().getNick();
+        return getINSTANCE().config.getBotName();
+    }
+
+    public static String getName(Bot bot){
+        if(getINSTANCE().config.getBotName().equals("")) return bot.getNick();
+        return getINSTANCE().config.getBotName();
+    }
+
+    public static String getName(BotLeaveEvent event){
+        if(getINSTANCE().config.getBotName().equals("")) return event.getBot().getNick();
+        return getINSTANCE().config.getBotName();
+    }
+
+
+    public void ini(){}
 }

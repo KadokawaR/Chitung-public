@@ -1,5 +1,8 @@
 package lielietea.mirai.plugin.core.responder.lotterywinner;
 
+import lielietea.mirai.plugin.administration.config.ConfigHandler;
+import lielietea.mirai.plugin.core.groupconfig.GroupConfig;
+import lielietea.mirai.plugin.core.groupconfig.GroupConfigManager;
 import lielietea.mirai.plugin.core.responder.RespondTask;
 import lielietea.mirai.plugin.utils.StandardTimeUtil;
 import lielietea.mirai.plugin.utils.image.ImageCreater;
@@ -43,6 +46,18 @@ public class LotteryMachine {
     }
 
     public static RespondTask okBummer(GroupMessageEvent event, RespondTask.Builder builder) {
+        if(!GroupConfigManager.lotteryConfig(event)) {
+            builder.addMessage("本群暂未开启 Bummer 功能。");
+            builder.addNote("群 " + event.getGroup().getId() + " 尝试发起Bummer功能，但该群未开启该功能。");
+            return builder.build();
+        }
+
+        if(!ConfigHandler.getINSTANCE().config.getGroupFC().isLottery()) {
+            builder.addMessage("机器人暂未开启C4功能。");
+            builder.addNote("机器人未开启C4功能。");
+            return builder.build();
+        }
+
         if (botPermissionChecker(event)) {
             //抽取倒霉蛋
             List<NormalMember> candidates = event.getGroup().getMembers().stream().filter(normalMember -> normalMember.getPermission().equals(MemberPermission.MEMBER)).collect(Collectors.toList());
@@ -110,6 +125,18 @@ public class LotteryMachine {
     }
 
     public static RespondTask okC4(GroupMessageEvent event, RespondTask.Builder builder) {
+        if(!GroupConfigManager.lotteryConfig(event)) {
+            builder.addMessage("本群暂未开启C4功能。");
+            builder.addNote("群 " + event.getGroup().getId() + " 尝试发起Bummer功能，但该群未开启该功能。");
+            return builder.build();
+        }
+
+        if(!ConfigHandler.getINSTANCE().config.getGroupFC().isLottery()) {
+            builder.addMessage("机器人暂未开启C4功能。");
+            builder.addNote("机器人未开启C4功能。");
+            return builder.build();
+        }
+
         if (botPermissionChecker(event)) {
             if (!C4_ACTIVATION_FLAGS.getOrDefault(event.getGroup().getId(), false)) {
                 double ratio = 1D / Math.sqrt(event.getGroup().getMembers().size());

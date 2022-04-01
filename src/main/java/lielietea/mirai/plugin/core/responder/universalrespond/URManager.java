@@ -123,26 +123,6 @@ public class URManager {
 
     static MessageResponseKind decodeMessageStatus(int code){
         switch(code){
-            case 1000:
-            case 1021:
-            case 1100:
-            case 1121:
-            case 1200:
-            case 1210:
-            case 1220:
-            case 1201:
-            case 1211:
-            case 1221:
-            case 2000:
-            case 2011:
-            case 2100:
-            case 2110:
-            case 2120:
-            case 2101:
-            case 2111:
-            case 2121:
-            case 2200:
-                return MessageResponseKind.DoNotRespond;
             case 1020:
             case 1001:
             case 1120:
@@ -167,8 +147,9 @@ public class URManager {
                 return MessageResponseKind.CheckMemberBlackList;
             case 2211:
                 return MessageResponseKind.CheckMemberWhiteList;
+            default:
+                return MessageResponseKind.DoNotRespond;
         }
-        return MessageResponseKind.DoNotRespond;
     }
 
     static boolean IDMatch(MessageEvent event, UniversalResponder ur){
@@ -236,4 +217,6 @@ public class URManager {
         reset(event);
         respond(event);
     }
+
+    public void ini(){}
 }

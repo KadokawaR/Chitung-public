@@ -1,147 +1,60 @@
 package lielietea.mirai.plugin.administration.config;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class FunctionConfig{
-    boolean FursonaPunk;
-    boolean LotteryWinner;
-    boolean LotteryBummer;
-    boolean LotteryC4;
-    boolean MealPicker;
-    boolean FortuneTeller;
-    boolean PlayDice;
-    boolean AntiOverwatch;
-    boolean AntiDirtyWord;
-    boolean GreetingAndGoodbye;
-    boolean HeroLinesSelector;
-    boolean LovelyImage;
-    boolean FurryGamesIndex;
-    boolean FeedBack;
+    private boolean fish;
+    private boolean casino;//bank是casino的配套设施
+    private boolean responder;
+    private boolean lottery;//C4 和 Bummer, FriendFC 里面该值不影响
+    private boolean game;//包含fish casino mahjong-riddle
 
     public FunctionConfig(){
-        this.FursonaPunk=true;
-        this.LotteryWinner=true;
-        this.LotteryBummer=true;
-        this.LotteryC4=true;
-        this.MealPicker=true;
-        this.FortuneTeller=true;
-        this.PlayDice=true;
-        this.AntiOverwatch=true;
-        this.AntiDirtyWord=true;
-        this.GreetingAndGoodbye=true;
-        this.HeroLinesSelector=false;
-        this.LovelyImage=false;
-        this.FurryGamesIndex=false;
-        this.FeedBack=false;
+        this.fish = true;
+        this.casino = true;
+        this.responder = true;
+        this.lottery = true;
+        this.game = true;
     }
 
-    public boolean isFursonaPunk() {
-        return FursonaPunk;
+    public boolean isFish() {
+        return fish;
     }
 
-    public void setFursonaPunk(boolean fursonaPunk) {
-        FursonaPunk = fursonaPunk;
+    public void setFish(boolean fish) {
+        this.fish = fish;
     }
 
-    public boolean isLotteryWinner() {
-        return LotteryWinner;
+    public boolean isCasino() {
+        return casino;
     }
 
-    public void setLotteryWinner(boolean lotteryWinner) {
-        LotteryWinner = lotteryWinner;
+    public void setCasino(boolean casino) {
+        this.casino = casino;
     }
 
-    public boolean isLotteryBummer() {
-        return LotteryBummer;
+    public boolean isResponder() {
+        return responder;
     }
 
-    public void setLotteryBummer(boolean lotteryBummer) {
-        LotteryBummer = lotteryBummer;
+    public void setResponder(boolean responder) {
+        this.responder = responder;
     }
 
-    public boolean isLotteryC4() {
-        return LotteryC4;
+    public boolean isLottery() {
+        return lottery;
     }
 
-    public void setLotteryC4(boolean lotteryC4) {
-        LotteryC4 = lotteryC4;
+    public void setLottery(boolean lottery) {
+        this.lottery = lottery;
     }
 
-    public boolean isMealPicker() {
-        return MealPicker;
+    public boolean isGame() {
+        return game;
     }
 
-    public void setMealPicker(boolean mealPicker) {
-        MealPicker = mealPicker;
-    }
-
-    public boolean isFortuneTeller() {
-        return FortuneTeller;
-    }
-
-    public void setFortuneTeller(boolean fortuneTeller) {
-        FortuneTeller = fortuneTeller;
-    }
-
-    public boolean isPlayDice() {
-        return PlayDice;
-    }
-
-    public void setPlayDice(boolean playDice) {
-        PlayDice = playDice;
-    }
-
-    public boolean isAntiOverwatch() {
-        return AntiOverwatch;
-    }
-
-    public void setAntiOverwatch(boolean antiOverwatch) {
-        AntiOverwatch = antiOverwatch;
-    }
-
-    public boolean isAntiDirtyWord() {
-        return AntiDirtyWord;
-    }
-
-    public void setAntiDirtyWord(boolean antiDirtyWord) {
-        AntiDirtyWord = antiDirtyWord;
-    }
-
-    public boolean isGreetingAndGoodbye() {
-        return GreetingAndGoodbye;
-    }
-
-    public void setGreetingAndGoodbye(boolean greetingAndGoodbye) {
-        GreetingAndGoodbye = greetingAndGoodbye;
-    }
-
-    public boolean isHeroLinesSelector() {
-        return HeroLinesSelector;
-    }
-
-    public void setHeroLinesSelector(boolean heroLinesSelector) {
-        HeroLinesSelector = heroLinesSelector;
-    }
-
-    public boolean isLovelyImage() {
-        return LovelyImage;
-    }
-
-    public void setLovelyImage(boolean lovelyImage) {
-        LovelyImage = lovelyImage;
-    }
-
-    public boolean isFurryGamesIndex() {
-        return FurryGamesIndex;
-    }
-
-    public void setFurryGamesIndex(boolean furryGamesIndex) {
-        FurryGamesIndex = furryGamesIndex;
-    }
-
-    public boolean isFeedBack() {
-        return FeedBack;
-    }
-
-    public void setFeedBack(boolean feedBack) {
-        FeedBack = feedBack;
+    public void setGame(boolean game) {
+        this.game = game;
     }
 }

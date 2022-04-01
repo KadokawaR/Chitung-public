@@ -1,7 +1,6 @@
 package lielietea.mirai.plugin.core.game.fish;
 
 import com.google.gson.Gson;
-import lielietea.mirai.plugin.administration.statistics.GameCenterCount;
 
 import lielietea.mirai.plugin.core.bank.PumpkinPesoWindow;
 import lielietea.mirai.plugin.utils.image.ImageSender;
@@ -95,7 +94,6 @@ public class Fishing extends FishingUtil{
     public static void go(MessageEvent event){
         if(event.getMessage().contentToString().equals("/fishhelp")){
 
-            GameCenterCount.count(GameCenterCount.Functions.FishingInfo);
             try (InputStream img = Fishing.class.getResourceAsStream(FISH_INFO_PATH)) {
                 assert img != null;
                 event.getSubject().sendMessage(Contact.uploadImage(event.getSubject(), img));
@@ -107,7 +105,6 @@ public class Fishing extends FishingUtil{
         }
 
         if(event.getMessage().contentToString().equals("/handbook")){
-            GameCenterCount.count(GameCenterCount.Functions.FishingHandbook);
             try (InputStream img = Fishing.class.getResourceAsStream(HANDBOOK_PATH)) {
                 assert img != null;
                 event.getSubject().sendMessage(Contact.uploadImage(event.getSubject(), img));
@@ -118,7 +115,6 @@ public class Fishing extends FishingUtil{
         }
 
         if(event.getMessage().contentToString().equals("/collection")){
-            GameCenterCount.count(GameCenterCount.Functions.FishingCollection);
             MessageChainBuilder mcb = mcbProcessor(event);
             mcb.append("您的图鉴完成度目前为").append(String.valueOf(handbookProportion(event.getSender().getId()))).append("%\n\n");
             try {
@@ -134,7 +130,6 @@ public class Fishing extends FishingUtil{
         if (event.getMessage().contentToString().contains("/fish")){
             if (!isInFishingProcessFlag.contains(event.getSender().getId())){
                 isInFishingProcessFlag.add(event.getSender().getId());
-                GameCenterCount.count(GameCenterCount.Functions.FishingGo);
                 getFish(event,getWater(event.getMessage().contentToString()));
             } else {
                 MessageChainBuilder mcb = new MessageChainBuilder();
@@ -142,7 +137,6 @@ public class Fishing extends FishingUtil{
                     mcb.append((new At(event.getSender().getId()))).append(" ");
                 }
                 mcb.append("上次抛竿还在进行中。");
-                GameCenterCount.count(GameCenterCount.Functions.FishingNotReadyYet);
                 event.getSubject().sendMessage(mcb.asMessageChain());
             }
         }

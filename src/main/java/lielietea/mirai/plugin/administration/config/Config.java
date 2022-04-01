@@ -8,16 +8,18 @@ public class Config {
     List<Long> devGroupID;
     List<Long> adminID;
     int minimumMembers;
-    FunctionConfig fc;
+    FunctionConfig friendFC;
+    FunctionConfig groupFC;
     ResponseConfig rc;
     CustomizedConfig cc;
 
     Config(){
-        this.botName = "机器人";
+        this.botName = "";
         this.devGroupID = new ArrayList<>();
         this.adminID = new ArrayList<>();
         this.minimumMembers = 7;
-        this.fc = new FunctionConfig();
+        this.friendFC = new FunctionConfig();
+        this.groupFC = new FunctionConfig();
         this.rc = new ResponseConfig();
         this.cc = new CustomizedConfig();
     }
@@ -44,14 +46,6 @@ public class Config {
 
     public void setAdminID(List<Long> adminID) {
         this.adminID = adminID;
-    }
-
-    public FunctionConfig getFc() {
-        return fc;
-    }
-
-    public void setFc(FunctionConfig fc) {
-        this.fc = fc;
     }
 
     public ResponseConfig getRc() {
@@ -96,6 +90,22 @@ public class Config {
 
     public void setMinimumMembers(int minimumMembers) {
         this.minimumMembers = minimumMembers;
+    }
+
+    public FunctionConfig getFriendFC() {
+        return friendFC;
+    }
+
+    public void setFriendFC(FunctionConfig friendFC) {
+        this.friendFC = friendFC;
+    }
+
+    public FunctionConfig getGroupFC() {
+        return groupFC;
+    }
+
+    public void setGroupFC(FunctionConfig groupFC) {
+        this.groupFC = groupFC;
     }
 }
 

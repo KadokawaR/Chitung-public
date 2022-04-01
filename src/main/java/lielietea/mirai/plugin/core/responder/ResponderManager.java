@@ -1,7 +1,6 @@
 package lielietea.mirai.plugin.core.responder;
 
 
-import lielietea.mirai.plugin.administration.statistics.MPSEHandler.MPSEStatistics;
 import lielietea.mirai.plugin.core.responder.basic.AntiDirtyWord;
 import lielietea.mirai.plugin.core.responder.basic.AntiOverwatch;
 import lielietea.mirai.plugin.core.responder.basic.Goodbye;
@@ -11,16 +10,12 @@ import lielietea.mirai.plugin.core.responder.feastinghelper.dinnerpicker.MealPic
 import lielietea.mirai.plugin.core.responder.feastinghelper.dinnerpicker.PizzaPicker;
 import lielietea.mirai.plugin.core.responder.feastinghelper.drinkpicker.DrinkPicker;
 import lielietea.mirai.plugin.core.responder.feedback.FeedBack;
-import lielietea.mirai.plugin.core.responder.furrygamesindex.FurryGamesRandom;
-import lielietea.mirai.plugin.core.responder.furrygamesindex.FurryGamesSearch;
 import lielietea.mirai.plugin.core.responder.fursona.FursonaPunk;
-import lielietea.mirai.plugin.core.responder.help.DisclTemporary;
 import lielietea.mirai.plugin.core.responder.help.FunctTemporary;
 import lielietea.mirai.plugin.core.responder.help.Help;
 import lielietea.mirai.plugin.core.responder.lotterywinner.LotteryBummerMessageHandler;
 import lielietea.mirai.plugin.core.responder.lotterywinner.LotteryC4MessageHandler;
 import lielietea.mirai.plugin.core.responder.lotterywinner.LotteryWinnerMessageHandler;
-import lielietea.mirai.plugin.core.responder.lovelypicture.LovelyImage;
 import lielietea.mirai.plugin.core.responder.mahjong.FortuneTeller;
 import lielietea.mirai.plugin.core.responder.overwatch.HeroLinesSelector;
 import lielietea.mirai.plugin.utils.exception.MessageEventTypeException;
@@ -128,10 +123,6 @@ public class ResponderManager {
         register(Greeting::new);
         register(HeroLinesSelector::new);
         register(FunctTemporary::new);
-        register(DisclTemporary::new);
-        register(LovelyImage::getINSTANCE);
-        register(FurryGamesRandom::new);
-        register(FurryGamesSearch::new);
         register(FeedBack::new);
     }
 

@@ -1,6 +1,5 @@
 package lielietea.mirai.plugin.core.game.montecarlo.blackjack;
 
-import lielietea.mirai.plugin.administration.statistics.GameCenterCount;
 import lielietea.mirai.plugin.core.bank.PumpkinPesoWindow;
 import lielietea.mirai.plugin.core.game.montecarlo.blackjack.data.BlackJackData;
 import lielietea.mirai.plugin.core.game.montecarlo.blackjack.data.BlackJackPlayer;
@@ -114,7 +113,6 @@ public class BlackJack extends BlackJackUtils {
 
         InputStream img = BlackJack.class.getResourceAsStream(BLACKJACK_INTRO_PATH);
         assert img != null;
-        GameCenterCount.count(GameCenterCount.Functions.BlackjackStart);
 
         //前置标记取消
         cancelMark(event);
@@ -248,7 +246,6 @@ public class BlackJack extends BlackJackUtils {
         System.out.println("Is in gaming process");
         if (getGlobalData(event).get(indexInTheList(event)).getPhase() == BlackJackPhase.Operation) return;
         System.out.println("count");
-        GameCenterCount.count(GameCenterCount.Functions.BlackjackBet);
 
         //判定数值是否正确
         Integer bet = null;
@@ -592,7 +589,6 @@ public class BlackJack extends BlackJackUtils {
 
     //playOperation里面使用的Switch
     public static void startOperation(MessageEvent event) {
-        GameCenterCount.count(GameCenterCount.Functions.BlackjackOperations);
         switch (Objects.requireNonNull(bjOperation(event))) {
             case Assurance:
                 assurance(event);

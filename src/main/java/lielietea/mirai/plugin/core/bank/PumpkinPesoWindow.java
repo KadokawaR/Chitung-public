@@ -1,6 +1,5 @@
 package lielietea.mirai.plugin.core.bank;
 
-import lielietea.mirai.plugin.administration.statistics.GameCenterCount;
 import lielietea.mirai.plugin.utils.IdentityUtil;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
 import net.mamoe.mirai.event.events.MessageEvent;
@@ -13,8 +12,6 @@ public class PumpkinPesoWindow {
     public static void checkMoney(MessageEvent event) {
         if (event.getMessage().contentToString().equals("/bank") || event.getMessage().contentToString().equals("查询余额")) {
             MessageChainBuilder mcb = new MessageChainBuilder();
-
-            GameCenterCount.count(GameCenterCount.Functions.BankCheck);
 
             if (event.getClass().equals(GroupMessageEvent.class)) {
                 mcb.append((new At(event.getSender().getId())));
