@@ -1,7 +1,7 @@
 package lielietea.mirai.plugin.utils;
 
 import lielietea.mirai.plugin.administration.config.ConfigHandler;
-import lielietea.mirai.plugin.core.responder.help.Help;
+import lielietea.mirai.plugin.core.responder.help.NewHelp;
 import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.contact.Friend;
 import net.mamoe.mirai.contact.Group;
@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 public class ContactUtil {
     public static String JOIN_GROUP = ConfigHandler.getINSTANCE().config.getCc().getJoinGroupText();
-    public static String DISCLAIMER = Help.Speech.DISCL;
+    public static String DISCLAIMER = NewHelp.Speech.DISCL;
 
     static ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 

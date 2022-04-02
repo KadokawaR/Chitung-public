@@ -12,7 +12,6 @@ import lielietea.mirai.plugin.core.responder.feastinghelper.drinkpicker.DrinkPic
 import lielietea.mirai.plugin.core.responder.feedback.FeedBack;
 import lielietea.mirai.plugin.core.responder.fursona.FursonaPunk;
 import lielietea.mirai.plugin.core.responder.help.FunctTemporary;
-import lielietea.mirai.plugin.core.responder.help.Help;
 import lielietea.mirai.plugin.core.responder.lotterywinner.LotteryBummerMessageHandler;
 import lielietea.mirai.plugin.core.responder.lotterywinner.LotteryC4MessageHandler;
 import lielietea.mirai.plugin.core.responder.lotterywinner.LotteryWinnerMessageHandler;
@@ -108,7 +107,6 @@ public class ResponderManager {
      */
     public void ini() {
         register(FursonaPunk::new);
-        register(Help::new);
         register(LotteryWinnerMessageHandler::new);
         register(LotteryBummerMessageHandler::new);
         register(LotteryC4MessageHandler::new);

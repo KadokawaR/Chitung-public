@@ -10,6 +10,7 @@ import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.contact.ContactList;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.MemberPermission;
+import net.mamoe.mirai.contact.NormalMember;
 import net.mamoe.mirai.event.Event;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
 
@@ -247,10 +248,24 @@ public class GroupConfigManager {
         String message = event.getMessage().contentToString().replace("/blockmember","");
         message = message.replace(" ","");
         if(!Pattern.compile("[0-9]*").matcher(message).matches()){
-            event.getGroup().sendMessage("/blockmember 指示器使用错误");
+            event.getGroup().sendMessage("/blockmember 指示器使用错误，请添加QQ号");
             return;
         }
-        long ID = 
+        long ID = 0;
+        try {
+            ID = Long.parseLong(message);
+        } catch (Exception e){
+            e.printStackTrace();
+            event.getGroup().sendMessage("/blockmember 指示器使用错误，请添加QQ号");
+            return;
+        }
+        if(ID==0){
+            event.getGroup().sendMessage("/blockmember 指示器使用错误，请添加QQ号");
+            return;
+        }
+        for(NormalMember nm:event.getGroup().getMembers()){
+            if(nm.getId()==ID);
+        }
     }
 
     public static void handle(GroupMessageEvent event){

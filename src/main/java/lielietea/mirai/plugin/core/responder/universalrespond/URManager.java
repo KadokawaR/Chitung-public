@@ -209,8 +209,10 @@ public class URManager {
 
     static void reset(MessageEvent event){
         if(!IdentityUtil.isAdmin(event)) return;
-        if(event.getMessage().contentToString().contains("/reset")&&(event.getMessage().contentToString().contains("UR")||event.getMessage().contentToString().contains("ur"))) getINSTANCE().urList=readRecord();
-        event.getSubject().sendMessage("已经重置 Universal Responder 配置文件。");
+        if(event.getMessage().contentToString().toLowerCase().contains("/reset")&&(event.getMessage().contentToString().toLowerCase().contains("ur"))){
+            getINSTANCE().urList=readRecord();
+            event.getSubject().sendMessage("已经重置 Universal Responder 的配置文件。");
+        }
     }
 
     public static void handle(MessageEvent event){

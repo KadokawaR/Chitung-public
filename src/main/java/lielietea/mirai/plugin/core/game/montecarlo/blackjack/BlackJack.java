@@ -239,13 +239,9 @@ public class BlackJack extends BlackJackUtils {
 
     //对话框中输入/bet或者下注
     public static void checkBet(MessageEvent event) {
-        System.out.println("Check Bet Activity");
         if (!isBet(event)) return;
-        System.out.println("Is Bet Event");
         if (!isInGamingProcess(event)) return;
-        System.out.println("Is in gaming process");
         if (getGlobalData(event).get(indexInTheList(event)).getPhase() == BlackJackPhase.Operation) return;
-        System.out.println("count");
 
         //判定数值是否正确
         Integer bet = null;
@@ -365,9 +361,7 @@ public class BlackJack extends BlackJackUtils {
         changePhase(event, BlackJackPhase.Operation);
         //进入发牌操作
         cardShuffle(event);
-        System.out.println("洗完牌了");
         dealCards(event);
-        System.out.println("发完牌了");
         showTheCards(event);
         getINSTANCE().groupEndBetTimer.get(event.getSubject().getId()).cancel();
         getINSTANCE().groupEndBetTimer.remove(event.getSubject().getId());
@@ -835,7 +829,6 @@ public class BlackJack extends BlackJackUtils {
             }
         }
 
-        System.out.println("点数计算结果是" + totalPoints);
         return totalPoints;
     }
 
@@ -942,24 +935,18 @@ public class BlackJack extends BlackJackUtils {
     //结算
     public static void resultCalculator(MessageEvent event) {
         try {
-            System.out.println("进入resultCalculator");
             //庄家先操作
             bookmakerDoesTheFinalMove(event);
-            System.out.println("庄家动完");
             //计算分值
             Map<Long, Double> resultMap = getFinalPoints(event);
-            System.out.println("计算分值");
             //返回赌款
             for (Long ID : resultMap.keySet()) {
                 PumpkinPesoWindow.addMoney(ID, (int) Math.round(resultMap.get(ID)));
             }
-            System.out.println("返回赌款");
             //赌场进出帐
             casinoHasItsFinalLaugh(resultMap);
-            System.out.println("赌场进出帐");
             //通知玩家
             sendFinalNotice(event, resultMap);
-            System.out.println("通知完毕");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

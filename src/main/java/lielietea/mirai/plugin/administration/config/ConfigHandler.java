@@ -147,8 +147,11 @@ public class ConfigHandler {
 
     static void reset(MessageEvent event){
         if(!IdentityUtil.isAdmin(event)) return;
-        if(event.getMessage().contentToString().contains("/reset")&&(event.getMessage().contentToString().contains("config")||event.getMessage().contentToString().contains("Config"))) getINSTANCE().config=readRecord();
-        event.getSubject().sendMessage("已经重置 Universal Responder 配置文件。");
+        if(event.getMessage().contentToString().toLowerCase().contains("/reset")&&(event.getMessage().contentToString().toLowerCase().contains("config"))){
+            getINSTANCE().config=readRecord();
+            event.getSubject().sendMessage("已经重置 Config 配置文件。");
+        }
+        
     }
 
     public static void react(MessageEvent event){

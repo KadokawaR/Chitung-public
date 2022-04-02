@@ -6,6 +6,7 @@ import lielietea.mirai.plugin.administration.config.ConfigHandler;
 import lielietea.mirai.plugin.core.groupconfig.GroupConfig;
 import lielietea.mirai.plugin.core.groupconfig.GroupConfigManager;
 import lielietea.mirai.plugin.core.responder.ResponderCenter;
+import lielietea.mirai.plugin.core.responder.help.NewHelp;
 import lielietea.mirai.plugin.core.responder.universalrespond.URManager;
 import lielietea.mirai.plugin.utils.Nudge;
 import lielietea.mirai.plugin.utils.ContactUtil;
@@ -95,6 +96,7 @@ public final class JavaPluginMain extends JavaPlugin {
 
             //ResponderCenter
             if(GroupConfigManager.responderConfig(event) && ConfigHandler.getINSTANCE().config.getGroupFC().isResponder()){
+                NewHelp.handle(event);
                 Nudge.mentionNudge(event);
                 ResponderCenter.getINSTANCE().handleMessage(event);
             }
