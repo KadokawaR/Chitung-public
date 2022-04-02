@@ -197,9 +197,11 @@ public class URManager {
     static void respond(MessageEvent event){
         for(UniversalResponder ur:getINSTANCE().urList.universalRespondList) {
             if(!kindMatch(event,ur)) continue;
+            System.out.println("Kind Matched");
             if(!contentMatch(event.getMessage().contentToString(),ur)) continue;
+            System.out.println("Content Matched");
             if(!IDMatch(event,ur)) continue;
-
+            System.out.println("ID Matched");
             Random random = new Random();
             int n = random.nextInt(ur.getAnswer().size());
             event.getSubject().sendMessage(ur.getAnswer().get(n));

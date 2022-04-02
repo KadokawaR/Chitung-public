@@ -16,7 +16,7 @@ public class UniversalResponder {
     UniversalResponder(){
         this.messageKind=MessageKind.Any;
         this.listResponseKind =MessageKind.Any;
-        this.listKind=ListKind.Black;
+        this.listKind=ListKind.White;
         this.userList=new ArrayList<>();
         this.triggerKind=TriggerKind.Equal;
         this.pattern=new ArrayList<>();

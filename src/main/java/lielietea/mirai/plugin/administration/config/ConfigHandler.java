@@ -151,7 +151,7 @@ public class ConfigHandler {
             getINSTANCE().config=readRecord();
             event.getSubject().sendMessage("已经重置 Config 配置文件。");
         }
-        
+
     }
 
     public static void react(MessageEvent event){
