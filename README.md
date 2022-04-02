@@ -16,7 +16,7 @@ Public Chitung allows users to run, customize and manage their own Chitung.
 
 七筒开放版允许用户运行、定制和管理他们自己的**七筒/八条/九万**机器人。同时出于服务简体中文 Furry 社群和维持互联网开放的目的，七筒官方开发者希望即使七筒本身的账号出于各方面的限制停止运行，其他用户也能使用该插件继续延续七筒的服务和生命。
 
-###新功能
+### 新功能
 与2022年3月之前的七筒相比，七筒开放版新增了如下功能：
 #### 群管理 Group Config
 允许群主和管理员自定义是否开启相应的功能。共有六个开关：global / responder / game / casino / fish / lottery。
