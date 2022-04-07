@@ -53,12 +53,23 @@ public class URManager {
     }
 
     public static URList readRecord(){
+        URList urList = new URList();
         try {
-            return new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(UR_PATH)))), URList.class);
+            urList = new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(UR_PATH)))), URList.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
+        URList copiedURList = urList;
+        for(UniversalResponder ur:copiedURList.universalRespondList){
+            if(ur.getMessageKind()==null||ur.getListKind()==null||ur.getListResponceKind()==null){
+                urList.universalRespondList.remove(ur);
+                urList.universalRespondList.add(new UniversalResponder(ur));
+            }
+            if(ur.getPattern().isEmpty()||ur.getAnswer().isEmpty()){
+                urList.universalRespondList.remove(ur);
+            }
+        }
+        return urList;
     }
 
     public static void writeRecord(){
@@ -197,11 +208,8 @@ public class URManager {
     static void respond(MessageEvent event){
         for(UniversalResponder ur:getINSTANCE().urList.universalRespondList) {
             if(!kindMatch(event,ur)) continue;
-            System.out.println("Kind Matched");
             if(!contentMatch(event.getMessage().contentToString(),ur)) continue;
-            System.out.println("Content Matched");
             if(!IDMatch(event,ur)) continue;
-            System.out.println("ID Matched");
             Random random = new Random();
             int n = random.nextInt(ur.getAnswer().size());
             event.getSubject().sendMessage(ur.getAnswer().get(n));

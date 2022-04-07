@@ -23,6 +23,16 @@ public class UniversalResponder {
         this.answer=new ArrayList<>();
     }
 
+    UniversalResponder(UniversalResponder ur){
+        this.messageKind=MessageKind.Any;
+        this.listResponseKind =MessageKind.Any;
+        this.listKind=ListKind.White;
+        this.userList=new ArrayList<>();
+        this.triggerKind=ur.getTriggerKind();
+        this.pattern=ur.getPattern();
+        this.answer=ur.getAnswer();
+    }
+
     public MessageKind getMessageKind() {
         return messageKind;
     }
