@@ -11,6 +11,7 @@ public class IdentityUtil {
     static final Set<Long> botList = ImmutableSet.of(
             3628496803L, //七筒#2
             2429465624L, //七筒#3
+            3582637350L,//七筒#4
             3621269439L, //wymTbot 维护者 1875018140
             736951095L, //未知
             1528805494L, //啥龙龙
@@ -23,12 +24,7 @@ public class IdentityUtil {
 
     static final Set<Long> adminList = ImmutableSet.of(
             2955808839L, //KADOKAWA
-            1811905537L, //MARBLEGATE
-            493624254L   //感谢咕咕科提供账号
-    );
-
-    static final Set<Long> unusedBotList = ImmutableSet.of(
-            340865180L
+            1811905537L //MARBLEGATE
     );
 
     public static boolean isBot(long id){
@@ -43,21 +39,12 @@ public class IdentityUtil {
         return adminList.contains(id);
     }
 
-    public static boolean containsUnusedBot(Group group){
-        for(Long ID:unusedBotList){
-            for(NormalMember nm:group.getMembers()){
-                if(nm.getId()==ID) return true;
-            }
-        }
-        return false;
-    }
-
     public static boolean isAdmin(MessageEvent event){
         return isAdmin(event.getSender().getId());
     }
 
     public enum DevGroup{
-        DEFAULT(578984285L);
+        DEFAULT(0L);
 
         long groupId;
 

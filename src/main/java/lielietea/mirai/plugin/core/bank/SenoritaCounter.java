@@ -10,7 +10,7 @@ import java.io.File;
 import java.math.BigDecimal;
 
 public class SenoritaCounter {
-    final static String BANK_RECORD_PATH = System.getProperty("user.dir") + File.separator + "data" + File.separator + "bankrecord.json";
+    final static String BANK_RECORD_PATH = System.getProperty("user.dir") + File.separator + "data" + File.separator + "Chitung" + File.separator + "bankrecord.json";
     private static final Vault<Long, Currency> VAULT;
 
     static{

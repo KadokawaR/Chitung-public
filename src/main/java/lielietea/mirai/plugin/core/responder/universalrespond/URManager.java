@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Random;
 
 public class URManager {
-    static String UR_PATH = System.getProperty("user.dir") + File.separator + "data" + File.separator + "UniversalResponder.json";
+    static final String UR_PATH = System.getProperty("user.dir") + File.separator + "data" + File.separator + "Chitung" + File.separator + "UniversalResponder.json";
 
     URManager(){}
 

@@ -18,7 +18,7 @@ import static lielietea.mirai.plugin.utils.image.ImageEnlarger.zoomInImage;
 
 public class FishingUtil {
 
-    final static String FISHING_RECORD_PATH = System.getProperty("user.dir") + File.separator + "data" + File.separator + "fishrecord.json";
+    final static String FISHING_RECORD_PATH = System.getProperty("user.dir") + File.separator + "data" + File.separator + "Chitung" + File.separator + "fishrecord.json";
 
     final static int FISH_RECORD_IN_X_HOUR = 1;
 

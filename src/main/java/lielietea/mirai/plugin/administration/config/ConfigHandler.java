@@ -16,7 +16,7 @@ import java.io.*;
 
 public class ConfigHandler {
 
-    static String BASIC_CONFIGURATION_PATH = System.getProperty("user.dir") + File.separator + "data" + File.separator + "Config.json";
+    static String BASIC_CONFIGURATION_PATH = System.getProperty("user.dir") + File.separator + "data" + File.separator + "Chitung" + File.separator + "Config.json";
 
     ConfigHandler(){}
 

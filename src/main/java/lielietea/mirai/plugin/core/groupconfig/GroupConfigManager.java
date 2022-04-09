@@ -11,7 +11,6 @@ import net.mamoe.mirai.contact.ContactList;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.MemberPermission;
 import net.mamoe.mirai.contact.NormalMember;
-import net.mamoe.mirai.event.Event;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
 
 import java.io.*;
@@ -21,7 +20,7 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class GroupConfigManager {
-    static String UR_PATH = System.getProperty("user.dir") + File.separator + "data" + File.separator + "GroupConfig.json";
+    static String GC_PATH = System.getProperty("user.dir") + File.separator + "data" + File.separator + "Chitung" + File.separator +"GroupConfig.json";
 
     GroupConfigManager(){}
 
@@ -47,9 +46,9 @@ public class GroupConfigManager {
 
     public static void initialize(){
         getINSTANCE().groupConfigs = new GroupConfigs();
-        if(Touch.file(UR_PATH)){
+        if(Touch.file(GC_PATH)){
             try {
-                getINSTANCE().groupConfigs = new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(UR_PATH)))), GroupConfigs.class);
+                getINSTANCE().groupConfigs = new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(GC_PATH)))), GroupConfigs.class);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -61,7 +60,7 @@ public class GroupConfigManager {
 
     static void readRecord(){
         try {
-            getINSTANCE().groupConfigs = new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(UR_PATH)))), GroupConfigs.class);
+            getINSTANCE().groupConfigs = new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(GC_PATH)))), GroupConfigs.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -69,7 +68,7 @@ public class GroupConfigManager {
 
     static void writeRecord(){
         String jsonString = new GsonBuilder().setPrettyPrinting().create().toJson(getINSTANCE().groupConfigs);
-        Write.cover(jsonString, UR_PATH);
+        Write.cover(jsonString, GC_PATH);
     }
 
     static Integer getGroupIndex(long groupID){
