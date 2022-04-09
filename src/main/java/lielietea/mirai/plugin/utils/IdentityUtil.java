@@ -1,10 +1,13 @@
 package lielietea.mirai.plugin.utils;
 
 import com.google.common.collect.ImmutableSet;
+import lielietea.mirai.plugin.administration.config.ConfigHandler;
+import lielietea.mirai.plugin.core.groupconfig.GroupConfigManager;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.NormalMember;
 import net.mamoe.mirai.event.events.MessageEvent;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class IdentityUtil {
@@ -22,10 +25,12 @@ public class IdentityUtil {
             120213813L //KizuBot
     );
 
-    static final Set<Long> adminList = ImmutableSet.of(
+    static final Set<Long> developerList = ImmutableSet.of(
             2955808839L, //KADOKAWA
             1811905537L //MARBLEGATE
     );
+
+    static final Set<Long> adminList = new HashSet<Long>(){{addAll(ConfigHandler.getINSTANCE().config.getAdminID());addAll(developerList);}};
 
     public static boolean isBot(long id){
         return botList.contains(id);
