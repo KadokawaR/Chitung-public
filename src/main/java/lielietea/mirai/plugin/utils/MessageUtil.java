@@ -6,26 +6,9 @@ import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 
 import java.util.List;
+import java.util.Objects;
 
 public class MessageUtil {
-    /**
-     * 向开发群发送消息通知
-     */
-    public static void notifyDevGroup(String content){
-        List<Bot> bots = Bot.getInstances();
-        for (Bot bot : bots) {
-            Group group = bot.getGroup(IdentityUtil.DevGroup.DEFAULT.getID());
-            if (group != null) group.sendMessage(content);
-        }
-    }
-
-    public static void notifyDevGroup(MessageChain messageChain){
-        List<Bot> bots = Bot.getInstances();
-        for (Bot bot : bots) {
-            Group group = bot.getGroup(IdentityUtil.DevGroup.DEFAULT.getID());
-            if (group != null) group.sendMessage(messageChain);
-        }
-    }
 
     /**
      * 指定某个Bot，向开发群发送消息通知
@@ -34,8 +17,9 @@ public class MessageUtil {
         List<Bot> bots = Bot.getInstances();
         for (Bot bot : bots) {
             if(bot.getId() == botId){
-                Group group = bot.getGroup(IdentityUtil.DevGroup.DEFAULT.getID());
-                if (group != null) group.sendMessage(content);
+                for(long ID:IdentityUtil.getDevGroup()){
+                    if(bot.getGroup(ID)!=null) Objects.requireNonNull(bot.getGroup(ID)).sendMessage(content);
+                }
             }
         }
     }
@@ -44,23 +28,9 @@ public class MessageUtil {
      * 指定某个Bot，向开发群发送消息通知
      */
     public static void notifyDevGroup(String content, Bot bot){
-        Group group = bot.getGroup(IdentityUtil.DevGroup.DEFAULT.getID());
-        if (group != null) group.sendMessage(content);
-    }
-
-    public static void notifyDevGroup(MessageChain messageChain, long botID){
-        List<Bot> bots = Bot.getInstances();
-        for (Bot bot : bots) {
-            if(bot.getId() == botID){
-                Group group = bot.getGroup(IdentityUtil.DevGroup.DEFAULT.getID());
-                if (group != null) group.sendMessage(messageChain);
-            }
+        for(long ID:IdentityUtil.getDevGroup()){
+            if(bot.getGroup(ID)!=null) Objects.requireNonNull(bot.getGroup(ID)).sendMessage(content);
         }
-    }
-
-    public static void notifyDevGroup(MessageChain messageChain, Bot bot){
-        Group group = bot.getGroup(IdentityUtil.DevGroup.DEFAULT.getID());
-        if (group != null) group.sendMessage(messageChain);
     }
 
 }
