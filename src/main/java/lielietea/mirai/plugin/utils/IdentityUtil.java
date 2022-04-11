@@ -8,6 +8,7 @@ import net.mamoe.mirai.contact.NormalMember;
 import net.mamoe.mirai.event.events.MessageEvent;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class IdentityUtil {
@@ -15,10 +16,11 @@ public class IdentityUtil {
             3628496803L, //七筒#2
             2429465624L, //七筒#3
             3582637350L,//七筒#4
+            1256252623L,//七筒#5
             3621269439L, //wymTbot 维护者 1875018140
             736951095L, //未知
-            1528805494L, //啥龙龙
-            1661492751L, // 贾维斯
+            1528805494L, //龙龙
+            1661492751L, //贾维斯
             3295045384L, //完犊子BOT
             1417324212L,
             3270864281L,//nulqwerty 维护者 1417324298
@@ -58,24 +60,12 @@ public class IdentityUtil {
         return isAdmin(event.getSender().getId());
     }
 
-    public enum DevGroup{
-        DEFAULT(0L);
-
-        long groupId;
-
-        DevGroup(long groupId) {
-            this.groupId = groupId;
-        }
-
-        public long getID(){
-            return groupId;
-        }
-
-        public boolean isDevGroup(long ID){
-            for(DevGroup dg:DevGroup.values()){
-                if (ID==dg.getID()) return true;
-            }
-            return false;
-        }
+    public static List<Long> getDevGroup(){
+        return ConfigHandler.getINSTANCE().config.getDevGroupID();
     }
+
+    public static boolean isDevGroup(long groupID){
+        return getDevGroup().contains(groupID);
+    }
+
 }
