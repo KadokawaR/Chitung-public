@@ -4,6 +4,7 @@ import lielietea.mirai.plugin.administration.config.ConfigHandler;
 import lielietea.mirai.plugin.core.groupconfig.GroupConfig;
 import lielietea.mirai.plugin.core.groupconfig.GroupConfigManager;
 import lielietea.mirai.plugin.core.responder.RespondTask;
+import lielietea.mirai.plugin.utils.IdentityUtil;
 import lielietea.mirai.plugin.utils.StandardTimeUtil;
 import lielietea.mirai.plugin.utils.image.ImageCreater;
 import net.mamoe.mirai.contact.MemberPermission;
@@ -60,10 +61,17 @@ public class LotteryMachine {
 
         if (botPermissionChecker(event)) {
             //抽取倒霉蛋
-            List<NormalMember> candidates = event.getGroup().getMembers().stream().filter(normalMember -> normalMember.getPermission().equals(MemberPermission.MEMBER)).collect(Collectors.toList());
+            List<NormalMember> candidates = event.getGroup().getMembers().stream().filter(member -> member.getPermission().equals(MemberPermission.MEMBER)).collect(Collectors.toList());
             if(candidates.isEmpty()){
                 builder.addMessage("全都是管理员的群你让我抽一个普通成员禁言？别闹。");
                 return builder.build();
+            } else {
+                //排除官方Bot，最好不要戳到这群“正规军”
+                candidates = candidates.stream().filter(member -> !IdentityUtil.isOfficialBot(member.getId())).collect(Collectors.toList());
+                if(candidates.isEmpty()){
+                    builder.addMessage("你想让我去禁言官方Bot？不可以的吧。");
+                    return builder.build();
+                }
             }
             NormalMember victim = candidates.get(rand.nextInt(candidates.size()));
 
@@ -109,7 +117,8 @@ public class LotteryMachine {
         long numOfTheDay = (year + month * 10000 + date * 1000000) * 100000000000L / event.getGroup().getId();
 
         //获取当日幸运儿
-        List<NormalMember> candidates = new ArrayList<>(event.getGroup().getMembers());
+        //排除掉官方Bot，不要去动它们
+        List<NormalMember> candidates = event.getGroup().getMembers().stream().filter(member -> !IdentityUtil.isOfficialBot(member.getId())).collect(Collectors.toList());
         long guyOfTheDay = numOfTheDay % candidates.size();
 
         builder.addMessage("Ok Winner! " + candidates.get(Math.toIntExact(guyOfTheDay)).getNick());

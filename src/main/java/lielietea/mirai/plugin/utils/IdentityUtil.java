@@ -22,7 +22,9 @@ public class IdentityUtil {
             3295045384L, //完犊子BOT
             1417324212L,
             3270864281L,//nulqwerty 维护者 1417324298
-            120213813L //KizuBot
+            120213813L, //KizuBot
+            3028159740L, //RPGmirai 维护者 173799682
+            2513882944L //KaitoBot 维护者 435907629
     );
 
     static final Set<Long> developerList = ImmutableSet.of(
@@ -33,7 +35,15 @@ public class IdentityUtil {
     static final Set<Long> adminList = new HashSet<Long>(){{addAll(ConfigHandler.getINSTANCE().config.getAdminID());addAll(developerList);}};
 
     public static boolean isBot(long id){
+        return isUnofficialBot(id) || isOfficialBot(id);
+    }
+
+    public static boolean isUnofficialBot(long id){
         return botList.contains(id);
+    }
+
+    public static boolean isOfficialBot(long id){
+        return String.valueOf(id).startsWith("28541963") && id / 1000000000L >= 1;
     }
 
     public static boolean isBot(MessageEvent event){
