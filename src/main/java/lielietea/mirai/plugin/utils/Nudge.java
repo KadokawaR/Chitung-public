@@ -1,5 +1,6 @@
 package lielietea.mirai.plugin.utils;
 
+import lielietea.mirai.plugin.administration.config.ConfigHandler;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
 import net.mamoe.mirai.event.events.NudgeEvent;
@@ -59,7 +60,7 @@ public class Nudge {
         if(IdentityUtil.isBot(event.getFrom().getId())) return;
         if (event.getTarget().equals(event.getBot())){
             event.getFrom().nudge().sendTo(event.getSubject());
-            event.getSubject().sendMessage("啥事？");
+            event.getSubject().sendMessage(ConfigHandler.getINSTANCE().config.getCc().getNudgeText());
             addCount(event.getSubject().getId());
         }
     }
