@@ -7,6 +7,7 @@ import lielietea.mirai.plugin.core.groupconfig.GroupConfig;
 import lielietea.mirai.plugin.core.groupconfig.GroupConfigManager;
 import lielietea.mirai.plugin.core.responder.Blacklist;
 import lielietea.mirai.plugin.core.responder.ResponderCenter;
+import lielietea.mirai.plugin.core.responder.basic.Repeater;
 import lielietea.mirai.plugin.core.responder.help.NewHelp;
 import lielietea.mirai.plugin.core.responder.universalrespond.URManager;
 import lielietea.mirai.plugin.utils.Nudge;
@@ -108,6 +109,7 @@ public final class JavaPluginMain extends JavaPlugin {
                 NewHelp.handle(event);
                 Nudge.mentionNudge(event);
                 ResponderCenter.getINSTANCE().handleMessage(event);
+                Repeater.handle(event);
             }
             //管理员功能
             AdminCommandDispatcher.getInstance().handleMessage(event);
