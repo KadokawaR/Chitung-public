@@ -1,6 +1,7 @@
 package lielietea.mirai.plugin.administration;
 
 import lielietea.mirai.plugin.administration.config.ConfigHandler;
+import lielietea.mirai.plugin.core.responder.Blacklist;
 import lielietea.mirai.plugin.utils.IdentityUtil;
 import net.mamoe.mirai.event.events.MessageEvent;
 import java.util.concurrent.ExecutorService;
@@ -23,6 +24,8 @@ public class AdminCommandDispatcher {
     public void handleMessage(MessageEvent event){
         if(!IdentityUtil.isAdmin(event)) return;
         AdminTools.getINSTANCE().handleAdminCommand(event);
+        //黑名单
+        Blacklist.BlacklistOperation(event);
         //设置管理
         ConfigHandler.react(event);
     }

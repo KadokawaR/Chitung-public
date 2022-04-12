@@ -5,6 +5,7 @@ import lielietea.mirai.plugin.administration.AdminCommandDispatcher;
 import lielietea.mirai.plugin.administration.config.ConfigHandler;
 import lielietea.mirai.plugin.core.groupconfig.GroupConfig;
 import lielietea.mirai.plugin.core.groupconfig.GroupConfigManager;
+import lielietea.mirai.plugin.core.responder.Blacklist;
 import lielietea.mirai.plugin.core.responder.ResponderCenter;
 import lielietea.mirai.plugin.core.responder.help.NewHelp;
 import lielietea.mirai.plugin.core.responder.universalrespond.URManager;
@@ -21,6 +22,7 @@ import net.mamoe.mirai.contact.MemberPermission;
 import net.mamoe.mirai.event.GlobalEventChannel;
 import net.mamoe.mirai.event.events.*;
 
+import java.util.Objects;
 import java.util.Optional;
 
 /*
@@ -53,9 +55,16 @@ public final class JavaPluginMain extends JavaPlugin {
         ConfigHandler.getINSTANCE().ini();
         GroupConfigManager.getINSTANCE().ini();
         URManager.getINSTANCE().ini();
+        Blacklist.getINSTANCE().ini();
 
         // 上线事件
-        GlobalEventChannel.INSTANCE.subscribeAlways(BotOnlineEvent.class, event -> Optional.ofNullable(event.getBot().getGroup(IdentityUtil.DevGroup.DEFAULT.getID())).ifPresent(group -> group.sendMessage(ConfigHandler.getINSTANCE().config.getCc().getOnlineText())));
+        GlobalEventChannel.INSTANCE.subscribeAlways(BotOnlineEvent.class, event -> {
+            for(Long groupID:IdentityUtil.getDevGroup()){
+                if(event.getBot().getGroup(groupID)!=null) {
+                    Objects.requireNonNull(event.getBot().getGroup(groupID)).sendMessage(ConfigHandler.getINSTANCE().config.getCc().getOnlineText());
+                }
+            }
+        });
 
         // 处理好友请求
         GlobalEventChannel.INSTANCE.subscribeAlways(NewFriendRequestEvent.class, ContactUtil::handleFriendRequest);
