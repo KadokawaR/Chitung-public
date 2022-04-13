@@ -9,6 +9,8 @@ import lielietea.mirai.plugin.core.responder.Blacklist;
 import lielietea.mirai.plugin.core.responder.ResponderCenter;
 import lielietea.mirai.plugin.core.responder.basic.Repeater;
 import lielietea.mirai.plugin.core.responder.help.NewHelp;
+import lielietea.mirai.plugin.core.responder.imageresponder.ImageResponder;
+import lielietea.mirai.plugin.core.responder.imageresponder.ImageResponderData;
 import lielietea.mirai.plugin.core.responder.universalrespond.URManager;
 import lielietea.mirai.plugin.utils.Nudge;
 import lielietea.mirai.plugin.utils.ContactUtil;
@@ -23,6 +25,7 @@ import net.mamoe.mirai.contact.MemberPermission;
 import net.mamoe.mirai.event.GlobalEventChannel;
 import net.mamoe.mirai.event.events.*;
 
+import java.awt.*;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -57,6 +60,7 @@ public final class JavaPluginMain extends JavaPlugin {
         GroupConfigManager.getINSTANCE().ini();
         URManager.getINSTANCE().ini();
         Blacklist.getINSTANCE().ini();
+        ImageResponder.getINSTANCE().ini();
 
         // 上线事件
         GlobalEventChannel.INSTANCE.subscribeAlways(BotOnlineEvent.class, event -> {
@@ -109,6 +113,7 @@ public final class JavaPluginMain extends JavaPlugin {
                 NewHelp.handle(event);
                 Nudge.mentionNudge(event);
                 ResponderCenter.getINSTANCE().handleMessage(event);
+                ImageResponder.handle(event);
                 Repeater.handle(event);
             }
             //管理员功能
@@ -144,7 +149,10 @@ public final class JavaPluginMain extends JavaPlugin {
             if(IdentityUtil.isBot(event)) return;
 
             //ResponderCenter
-            if(ConfigHandler.getINSTANCE().config.getFriendFC().isResponder()) ResponderCenter.getINSTANCE().handleMessage(event);
+            if(ConfigHandler.getINSTANCE().config.getFriendFC().isResponder()) {
+                ResponderCenter.getINSTANCE().handleMessage(event);
+                ImageResponder.handle(event);
+            }
             //管理员功能
             AdminCommandDispatcher.getInstance().handleMessage(event);
             //GameCenter
