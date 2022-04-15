@@ -61,10 +61,10 @@ public class BroadcastSystem {
     }
 
     static void quitBroadcastMode(MessageEvent event){
-        Set<AdminContact> clonedKeySet = getINSTANCE().BroadcastModeList.keySet();
-        for(AdminContact adminContact:clonedKeySet){
-            if(adminContact.contact.equals(event.getSubject())&&adminContact.adminID==event.getSender().getId()) {
-                getINSTANCE().BroadcastModeList.remove(adminContact);
+        Iterator<AdminContact> clonedKeySet = getINSTANCE().BroadcastModeList.keySet().iterator();
+        while(clonedKeySet.hasNext()){
+            if(clonedKeySet.next().contact.equals(event.getSubject())&&clonedKeySet.next().adminID==event.getSender().getId()) {
+                getINSTANCE().BroadcastModeList.remove(clonedKeySet.next());
                 return;
             }
         }
