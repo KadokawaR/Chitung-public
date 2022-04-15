@@ -5,7 +5,7 @@ plugins {
     id("net.mamoe.mirai-console") version "2.7.0"
 }
 
-group = "dev.chitung"
+group = "dev.mirai.chitung"
 version = "0.1.0"
 
 repositories {
