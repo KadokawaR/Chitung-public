@@ -1,6 +1,6 @@
 package mirai.chitung.plugin.core.responder.imageresponder;
 
-import mirai.chitung.plugin.utils.image.ImageSaver;
+import mirai.chitung.plugin.utils.fileutils.Copy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import mirai.chitung.plugin.utils.IdentityUtil;
@@ -60,6 +60,7 @@ public class ImageResponder {
     }
 
     static void initialize(){
+
         getINSTANCE().dataListClass = new DataListClass();
         if(Touch.file(IMAGE_DATA_PATH)){
             try {
@@ -69,9 +70,10 @@ public class ImageResponder {
             }
         } else {
             writeRecord();
-            Touch.dir(IMAGE_DIR_PATH+"qt");
-            ImageSaver.copyPic("/pics/chitung/chitung public.png",IMAGE_DIR_PATH+"qt/mirai.chitung public.png");
         }
+
+        //范例图片文件夹
+        if(!Touch.dir(IMAGE_DIR_PATH+"qt")) Copy.fromInnerResource("/pics/chitung/chitung public.png",IMAGE_DIR_PATH+"qt/chitung public.png");
 
     }
 
@@ -175,6 +177,7 @@ public class ImageResponder {
         if(!IdentityUtil.isAdmin(event)) return;
         if(event.getMessage().contentToString().toLowerCase().contains("/reset ir")){
             getINSTANCE().dataListClass=readRecord();
+            event.getSubject().sendMessage("已经重置 Image Responder 的配置文件。");
         }
     }
 

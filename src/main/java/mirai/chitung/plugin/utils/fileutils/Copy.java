@@ -1,17 +1,17 @@
-package mirai.chitung.plugin.utils.image;
+package mirai.chitung.plugin.utils.fileutils;
 
 import java.io.*;
 
-public class ImageSaver {
+public class Copy {
 
-    public static void copyPic(String path,String targetPath){
+    public static void fromInnerResource(String path,String targetPath){
         File file = new File(targetPath);
         InputStream fis = null;
         DataInputStream dis = null;
         OutputStream fos = null;
         DataOutputStream dos = null;
         try {
-            fis = ImageSaver.class.getResourceAsStream(path);
+            fis = Copy.class.getResourceAsStream(path);
             assert fis != null;
             dis = new DataInputStream(fis);
             fos = new FileOutputStream(file);

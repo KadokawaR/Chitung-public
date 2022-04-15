@@ -21,6 +21,7 @@ public class ImageCreater {
         InputStream is1 = JsonFile.getInputStream(winner.getAvatarUrl());
         BufferedImage img1 = ImageIO.read(is1);
         InputStream is2 = ImageCreater.class.getResourceAsStream("/pics/winner/wanted.jpg");
+        assert is2 != null;
         BufferedImage img2 = ImageIO.read(is2);
         BufferedImage img0;
         //头像变形
