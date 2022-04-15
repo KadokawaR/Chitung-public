@@ -2,6 +2,7 @@ package lielietea.mirai.plugin.core.responder.imageresponder;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import lielietea.mirai.plugin.utils.IdentityUtil;
 import lielietea.mirai.plugin.utils.fileutils.Read;
 import lielietea.mirai.plugin.utils.fileutils.Touch;
 import lielietea.mirai.plugin.utils.fileutils.Write;
@@ -167,8 +168,19 @@ public class ImageResponder {
         return false;
     }
 
+    static void reset(MessageEvent event){
+        if(!IdentityUtil.isAdmin(event)) return;
+        if(event.getMessage().contentToString().toLowerCase().contains("/reset ir")){
+            getINSTANCE().dataListClass=readRecord();
+        }
+    }
+
     public static void handle(MessageEvent event){
         ImageResponderData ird = triggeredWordData(event);
+
+        //管理员入口
+        reset(event);
+
         if(!isTriggered(ird,event)) return;
 
         //检查目录是否存在
