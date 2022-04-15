@@ -19,8 +19,8 @@ public class UniversalResponder {
         this.listKind=ListKind.White;
         this.userList=new ArrayList<>();
         this.triggerKind=TriggerKind.Equal;
-        this.pattern=new ArrayList<>();
-        this.answer=new ArrayList<>();
+        this.pattern=new ArrayList<String>(){{add("早上好");add("早安");}};
+        this.answer=new ArrayList<String>(){{add("早上好");add("早安");}};
     }
 
     UniversalResponder(UniversalResponder ur){
