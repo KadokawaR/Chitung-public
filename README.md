@@ -19,7 +19,7 @@ Public Chitung allows users to run, customize and manage their own Chitung.
 ## 新功能
 与2022年3月之前的七筒相比，七筒开放版新增了如下功能：
 ### 群管理 Group Config
-允许群主和管理员自定义是否开启相应的功能。共有六个开关：global / responder / game / casino / fish / lottery。
+允许群主和管理员自定义是否开启相应的功能。共有六个开关：global / responder / game / casino / fish / lottery。使用方法为 /open 或者 /close 加响应的模块名称。
 - Global：
 全局开关。即不会响应任何内容
 - Responder：
@@ -32,6 +32,8 @@ Public Chitung allows users to run, customize and manage their own Chitung.
 钓鱼开关。
 - Lottery：
 群内抽奖开关。包括 Bummer 和 C4。
+  
+使用 /blockmember 并艾特要屏蔽的成员会将该名成员移入本群黑名单。此黑名单全局生效于该群聊中。
 
 ### 通用响应 Universal Responder
 允许七筒开放版的运营者添加更多关键词响应。由于该功能通过json文件实现，且目前不提供交互功能，运营者需要仔细检查其修改的json文件。
@@ -96,15 +98,25 @@ Public Chitung allows users to run, customize and manage their own Chitung.
         }
     }
 
+### 通用图库响应 Universal Image Responder
+
+通用图库响应的文件由两部分组成：通用图库响应的配置文件 image/imagedata.json 和用户的图片文件夹。用户需要在 image/ 的目录下创建
+相应的图片目录，并更改 imagedata.json 内的配置文件，填写触发关键词、触发类型、图片目录名称。
+
+配置文件包含如下内容：
+
+    List<String> keyword; //触发关键词
+    String directoryName; //图片目录名称
+    ImageResponder.TriggerType triggerType; //触发类型，Equal或者Contain
+    ImageResponder.ResponseType responseType; //响应类型，Friend、Group或者Any
+
+为避免发送失败，请尽可能使用 png 和 jpeg 格式的图片放置在相应目录内。
+
+
+
 ## 正在开发
 ### 通用响应、运营者配置文件的交互
 允许七筒开放版的运营者直接通过QQ平台进行管理。
-
-### 群管理黑名单
-允许群主和管理员添加群员黑名单。
-
-### 通用图库响应 Universal Image Sender
-允许七筒开放版的运营者添加更多的图片响应。
 
 ### 游戏定制
 允许七筒开放版的运营者对于游戏的一些基础数据进行更改。
