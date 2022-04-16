@@ -97,7 +97,7 @@ public class Blacklist {
     static void block(MessageEvent event){
         if(!IdentityUtil.isAdmin(event)) return;
         if(!event.getMessage().contentToString().toLowerCase().contains("/block")) return;
-        String rawString = event.getMessage().contentToString().toLowerCase().replace("/block","").replace(" ","");
+        String rawString = event.getMessage().contentToString().toLowerCase().replace("/block","").replace(" ","").replace("-","");
         String strID = Pattern.compile("[^0-9]").matcher(rawString).replaceAll(" ").trim();
 
         Long ID=null;
@@ -111,7 +111,7 @@ public class Blacklist {
             bk = BlockKind.Friend;
         }
 
-        if(bk==null){
+        if(bk==null||(rawString.contains("g")&&(rawString.contains("f")))){
             event.getSubject().sendMessage("命令格式错误，请重新输入。");
             return;
         }

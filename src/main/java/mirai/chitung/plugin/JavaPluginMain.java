@@ -22,6 +22,8 @@ import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescriptionBuilder;
 import net.mamoe.mirai.contact.MemberPermission;
 import net.mamoe.mirai.event.GlobalEventChannel;
 import net.mamoe.mirai.event.events.*;
+import net.mamoe.mirai.message.data.At;
+import net.mamoe.mirai.message.data.SingleMessage;
 
 import java.util.Objects;
 
@@ -103,6 +105,7 @@ public final class JavaPluginMain extends JavaPlugin {
             if(!ConfigHandler.canAnswerGroup()) return;
             if(IdentityUtil.isBot(event)) return;
             if(!GroupConfigManager.globalConfig(event)) return;
+            if(GroupConfigManager.isBlockedUser(event)) return;
 
             //ResponderCenter
             if(GroupConfigManager.responderConfig(event) && ConfigHandler.getINSTANCE().config.getGroupFC().isResponder()){
