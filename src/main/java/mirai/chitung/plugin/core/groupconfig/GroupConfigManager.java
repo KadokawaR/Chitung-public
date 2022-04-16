@@ -1,5 +1,6 @@
 package mirai.chitung.plugin.core.groupconfig;
 
+import mirai.chitung.plugin.administration.config.ConfigHandler;
 import mirai.chitung.plugin.utils.IdentityUtil;
 import mirai.chitung.plugin.utils.fileutils.Read;
 import mirai.chitung.plugin.utils.fileutils.Touch;
@@ -10,17 +11,24 @@ import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.contact.ContactList;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.MemberPermission;
-import net.mamoe.mirai.contact.NormalMember;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
+import net.mamoe.mirai.message.data.At;
+import net.mamoe.mirai.message.data.MessageChainBuilder;
+import net.mamoe.mirai.message.data.SingleMessage;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.regex.Pattern;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class GroupConfigManager {
+
     static String GC_PATH = System.getProperty("user.dir") + File.separator + "data" + File.separator + "Chitung" + File.separator +"GroupConfig.json";
+    static ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 
     GroupConfigManager(){}
 
@@ -72,6 +80,9 @@ public class GroupConfigManager {
     }
 
     static Integer getGroupIndex(long groupID){
+        if(!containsGroup(groupID)){
+            addGroupConfig(groupID);
+        }
         for(int i=0;i<getINSTANCE().groupConfigs.groupConfigList.size();i++){
             if(getINSTANCE().groupConfigs.groupConfigList.get(i).getGroupID()==groupID) return i;
         }
@@ -173,29 +184,37 @@ public class GroupConfigManager {
         String message = event.getMessage().contentToString();
         message = message.toLowerCase();
         message = message.replace("/close","").replace("/open","").replace(" ","");
+
+        Integer index = getGroupIndex(event.getGroup().getId());
+        assert index!=null;
+
         switch(message){
             case "global":
-                getINSTANCE().groupConfigs.groupConfigList.get(getGroupIndex(event.getGroup().getId())).setGlobal(operation);
+                getINSTANCE().groupConfigs.groupConfigList.get(index).setGlobal(operation);
                 event.getSubject().sendMessage("已设置全局消息的响应状态为"+operation);
                 break;
             case "fish":
-                getINSTANCE().groupConfigs.groupConfigList.get(getGroupIndex(event.getGroup().getId())).setFish(operation);
+                getINSTANCE().groupConfigs.groupConfigList.get(index).setFish(operation);
                 event.getSubject().sendMessage("已设置钓鱼的响应状态为"+operation);
                 break;
             case "casino":
-                getINSTANCE().groupConfigs.groupConfigList.get(getGroupIndex(event.getGroup().getId())).setCasino(operation);
+                getINSTANCE().groupConfigs.groupConfigList.get(index).setCasino(operation);
                 event.getSubject().sendMessage("已设置娱乐游戏的响应状态为"+operation);
                 break;
             case "responder":
-                getINSTANCE().groupConfigs.groupConfigList.get(getGroupIndex(event.getGroup().getId())).setResponder(operation);
+                getINSTANCE().groupConfigs.groupConfigList.get(index).setResponder(operation);
                 event.getSubject().sendMessage("已设置关键词触发功能的响应状态为"+operation);
                 break;
             case "game":
-                getINSTANCE().groupConfigs.groupConfigList.get(getGroupIndex(event.getGroup().getId())).setGame(operation);
+                getINSTANCE().groupConfigs.groupConfigList.get(index).setGame(operation);
                 event.getSubject().sendMessage("已设置所有游戏的响应状态为"+operation);
                 break;
+            case "lottery":
+                getINSTANCE().groupConfigs.groupConfigList.get(index).setLottery(operation);
+                event.getSubject().sendMessage("已设置C4和Bummer功能的响应状态为"+operation);
+                break;
             default:
-                event.getSubject().sendMessage("群设置指示词使用错误，请使用 /close 或者 /open 加上 空格 加上 global 或者 game 或者 casino 或者 responder 或者 fish 来开关相应内容。");
+                event.getSubject().sendMessage("群设置指示词使用错误，请使用 /close 或者 /open 加上 空格 加上 global、game、casino、responder、fish 或者 lottery 来开关相应内容。");
         }
     }
 
@@ -231,6 +250,7 @@ public class GroupConfigManager {
         return getINSTANCE().groupConfigs.groupConfigList.get(getGroupIndex(event.getGroup().getId())).isResponder();
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean lotteryConfig(GroupMessageEvent event){
         if(readGroupConfig(event.getGroup().getId())==null) addGroupConfig(event.getGroup().getId());
         return getINSTANCE().groupConfigs.groupConfigList.get(getGroupIndex(event.getGroup().getId())).isLottery();
@@ -241,35 +261,77 @@ public class GroupConfigManager {
         return getINSTANCE().groupConfigs.groupConfigList.get(getGroupIndex(event.getGroup().getId())).isGame();
     }
 
-    public static void addBlockedUser(GroupMessageEvent event){
+    static void addBlockedUser(GroupMessageEvent event){
         if(event.getSender().getPermission().equals(MemberPermission.MEMBER)&&!IdentityUtil.isAdmin(event)) return;
-        if(!event.getMessage().contentToString().toLowerCase().contains("/blockmember")) return;
-        String message = event.getMessage().contentToString().replace("/blockmember","");
-        message = message.replace(" ","");
-        if(!Pattern.compile("[0-9]*").matcher(message).matches()){
-            event.getGroup().sendMessage("/blockmember 指示器使用错误，请添加QQ号");
-            return;
+        if(!event.getMessage().contentToString().toLowerCase().startsWith("/blockmember")) return;
+
+        executor.schedule(new BlockUserAndSendNotice(event),1, TimeUnit.MINUTES);
+
+    }
+
+    static class BlockUserAndSendNotice implements Runnable{
+
+        private final GroupMessageEvent event;
+
+        BlockUserAndSendNotice(GroupMessageEvent event){
+            this.event=event;
         }
-        long ID = 0;
-        try {
-            ID = Long.parseLong(message);
-        } catch (Exception e){
-            e.printStackTrace();
-            event.getGroup().sendMessage("/blockmember 指示器使用错误，请添加QQ号");
-            return;
+
+        @Override
+        public void run(){
+            for(SingleMessage sm:event.getMessage()){
+                if(sm.contentToString().startsWith("@")){
+                    Long ID = Long.parseLong(sm.contentToString().replace("@",""));
+
+                    if(event.getGroup().getOrFail(ID).getPermission().equals(MemberPermission.OWNER)||event.getGroup().getOrFail(ID).getPermission().equals(MemberPermission.ADMINISTRATOR)){
+                        event.getSubject().sendMessage("拉黑同为管理员的"+ID+"？不要把"+ ConfigHandler.getName(event.getBot()) +"卷入勾心斗角的宫廷争斗！");
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        continue;
+                    }
+
+                    if(IdentityUtil.isAdmin(ID)){
+                        event.getSubject().sendMessage("抱歉，"+ ConfigHandler.getName(event.getBot()) +"的运营者"+ID+"就是可以为所欲为。");
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        continue;
+                    }
+
+                    if(event.getGroup().getMembers().contains(ID.longValue())){
+                        getINSTANCE().groupConfigs.groupConfigList.get(getGroupIndex(event.getGroup().getId())).getBlockedUser().add(ID);
+                        event.getSubject().sendMessage(new MessageChainBuilder()
+                                .append("已经在本群中屏蔽")
+                                .append(Objects.requireNonNull(event.getGroup().getMembers().get(ID)).getNick())
+                                .append("-")
+                                .append(String.valueOf(ID))
+                                .append(new At(ID)).asMessageChain());
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
         }
-        if(ID==0){
-            event.getGroup().sendMessage("/blockmember 指示器使用错误，请添加QQ号");
-            return;
-        }
-        for(NormalMember nm:event.getGroup().getMembers()){
-            if(nm.getId()==ID);
-        }
+    }
+
+    public static boolean isBlockedUser(GroupMessageEvent event){
+        if(event.getSender().getPermission().equals(MemberPermission.OWNER)||event.getSender().getPermission().equals(MemberPermission.ADMINISTRATOR)) return false;
+        if(IdentityUtil.isAdmin(event.getSender().getId())) return false;
+        return readGroupConfig(event.getGroup().getId()).getBlockedUser().contains(event.getSender().getId());
     }
 
     public static void handle(GroupMessageEvent event){
         resetGroupConfig(event);
         changeGroupConfig(event);
+        addBlockedUser(event);
     }
 
     public void ini(){}
