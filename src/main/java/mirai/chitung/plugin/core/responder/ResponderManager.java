@@ -44,9 +44,9 @@ public class ResponderManager {
                            @Override
                            public void run() {
                                String result = ResponderManager.getINSTANCE().optimizeHandlerSequence(true);
-                               //Notify Devs
-                               MessageUtil.notifyDevGroup(result, Bot.getInstances().get(0).getId());
-
+                               for(Bot bot: Bot.getInstances()){
+                                   MessageUtil.notifyDevGroup(result, bot);
+                               }
                            }
                        },
                 StandardTimeUtil.getStandardFirstTime(0, 30, 1),

@@ -25,7 +25,7 @@ public class FeedBack implements MessageResponder<MessageEvent> {
     @Override
     public RespondTask handle(MessageEvent event) {
         RespondTask.Builder builder = new RespondTask.Builder(event, this);
-        builder.addTask(() -> MessageUtil.notifyDevGroup("来自" + event.getSender().getId() + " - " + event.getSenderName() + "的反馈意见：\n\n" + event.getMessage().contentToString(),event.getBot().getId()));
+        builder.addTask(() -> MessageUtil.notifyDevGroup("来自" + event.getSender().getId() + " - " + event.getSenderName() + "的反馈意见：\n\n" + event.getMessage().contentToString(),event.getBot()));
         builder.addMessage("您的意见我们已经收到。");
         return builder.build();
     }

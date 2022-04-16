@@ -62,7 +62,7 @@ public class ContactUtil {
                     }
                     event.getGroup().quit();
                     String content = "由于目前"+ConfigHandler.getName(event)+"不接受添加群聊，已经从 " + event.getGroup().getName() + "(" + event.getGroup().getId() + ")" + "出逃。";
-                    MessageUtil.notifyDevGroup(content, event.getBot().getId());
+                    MessageUtil.notifyDevGroup(content, event.getBot());
                     return;
                 }
 
@@ -73,7 +73,7 @@ public class ContactUtil {
                     }
                     event.getGroup().quit();
                     String content = (event).getInvitor().getNick() + "(" + (event).getInvitor().getId() + ")尝试邀请"+ConfigHandler.getName(event)+"加入一个少于"+ConfigHandler.getINSTANCE().config.getMinimumMembers()+"人的群聊。";
-                    MessageUtil.notifyDevGroup(content, event.getBot().getId());
+                    MessageUtil.notifyDevGroup(content, event.getBot());
                     return;
                 }
             }
@@ -104,7 +104,7 @@ public class ContactUtil {
                     event.getGroup().sendMessage(ConfigHandler.getINSTANCE().config.getCc().getRejectGroupText());
                     event.getGroup().quit();
                     String content = "由于目前"+ConfigHandler.getName(event)+"不接受添加群聊，已经从 " + event.getGroup().getName() + "(" + event.getGroup().getId() + ")" + "离开。";
-                    MessageUtil.notifyDevGroup(content, event.getBot().getId());
+                    MessageUtil.notifyDevGroup(content, event.getBot());
                     return;
                 }
 
@@ -112,7 +112,7 @@ public class ContactUtil {
                     event.getGroup().sendMessage(ConfigHandler.getName(event)+"目前不接受加入"+ConfigHandler.getINSTANCE().config.getMinimumMembers()+"人以下的群聊。");
                     event.getGroup().quit();
                     String content = "有人尝试尝试邀请"+ConfigHandler.getName(event)+"加入一个少于"+ConfigHandler.getINSTANCE().config.getMinimumMembers()+"人的群聊 "+event.getGroup().getName()+"("+event.getGroup().getId()+")，已经离开";
-                    MessageUtil.notifyDevGroup(content, event.getBot().getId());
+                    MessageUtil.notifyDevGroup(content, event.getBot());
                     return;
                 }
 
@@ -186,24 +186,24 @@ public class ContactUtil {
     // 向开发者发送加群提醒
     static void notifyDevWhenJoinGroup(BotJoinGroupEvent.Invite event) {
         MessageUtil.notifyDevGroup(ConfigHandler.getName(event)+"已加入 " + event.getGroup().getName() + "（" + event.getGroupId() + "）,邀请人为 "
-                + ((BotJoinGroupEvent.Invite) event).getInvitor().getNick() + "（" + ((BotJoinGroupEvent.Invite) event).getInvitor().getId() + "）。", event.getBot().getId());
+                + ((BotJoinGroupEvent.Invite) event).getInvitor().getNick() + "（" + ((BotJoinGroupEvent.Invite) event).getInvitor().getId() + "）。", event.getBot());
     }
 
     // 向开发者发送加群提醒
     static void notifyDevWhenJoinGroup(BotJoinGroupEvent.Active event) {
-        MessageUtil.notifyDevGroup(ConfigHandler.getName(event)+"已加入 " + event.getGroup().getName() + "（" + event.getGroupId() + "）", event.getBot().getId());
+        MessageUtil.notifyDevGroup(ConfigHandler.getName(event)+"已加入 " + event.getGroup().getName() + "（" + event.getGroupId() + "）", event.getBot());
     }
 
     // 向开发者发送退群提醒
     static void notifyDevWhenLeaveGroup(BotLeaveEvent.Kick event) {
         //todo:Mirai开发者告知这个写法可能不稳定
-        MessageUtil.notifyDevGroup(ConfigHandler.getName(event)+"已经从 " + event.getGroup().getName() + "（" + event.getGroupId() + "）离开，由管理员操作。", event.getBot().getId());
+        MessageUtil.notifyDevGroup(ConfigHandler.getName(event)+"已经从 " + event.getGroup().getName() + "（" + event.getGroupId() + "）离开，由管理员操作。", event.getBot());
     }
 
     // 向开发者发送退群提醒
     static void notifyDevWhenLeaveGroup(BotLeaveEvent.Active event) {
         //todo:Mirai开发者告知这个写法可能不稳定
-        MessageUtil.notifyDevGroup(ConfigHandler.getName(event)+"已经从 " + event.getGroup().getName() + "（" + event.getGroupId() + "）主动离开。", event.getBot().getId());
+        MessageUtil.notifyDevGroup(ConfigHandler.getName(event)+"已经从 " + event.getGroup().getName() + "（" + event.getGroupId() + "）主动离开。", event.getBot());
     }
 
 }

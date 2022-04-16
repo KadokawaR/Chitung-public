@@ -8,15 +8,13 @@ import java.util.Objects;
 public class MessageUtil {
 
     /**
-     * 指定某个Bot，向开发群发送消息通知
+     * 要求全部在线Bot向开发群发送消息通知
      */
-    public static void notifyDevGroup(String content, long botId){
+    public static void notifyDevGroup(String content){
         List<Bot> bots = Bot.getInstances();
         for (Bot bot : bots) {
-            if(bot.getId() == botId){
-                for(long ID:IdentityUtil.getDevGroup()){
-                    if(bot.getGroup(ID)!=null) Objects.requireNonNull(bot.getGroup(ID)).sendMessage(content);
-                }
+            for(long ID:IdentityUtil.getDevGroup()){
+                if(bot.getGroup(ID)!=null) Objects.requireNonNull(bot.getGroup(ID)).sendMessage(content);
             }
         }
     }
