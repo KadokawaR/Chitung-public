@@ -13,6 +13,7 @@ import net.mamoe.mirai.event.events.MessageEvent;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 public class ConfigHandler {
 
@@ -37,7 +38,7 @@ public class ConfigHandler {
         getINSTANCE().config = new Config();
         if(Touch.file(BASIC_CONFIGURATION_PATH)){
             try {
-                getINSTANCE().config = new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(BASIC_CONFIGURATION_PATH)))), Config.class);
+                getINSTANCE().config = new Gson().fromJson(new String(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(BASIC_CONFIGURATION_PATH)))).getBytes("GBK"), StandardCharsets.UTF_8), Config.class);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -48,7 +49,7 @@ public class ConfigHandler {
 
     static Config readRecord(){
         try {
-            return new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(BASIC_CONFIGURATION_PATH)))), Config.class);
+            return new Gson().fromJson(new String(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(BASIC_CONFIGURATION_PATH)))).getBytes("GBK"), StandardCharsets.UTF_8), Config.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -56,7 +57,12 @@ public class ConfigHandler {
     }
 
     static void writeRecord(){
-        String jsonString = new GsonBuilder().setPrettyPrinting().create().toJson(getINSTANCE().config);
+        String jsonString = null;
+        try {
+            jsonString = new String(new GsonBuilder().setPrettyPrinting().create().toJson(getINSTANCE().config).getBytes("GBK"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         Write.cover(jsonString, BASIC_CONFIGURATION_PATH);
     }
 
@@ -129,6 +135,7 @@ public class ConfigHandler {
         return getINSTANCE().config.getRc().isAddFriend();
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean canAddGroup(){
         return getINSTANCE().config.getRc().isAddGroup();
     }

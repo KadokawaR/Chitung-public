@@ -1,5 +1,6 @@
 package mirai.chitung.plugin.core.responder.imageresponder;
 
+import mirai.chitung.plugin.core.responder.universalrespond.URManager;
 import mirai.chitung.plugin.utils.fileutils.Copy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -15,6 +16,7 @@ import net.mamoe.mirai.utils.ExternalResource;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -64,7 +66,7 @@ public class ImageResponder {
         getINSTANCE().dataListClass = new DataListClass();
         if(Touch.file(IMAGE_DATA_PATH)){
             try {
-                getINSTANCE().dataListClass = new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(IMAGE_DATA_PATH)))), DataListClass.class);
+                getINSTANCE().dataListClass = new Gson().fromJson(new String(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(IMAGE_DATA_PATH)))).getBytes("GBK"),StandardCharsets.UTF_8), DataListClass.class);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -79,7 +81,7 @@ public class ImageResponder {
 
     static DataListClass readRecord(){
         try {
-            return new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(IMAGE_DATA_PATH)))), DataListClass.class);
+            return new Gson().fromJson(new String(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(IMAGE_DATA_PATH)))).getBytes("GBK"),StandardCharsets.UTF_8), DataListClass.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -87,7 +89,12 @@ public class ImageResponder {
     }
 
     static void writeRecord(){
-        String jsonString = new GsonBuilder().setPrettyPrinting().create().toJson(getINSTANCE().dataListClass);
+        String jsonString = null;
+        try {
+            jsonString = new String(new GsonBuilder().setPrettyPrinting().create().toJson(getINSTANCE().dataListClass).getBytes("GBK"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         Write.cover(jsonString, IMAGE_DATA_PATH);
     }
 
