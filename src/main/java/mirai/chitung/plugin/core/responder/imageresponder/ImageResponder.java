@@ -243,5 +243,7 @@ public class ImageResponder {
 
     }
 
-    public void ini(){}
+    public void ini(){
+        System.out.println("Initialize Universal Image Responder");
+    }
 }

@@ -96,7 +96,7 @@ public class Blacklist {
 
     static void block(MessageEvent event){
         if(!IdentityUtil.isAdmin(event)) return;
-        if(!event.getMessage().contentToString().toLowerCase().contains("/block")) return;
+        if(!event.getMessage().contentToString().toLowerCase().contains("/block ")&&!event.getMessage().contentToString().toLowerCase().contains("/block-")) return;
         String rawString = event.getMessage().contentToString().toLowerCase().replace("/block","").replace(" ","").replace("-","");
         String strID = Pattern.compile("[^0-9]").matcher(rawString).replaceAll(" ").trim();
 
@@ -142,5 +142,7 @@ public class Blacklist {
         block(event);
     }
 
-    public void ini(){}
+    public void ini(){
+        System.out.println("Initialize Blacklist");
+    }
 }

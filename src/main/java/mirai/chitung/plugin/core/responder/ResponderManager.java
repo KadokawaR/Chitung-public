@@ -122,6 +122,7 @@ public class ResponderManager {
         register(HeroLinesSelector::new);
         register(FunctTemporary::new);
         register(FeedBack::new);
+        System.out.println("Initialize Responder Manager");
     }
 
     /**

@@ -239,5 +239,7 @@ public class URManager {
         respond(event);
     }
 
-    public void ini(){}
+    public void ini(){
+        System.out.println("Initialize Universal Responder Manager");
+    }
 }

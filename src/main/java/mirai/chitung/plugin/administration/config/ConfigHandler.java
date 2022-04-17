@@ -183,5 +183,7 @@ public class ConfigHandler {
     }
 
 
-    public void ini(){}
+    public void ini(){
+        System.out.println("Initialize Config Handler");
+    }
 }

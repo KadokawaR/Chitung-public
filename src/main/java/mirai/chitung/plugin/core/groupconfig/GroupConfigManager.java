@@ -63,7 +63,6 @@ public class GroupConfigManager {
         } else {
             writeRecord();
         }
-        updateConfigList();
     }
 
     static void readRecord(){
@@ -80,12 +79,17 @@ public class GroupConfigManager {
     }
 
     static Integer getGroupIndex(long groupID){
-        if(!containsGroup(groupID)){
-            addGroupConfig(groupID);
-        }
+
         for(int i=0;i<getINSTANCE().groupConfigs.groupConfigList.size();i++){
             if(getINSTANCE().groupConfigs.groupConfigList.get(i).getGroupID()==groupID) return i;
         }
+
+        addGroupConfig(groupID);
+
+        for(int i=0;i<getINSTANCE().groupConfigs.groupConfigList.size();i++){
+            if(getINSTANCE().groupConfigs.groupConfigList.get(i).getGroupID()==groupID) return i;
+        }
+
         return null;
     }
 
@@ -94,7 +98,11 @@ public class GroupConfigManager {
     }
 
     static void addGroupConfig(long groupID){
-        if(containsGroup(groupID)) return;
+
+        for(int i=0;i<getINSTANCE().groupConfigs.groupConfigList.size();i++){
+            if(getINSTANCE().groupConfigs.groupConfigList.get(i).getGroupID()==groupID) return;
+        }
+
         getINSTANCE().groupConfigs.groupConfigList.add(new GroupConfig(groupID));
         writeRecord();
         readRecord();
@@ -126,13 +134,13 @@ public class GroupConfigManager {
         readRecord();
     }
 
-     static void updateConfigList(){
+     public static void updateConfigList(){
         List<Long> mutualList = new ArrayList<>();
         List<Long> botGroupList = new ArrayList<>();
         List<Long> configGroupList = new ArrayList<>();
         List<Long> addList = new ArrayList<>();
         List<Long> deleteList = new ArrayList<>();
-        ContactList<Group> groupList = new ContactList<>();
+        List<Group> groupList = new ArrayList<>();
 
         for(Bot bot:Bot.getInstances()){
             groupList.addAll(bot.getGroups());
@@ -265,7 +273,7 @@ public class GroupConfigManager {
         if(event.getSender().getPermission().equals(MemberPermission.MEMBER)&&!IdentityUtil.isAdmin(event)) return;
         if(!event.getMessage().contentToString().toLowerCase().startsWith("/blockmember")) return;
 
-        executor.schedule(new BlockUserAndSendNotice(event),1, TimeUnit.MINUTES);
+        executor.schedule(new BlockUserAndSendNotice(event),1, TimeUnit.SECONDS);
 
     }
 
@@ -334,6 +342,8 @@ public class GroupConfigManager {
         addBlockedUser(event);
     }
 
-    public void ini(){}
+    public void ini(){
+        System.out.println("Initialize Group Config Manager");
+    }
 
 }

@@ -52,13 +52,9 @@ public final class JavaPluginMain extends JavaPlugin {
     public void onEnable() {
         getLogger().info("日志");
 
-        GroupPolice.getINSTANCE().ini();
-        ResponderManager.getINSTANCE().ini();
-        ConfigHandler.getINSTANCE().ini();
-        GroupConfigManager.getINSTANCE().ini();
-        URManager.getINSTANCE().ini();
-        Blacklist.getINSTANCE().ini();
-        ImageResponder.getINSTANCE().ini();
+
+
+
 
         // 上线事件
         GlobalEventChannel.INSTANCE.subscribeAlways(BotOnlineEvent.class, event -> {
@@ -67,6 +63,8 @@ public final class JavaPluginMain extends JavaPlugin {
                     Objects.requireNonNull(event.getBot().getGroup(groupID)).sendMessage(ConfigHandler.getINSTANCE().config.getCc().getOnlineText());
                 }
             }
+            //更新群设置列表
+            GroupConfigManager.updateConfigList();
         });
 
         // 处理好友请求

@@ -41,5 +41,7 @@ public class GroupPolice {
         }
     }
 
-    public void ini(){}
+    public void ini(){
+        System.out.println("Initialize Group Police");
+    }
 }
