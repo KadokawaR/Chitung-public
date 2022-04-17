@@ -69,7 +69,7 @@ public class Blacklist {
         Write.cover(jsonString, BLACKLIST_PATH);
     }
 
-    enum BlockKind{
+    public enum BlockKind{
         Friend,
         Group
     }
@@ -83,6 +83,20 @@ public class Blacklist {
                 break;
             case Group:
                 getINSTANCE().blackListClass.groupBlacklist.add(ID);
+                writeRecord();
+                getINSTANCE().blackListClass=readRecord();
+        }
+    }
+
+    static void deleteBlock(long ID,BlockKind bk){
+        switch(bk){
+            case Friend:
+                getINSTANCE().blackListClass.friendBlacklist.remove(ID);
+                writeRecord();
+                getINSTANCE().blackListClass=readRecord();
+                break;
+            case Group:
+                getINSTANCE().blackListClass.groupBlacklist.remove(ID);
                 writeRecord();
                 getINSTANCE().blackListClass=readRecord();
         }
@@ -133,13 +147,89 @@ public class Blacklist {
         }
 
         addBlock(ID,bk);
+
+        switch(bk){
+            case Friend:
+                event.getSubject().sendMessage("已屏蔽用户"+ID);
+            case Group:
+                event.getSubject().sendMessage("已屏蔽群聊"+ID);
+        }
+
     }
 
-    public static void BlacklistOperation(MessageEvent event){
+    static void unblock(MessageEvent event){
+        if(!IdentityUtil.isAdmin(event)) return;
+        if(!event.getMessage().contentToString().toLowerCase().contains("/unblock ")&&!event.getMessage().contentToString().toLowerCase().contains("/unblock-")) return;
+        String rawString = event.getMessage().contentToString().toLowerCase().replace("/unblock","").replace(" ","").replace("-","");
+        String strID = Pattern.compile("[^0-9]").matcher(rawString).replaceAll(" ").trim();
+
+        Long ID=null;
+        BlockKind bk=null;
+
+        if(rawString.contains("g")){
+            bk = BlockKind.Group;
+        }
+
+        if(rawString.contains("f")){
+            bk = BlockKind.Friend;
+        }
+
+        if(bk==null||(rawString.contains("g")&&(rawString.contains("f")))){
+            event.getSubject().sendMessage("命令格式错误，请重新输入。");
+            return;
+        }
+
+        try{
+            ID = Long.parseLong(strID);
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+
+        if(ID==null||ID<10000){
+            event.getSubject().sendMessage("账号格式错误，请重新输入。");
+            return;
+        }
+
+        if(!isBlocked(ID,bk)){
+            switch(bk){
+                case Friend:
+                    event.getSubject().sendMessage("用户"+ID+"未被屏蔽。");
+                case Group:
+                    event.getSubject().sendMessage("群聊"+ID+"未被屏蔽。");
+            }
+            return;
+        }
+
+        deleteBlock(ID,bk);
+
+        switch(bk){
+            case Friend:
+                event.getSubject().sendMessage("已屏蔽用户"+ID);
+            case Group:
+                event.getSubject().sendMessage("已屏蔽群聊"+ID);
+        }
+    }
+
+    public static boolean isBlocked(long ID,BlockKind bk){
+
+        if(IdentityUtil.isAdmin(ID)) return false;
+
+        switch(bk){
+            case Group:
+                return getINSTANCE().blackListClass.groupBlacklist.contains(ID);
+            case Friend:
+                return getINSTANCE().blackListClass.friendBlacklist.contains(ID);
+        }
+        return false;
+
+    }
+
+    public static void operation(MessageEvent event){
         if(event instanceof GroupMessageEvent){
             blockGroupInGroup((GroupMessageEvent) event);
         }
         block(event);
+        unblock(event);
     }
 
     public void ini(){
