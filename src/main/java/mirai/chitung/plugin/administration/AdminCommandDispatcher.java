@@ -25,9 +25,11 @@ public class AdminCommandDispatcher {
         if(!IdentityUtil.isAdmin(event)) return;
         AdminTools.getINSTANCE().handleAdminCommand(event);
         //黑名单
-        Blacklist.BlacklistOperation(event);
+        Blacklist.operation(event);
         //设置管理
         ConfigHandler.react(event);
+        //管理帮助
+        AdminHelp.send(event);
     }
 
     public void close() {

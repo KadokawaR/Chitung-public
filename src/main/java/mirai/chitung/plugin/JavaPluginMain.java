@@ -101,9 +101,14 @@ public final class JavaPluginMain extends JavaPlugin {
         GlobalEventChannel.INSTANCE.subscribeAlways(GroupMessageEvent.class, event -> {
 
             if(!ConfigHandler.canAnswerGroup()) return;
+
             if(IdentityUtil.isBot(event)) return;
+
             if(!GroupConfigManager.globalConfig(event)) return;
             if(GroupConfigManager.isBlockedUser(event)) return;
+
+            if(Blacklist.isBlocked(event.getSender().getId(), Blacklist.BlockKind.Friend)) return;
+            if(Blacklist.isBlocked(event.getGroup().getId(), Blacklist.BlockKind.Group)) return;
 
             //ResponderCenter
             if(GroupConfigManager.responderConfig(event) && ConfigHandler.getINSTANCE().config.getGroupFC().isResponder()){
@@ -146,6 +151,8 @@ public final class JavaPluginMain extends JavaPlugin {
 
             if(!ConfigHandler.canAnswerFriend()) return;
             if(IdentityUtil.isBot(event)) return;
+
+            if(Blacklist.isBlocked(event.getSender().getId(), Blacklist.BlockKind.Friend)) return;
 
             //ResponderCenter
             if(ConfigHandler.getINSTANCE().config.getFriendFC().isResponder()) {

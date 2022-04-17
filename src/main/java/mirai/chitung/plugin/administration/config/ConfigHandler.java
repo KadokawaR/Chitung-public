@@ -68,7 +68,7 @@ public class ConfigHandler {
 
     static void getCurrentBotConfig(MessageEvent event){
         if(!IdentityUtil.isAdmin(event)) return;
-        if(!event.getMessage().contentToString().equals("/config")) return;
+        if(!event.getMessage().contentToString().equalsIgnoreCase("/config")) return;
         MessageChainBuilder mcb = new MessageChainBuilder();
         mcb.append("addFriend: ").append(String.valueOf(getINSTANCE().config.getRc().isAddFriend())).append("\n");
         mcb.append("addGroup: ").append(String.valueOf(getINSTANCE().config.getRc().isAddGroup())).append("\n");
@@ -80,7 +80,7 @@ public class ConfigHandler {
 
     static void changeCurrentBotConfig(MessageEvent event){
         if(!IdentityUtil.isAdmin(event)) return;
-        if(event.getMessage().contentToString().equals("/changeconfig")) {
+        if(event.getMessage().contentToString().equalsIgnoreCase("/config -h")) {
             event.getSubject().sendMessage("使用/config+空格+数字序号+空格+true/false来开关配置。\n\n1:addFriend\n2:addGroup\n3:answerFriend\n4:answerGroup\n5:autoAnswer");
         }
         if(event.getMessage().contentToString().contains("/config")&&(event.getMessage().contentToString().contains("true")||event.getMessage().contentToString().contains("false"))){

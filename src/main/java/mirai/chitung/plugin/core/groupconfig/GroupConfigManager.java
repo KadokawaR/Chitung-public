@@ -134,7 +134,7 @@ public class GroupConfigManager {
         readRecord();
     }
 
-     public static void updateConfigList(){
+    public static void updateConfigList(){
         List<Long> mutualList = new ArrayList<>();
         List<Long> botGroupList = new ArrayList<>();
         List<Long> configGroupList = new ArrayList<>();
@@ -277,6 +277,43 @@ public class GroupConfigManager {
 
     }
 
+    static void deleteBlockedUser(GroupMessageEvent event){
+        if(event.getSender().getPermission().equals(MemberPermission.MEMBER)&&!IdentityUtil.isAdmin(event)) return;
+        if(!event.getMessage().contentToString().toLowerCase().startsWith("/unblockmember")) return;
+
+        List<Long> deletedUser = new ArrayList<>();
+
+        for(SingleMessage sm:event.getMessage()){
+
+            if(sm.contentToString().startsWith("@")){
+
+                Long ID = Long.parseLong(sm.contentToString().replace("@",""));
+
+                if(isBlockedUser(event.getGroup().getId(),ID)){
+                    getINSTANCE().groupConfigs.groupConfigList.get(getGroupIndex(event.getGroup().getId())).getBlockedUser().remove(ID);
+                    deletedUser.add(ID);
+                }
+            }
+        }
+
+        sendMessage(event,false,deletedUser);
+
+    }
+
+    static void sendMessage(GroupMessageEvent event,boolean isBlocking, List<Long> userList){
+        MessageChainBuilder mcb = new MessageChainBuilder();
+
+        if(isBlocking){
+            mcb.append("已经在本群中屏蔽：");
+        } else {
+            mcb.append("已经在本群中解除屏蔽：");
+        }
+
+        for(Long ID:userList) { mcb.append(new At(ID)); }
+
+        event.getSubject().sendMessage(mcb.asMessageChain());
+    }
+
     static class BlockUserAndSendNotice implements Runnable{
 
         private final GroupMessageEvent event;
@@ -287,46 +324,67 @@ public class GroupConfigManager {
 
         @Override
         public void run(){
+
+            List<Long> blockedNormalMember = new ArrayList<>();
+            List<Long> blockedGroupAdminMember = new ArrayList<>();
+            List<Long> blockedAdminMember = new ArrayList<>();
+
             for(SingleMessage sm:event.getMessage()){
+
                 if(sm.contentToString().startsWith("@")){
+
                     Long ID = Long.parseLong(sm.contentToString().replace("@",""));
 
                     if(event.getGroup().getOrFail(ID).getPermission().equals(MemberPermission.OWNER)||event.getGroup().getOrFail(ID).getPermission().equals(MemberPermission.ADMINISTRATOR)){
-                        event.getSubject().sendMessage("拉黑同为管理员的"+ID+"？不要把"+ ConfigHandler.getName(event.getBot()) +"卷入勾心斗角的宫廷争斗！");
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+                        blockedGroupAdminMember.add(ID);
                         continue;
                     }
 
                     if(IdentityUtil.isAdmin(ID)){
-                        event.getSubject().sendMessage("抱歉，"+ ConfigHandler.getName(event.getBot()) +"的运营者"+ID+"就是可以为所欲为。");
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+                        blockedAdminMember.add(ID);
                         continue;
                     }
 
                     if(event.getGroup().getMembers().contains(ID.longValue())){
                         getINSTANCE().groupConfigs.groupConfigList.get(getGroupIndex(event.getGroup().getId())).getBlockedUser().add(ID);
-                        event.getSubject().sendMessage(new MessageChainBuilder()
-                                .append("已经在本群中屏蔽")
-                                .append(Objects.requireNonNull(event.getGroup().getMembers().get(ID)).getNick())
-                                .append("-")
-                                .append(String.valueOf(ID))
-                                .append(new At(ID)).asMessageChain());
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+                        blockedNormalMember.add(ID);
                     }
                 }
             }
+
+
+            if(blockedGroupAdminMember.size()>0){
+                MessageChainBuilder mcb = new MessageChainBuilder().append("拉黑同为管理员的");
+                for(Long ID:blockedGroupAdminMember){
+                    mcb.append(new At(ID));
+                }
+                mcb.append("？不要把").append(ConfigHandler.getName(event.getBot())).append("卷入勾心斗角的宫廷争斗！");
+                event.getSubject().sendMessage(mcb.asMessageChain());
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if(blockedAdminMember.size()>0){
+                MessageChainBuilder mcb = new MessageChainBuilder().append("抱歉，").append(ConfigHandler.getName(event.getBot())).append("的运营者");
+                for(Long ID:blockedAdminMember){
+                    mcb.append(new At(ID));
+                }
+                mcb.append("就是可以为所欲为。");
+                event.getSubject().sendMessage(mcb.asMessageChain());
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if(blockedNormalMember.size()>0){
+                sendMessage(event,true,blockedNormalMember);
+            }
+
         }
     }
 
@@ -334,6 +392,10 @@ public class GroupConfigManager {
         if(event.getSender().getPermission().equals(MemberPermission.OWNER)||event.getSender().getPermission().equals(MemberPermission.ADMINISTRATOR)) return false;
         if(IdentityUtil.isAdmin(event.getSender().getId())) return false;
         return readGroupConfig(event.getGroup().getId()).getBlockedUser().contains(event.getSender().getId());
+    }
+
+    public static boolean isBlockedUser(long groupID, long memberID){
+        return readGroupConfig(groupID).getBlockedUser().contains(memberID);
     }
 
     public static void handle(GroupMessageEvent event){
