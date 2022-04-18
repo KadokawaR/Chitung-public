@@ -18,7 +18,7 @@ public class NewHelp {
 
         private final String stringValue;
 
-        private HelpFunction(String value){
+        HelpFunction(String value){
             this.stringValue=value;
         }
 

@@ -39,7 +39,7 @@ public class Fishing extends FishingUtil{
 
         private final int code;
 
-        private Waters(int code) { this.code = code; }
+        Waters(int code) { this.code = code; }
 
         public int getCode(){
             return this.code;

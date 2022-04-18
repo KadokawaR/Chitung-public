@@ -27,10 +27,8 @@ public final class VaultCore<U, V extends Valuable> {
             }
             else
                 space.get(valuable).put(user, amount);
-            if(!historicalUsers.contains(user))
-                historicalUsers.add(user);
-            if(!historicalValuables.contains(valuable))
-                historicalValuables.add(valuable);
+            historicalUsers.add(user);
+            historicalValuables.add(valuable);
         } finally {
             writeLock.unlock();
         }

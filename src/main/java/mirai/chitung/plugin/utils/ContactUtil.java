@@ -186,7 +186,7 @@ public class ContactUtil {
     // 向开发者发送加群提醒
     static void notifyDevWhenJoinGroup(BotJoinGroupEvent.Invite event) {
         MessageUtil.notifyDevGroup(ConfigHandler.getName(event)+"已加入 " + event.getGroup().getName() + "（" + event.getGroupId() + "）,邀请人为 "
-                + ((BotJoinGroupEvent.Invite) event).getInvitor().getNick() + "（" + ((BotJoinGroupEvent.Invite) event).getInvitor().getId() + "）。", event.getBot());
+                + event.getInvitor().getNick() + "（" + event.getInvitor().getId() + "）。", event.getBot());
     }
 
     // 向开发者发送加群提醒

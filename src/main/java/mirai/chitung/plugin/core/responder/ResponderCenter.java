@@ -19,7 +19,7 @@ public class ResponderCenter {
         if(MULTI_BOT_DISTRIBUTOR_MAP.containsKey(event.getBot()))
             MULTI_BOT_DISTRIBUTOR_MAP.get(event.getBot()).handleMessage(event);
         else{
-            MULTI_BOT_DISTRIBUTOR_MAP.put(event.getBot(),new ResponderTaskDistributor(event.getBot()));
+            MULTI_BOT_DISTRIBUTOR_MAP.put(event.getBot(),new ResponderTaskDistributor());
             MULTI_BOT_DISTRIBUTOR_MAP.get(event.getBot()).handleMessage(event);
         }
     }

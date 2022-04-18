@@ -342,7 +342,7 @@ public class Roulette extends RouletteUtils {
             if (!getINSTANCE().FriendBet.containsKey(event.getSubject().getId())) {
                 System.out.println("第一次往账户里面加钱");
                 getINSTANCE().FriendBet.put(event.getSubject().getId(), bet);
-                event.getSubject().sendMessage("已收到下注" + String.valueOf(bet) + "南瓜比索");
+                event.getSubject().sendMessage("已收到下注" + bet + "南瓜比索");
             }
         }
     }
