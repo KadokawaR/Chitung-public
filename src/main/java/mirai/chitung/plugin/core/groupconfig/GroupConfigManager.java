@@ -402,6 +402,7 @@ public class GroupConfigManager {
         resetGroupConfig(event);
         changeGroupConfig(event);
         addBlockedUser(event);
+        deleteBlockedUser(event);
     }
 
     public void ini(){
