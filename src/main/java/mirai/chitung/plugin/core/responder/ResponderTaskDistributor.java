@@ -30,8 +30,12 @@ public class ResponderTaskDistributor {
         }
     }
 
-    public static void handleIsolatedResponderTask(RespondTask messageChainPackage){
-        ISOLATED_EXECUTOR.submit(messageChainPackage::execute);
+    public static void handleIsolatedResponderTask(RespondTask respondTask){
+        if (respondTask.getSource() instanceof Group)
+            Harbor.count(PortRequestInfos.GROUP_MINUTE,respondTask.getSource().getId());
+        Harbor.count(PortRequestInfos.PERSONAL,respondTask.getSender().getId());
+        Harbor.count(PortRequestInfos.TOTAL_DAILY,0L);
+        ISOLATED_EXECUTOR.submit(respondTask::execute);
     }
 
     // 检测是否达到发送消息数量上限
