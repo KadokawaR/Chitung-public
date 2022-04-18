@@ -1,6 +1,7 @@
 package mirai.chitung.plugin.utils;
 
 import mirai.chitung.plugin.administration.config.ConfigHandler;
+import mirai.chitung.plugin.core.groupconfig.GroupConfigManager;
 import mirai.chitung.plugin.core.responder.help.NewHelp;
 import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.contact.Friend;
@@ -135,12 +136,14 @@ public class ContactUtil {
     public static void handleLeaveGroup(BotLeaveEvent.Kick event) {
         // 通知开发者群
         notifyDevWhenLeaveGroup(event);
+        GroupConfigManager.deleteGroupConfig(event.getGroupId());
     }
 
     // 处理退群事件
     public static void handleLeaveGroup(BotLeaveEvent.Active event) {
         // 通知开发者群
         notifyDevWhenLeaveGroup(event);
+        GroupConfigManager.deleteGroupConfig(event.getGroupId());
     }
 
     // 处理加为好友事件

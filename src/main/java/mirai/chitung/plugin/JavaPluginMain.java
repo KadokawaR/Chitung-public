@@ -10,13 +10,10 @@ import mirai.chitung.plugin.core.responder.basic.Repeater;
 import mirai.chitung.plugin.core.responder.help.NewHelp;
 import mirai.chitung.plugin.core.responder.imageresponder.ImageResponder;
 import mirai.chitung.plugin.core.responder.universalrespond.URManager;
-import mirai.chitung.plugin.utils.Nudge;
-import mirai.chitung.plugin.utils.ContactUtil;
+import mirai.chitung.plugin.utils.*;
 import mirai.chitung.plugin.core.broadcast.BroadcastSystem;
 import mirai.chitung.plugin.core.game.GameCenter;
 import mirai.chitung.plugin.core.responder.ResponderManager;
-import mirai.chitung.plugin.utils.GroupPolice;
-import mirai.chitung.plugin.utils.IdentityUtil;
 import net.mamoe.mirai.console.plugin.jvm.JavaPlugin;
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescriptionBuilder;
 import net.mamoe.mirai.contact.MemberPermission;
@@ -52,9 +49,7 @@ public final class JavaPluginMain extends JavaPlugin {
     public void onEnable() {
         getLogger().info("日志");
 
-
-
-
+        InitializeUtil.initialize();
 
         // 上线事件
         GlobalEventChannel.INSTANCE.subscribeAlways(BotOnlineEvent.class, event -> {

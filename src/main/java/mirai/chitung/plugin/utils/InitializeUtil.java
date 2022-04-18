@@ -33,5 +33,6 @@ public class InitializeUtil {
         URManager.getINSTANCE().ini();
         Blacklist.getINSTANCE().ini();
         ImageResponder.getINSTANCE().ini();
+        System.out.println(WELCOME_TEXT);
     }
 }

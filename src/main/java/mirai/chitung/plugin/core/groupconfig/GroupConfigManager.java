@@ -116,7 +116,7 @@ public class GroupConfigManager {
         readRecord();
     }
 
-    static void deleteGroupConfig(long groupID){
+    public static void deleteGroupConfig(long groupID){
         if(containsGroup(groupID)){
             getINSTANCE().groupConfigs.groupConfigList.remove(Objects.requireNonNull(getGroupIndex(groupID)).intValue());
         }
@@ -180,7 +180,7 @@ public class GroupConfigManager {
 
     @SuppressWarnings("RedundantIfStatement")
     public static void changeGroupConfig(GroupMessageEvent event){
-        if(!event.getMessage().contentToString().contains("/close")||event.getMessage().contentToString().contains("/open")) return;
+        if(!event.getMessage().contentToString().toLowerCase().contains("/close")&&!event.getMessage().contentToString().toLowerCase().contains("/open")) return;
         if(event.getSender().getPermission().equals(MemberPermission.MEMBER)&&(!IdentityUtil.isAdmin(event))) return;
         if(!containsGroup(event.getGroup().getId())) addGroupConfig(event.getGroup().getId());
         boolean operation;
@@ -223,7 +223,10 @@ public class GroupConfigManager {
                 break;
             default:
                 event.getSubject().sendMessage("群设置指示词使用错误，请使用 /close 或者 /open 加上 空格 加上 global、game、casino、responder、fish 或者 lottery 来开关相应内容。");
+                return;
         }
+        writeRecord();
+        readRecord();
     }
 
     public static void resetGroupConfig(GroupMessageEvent event){
