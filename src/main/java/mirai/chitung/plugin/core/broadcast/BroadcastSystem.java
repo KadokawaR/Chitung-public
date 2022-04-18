@@ -61,10 +61,10 @@ public class BroadcastSystem {
     }
 
     static void quitBroadcastMode(MessageEvent event){
-        Iterator<AdminContact> clonedKeySet = getINSTANCE().BroadcastModeList.keySet().iterator();
-        while(clonedKeySet.hasNext()){
-            if(clonedKeySet.next().contact.equals(event.getSubject())&&clonedKeySet.next().adminID==event.getSender().getId()) {
-                getINSTANCE().BroadcastModeList.remove(clonedKeySet.next());
+        List<AdminContact> clonedKeySet = new ArrayList<AdminContact>(){{addAll(getINSTANCE().BroadcastModeList.keySet());}};
+        for(AdminContact ac:clonedKeySet){
+            if(ac.contact.equals(event.getSubject())&&ac.adminID==event.getSender().getId()) {
+                getINSTANCE().BroadcastModeList.remove(ac);
                 return;
             }
         }
@@ -92,6 +92,8 @@ public class BroadcastSystem {
                     executor.schedule(new SendMessage<>(event.getBot().getFriends(),event.getMessage(),new AdminContact(event.getSubject(), event.getSender().getId())),1,TimeUnit.SECONDS);
                     break;
             }
+
+            quitBroadcastMode(event);
 
         } else {
 
@@ -177,7 +179,6 @@ public class BroadcastSystem {
         public void run(){
             if(isInBroadcastMode(event)) {
                 quitBroadcastMode(event);
-                event.getSubject().sendMessage("广播模式已经自动关闭。");
             }
         }
     }
@@ -202,16 +203,18 @@ public class BroadcastSystem {
 
             for(Contact c:contactList){
 
+                MessageChain temp = mc;
+
                 if(!hasJudged){
                     if(c instanceof Group) isGroup=true;
                     hasJudged = true;
                 }
 
                 if(c instanceof Group){
-                    mc = processAt((Group) c,mc);
+                    temp = processAt((Group) c,mc);
                 }
 
-                c.sendMessage(mc);
+                c.sendMessage(temp);
 
                 try {
                     Thread.sleep(1000);
