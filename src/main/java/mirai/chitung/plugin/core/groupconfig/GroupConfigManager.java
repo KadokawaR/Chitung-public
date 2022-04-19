@@ -1,6 +1,7 @@
 package mirai.chitung.plugin.core.groupconfig;
 
 import mirai.chitung.plugin.administration.config.ConfigHandler;
+import mirai.chitung.plugin.core.harbor.Harbor;
 import mirai.chitung.plugin.utils.IdentityUtil;
 import mirai.chitung.plugin.utils.fileutils.Read;
 import mirai.chitung.plugin.utils.fileutils.Touch;
@@ -225,8 +226,12 @@ public class GroupConfigManager {
                 event.getSubject().sendMessage("群设置指示词使用错误，请使用 /close 或者 /open 加上 空格 加上 global、game、casino、responder、fish 或者 lottery 来开关相应内容。");
                 return;
         }
+
+        Harbor.count(event);
+
         writeRecord();
         readRecord();
+
     }
 
     public static void resetGroupConfig(GroupMessageEvent event){
@@ -278,6 +283,8 @@ public class GroupConfigManager {
 
         executor.schedule(new BlockUserAndSendNotice(event),1, TimeUnit.SECONDS);
 
+        Harbor.count(event);
+
     }
 
     static void deleteBlockedUser(GroupMessageEvent event){
@@ -301,6 +308,8 @@ public class GroupConfigManager {
 
         sendMessage(event,false,deletedUser);
 
+        Harbor.count(event);
+
     }
 
     static void sendMessage(GroupMessageEvent event,boolean isBlocking, List<Long> userList){
@@ -315,6 +324,7 @@ public class GroupConfigManager {
         for(Long ID:userList) { mcb.append(new At(ID)); }
 
         event.getSubject().sendMessage(mcb.asMessageChain());
+
     }
 
     static class BlockUserAndSendNotice implements Runnable{
@@ -354,7 +364,6 @@ public class GroupConfigManager {
                     }
                 }
             }
-
 
             if(blockedGroupAdminMember.size()>0){
                 MessageChainBuilder mcb = new MessageChainBuilder().append("拉黑同为管理员的");

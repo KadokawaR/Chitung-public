@@ -1,6 +1,7 @@
 package mirai.chitung.plugin.utils;
 
 import mirai.chitung.plugin.administration.config.ConfigHandler;
+import mirai.chitung.plugin.core.harbor.Harbor;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
 import net.mamoe.mirai.event.events.NudgeEvent;

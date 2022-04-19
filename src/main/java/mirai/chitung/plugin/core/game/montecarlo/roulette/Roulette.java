@@ -159,9 +159,10 @@ public class Roulette extends RouletteUtils {
             }
             getINSTANCE().GroupSettleAccount.remove(event.getSubject().getId());
             getINSTANCE().GroupStatusMap.remove(event.getSubject().getId());
+            Set<Date> copyGroupResetMark = getINSTANCE().GroupResetMark.keySet();
 
             if(getINSTANCE().GroupResetMark.containsValue(event.getSubject().getId())){
-                for(Date date:getINSTANCE().GroupResetMark.keySet()){
+                for(Date date:copyGroupResetMark){
                     if (getINSTANCE().GroupResetMark.get(date).equals(event.getSubject().getId())){
                         getINSTANCE().GroupResetMark.remove(date);
                     }

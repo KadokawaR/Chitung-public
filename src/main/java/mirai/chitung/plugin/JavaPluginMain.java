@@ -3,13 +3,16 @@ package mirai.chitung.plugin;
 
 import mirai.chitung.plugin.administration.AdminCommandDispatcher;
 import mirai.chitung.plugin.administration.config.ConfigHandler;
+import mirai.chitung.plugin.core.game.fish.Fishing;
 import mirai.chitung.plugin.core.groupconfig.GroupConfigManager;
+import mirai.chitung.plugin.core.harbor.Harbor;
 import mirai.chitung.plugin.core.responder.Blacklist;
 import mirai.chitung.plugin.core.responder.ResponderCenter;
 import mirai.chitung.plugin.core.responder.basic.Repeater;
 import mirai.chitung.plugin.core.responder.help.NewHelp;
 import mirai.chitung.plugin.core.responder.imageresponder.ImageResponder;
 import mirai.chitung.plugin.core.responder.universalrespond.URManager;
+import mirai.chitung.plugin.core.responder.universalrespond.UniversalResponder;
 import mirai.chitung.plugin.utils.*;
 import mirai.chitung.plugin.core.broadcast.BroadcastSystem;
 import mirai.chitung.plugin.core.game.GameCenter;
@@ -95,6 +98,11 @@ public final class JavaPluginMain extends JavaPlugin {
 
         GlobalEventChannel.INSTANCE.subscribeAlways(GroupMessageEvent.class, event -> {
 
+            //管理员功能
+            AdminCommandDispatcher.getInstance().handleMessage(event);
+            //广播
+            BroadcastSystem.handle(event);
+
             if(!ConfigHandler.canAnswerGroup()) return;
 
             if(IdentityUtil.isBot(event)) return;
@@ -105,24 +113,27 @@ public final class JavaPluginMain extends JavaPlugin {
             if(Blacklist.isBlocked(event.getSender().getId(), Blacklist.BlockKind.Friend)) return;
             if(Blacklist.isBlocked(event.getGroup().getId(), Blacklist.BlockKind.Group)) return;
 
+            //GameCenter
+            GameCenter.handle(event);
+
+            if(Harbor.isReachingPortLimit(event)) return;
+
             //ResponderCenter
             if(GroupConfigManager.responderConfig(event) && ConfigHandler.getINSTANCE().config.getGroupFC().isResponder()){
+
                 NewHelp.handle(event);
                 Nudge.mentionNudge(event);
                 ResponderCenter.getINSTANCE().handleMessage(event);
                 ImageResponder.handle(event);
                 Repeater.handle(event);
+
+                //钓鱼
+                Fishing.go(event);
+                //Universal Responder
+                URManager.handle(event);
+                //群管理功能
+                GroupConfigManager.handle(event);
             }
-            //管理员功能
-            AdminCommandDispatcher.getInstance().handleMessage(event);
-            //GameCenter
-            GameCenter.handle(event);
-            //UniversalResponder
-            if(GroupConfigManager.responderConfig(event) && ConfigHandler.getINSTANCE().config.getGroupFC().isResponder()) URManager.handle(event);
-            //群管理功能
-            GroupConfigManager.handle(event);
-            //广播
-            BroadcastSystem.handle(event);
 
         });
 
@@ -149,17 +160,24 @@ public final class JavaPluginMain extends JavaPlugin {
 
             if(Blacklist.isBlocked(event.getSender().getId(), Blacklist.BlockKind.Friend)) return;
 
-            //ResponderCenter
-            if(ConfigHandler.getINSTANCE().config.getFriendFC().isResponder()) {
-                ResponderCenter.getINSTANCE().handleMessage(event);
-                ImageResponder.handle(event);
-            }
             //管理员功能
             AdminCommandDispatcher.getInstance().handleMessage(event);
             //GameCenter
             GameCenter.handle(event);
             //广播
             BroadcastSystem.handle(event);
+
+            if(Harbor.isReachingPortLimit(event)) return;
+
+            //ResponderCenter
+            if(ConfigHandler.getINSTANCE().config.getFriendFC().isResponder()) {
+                NewHelp.handle(event);
+                ResponderCenter.getINSTANCE().handleMessage(event);
+                URManager.handle(event);
+                ImageResponder.handle(event);
+                Fishing.go(event);
+            }
+
         });
     }
 

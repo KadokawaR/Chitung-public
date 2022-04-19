@@ -1,5 +1,6 @@
 package mirai.chitung.plugin.core.responder.imageresponder;
 
+import mirai.chitung.plugin.core.harbor.Harbor;
 import mirai.chitung.plugin.core.responder.universalrespond.URManager;
 import mirai.chitung.plugin.utils.fileutils.Copy;
 import com.google.gson.Gson;
@@ -35,7 +36,7 @@ public class ImageResponder {
     static class DataListClass{
         List<ImageResponderData> dataList;
         DataListClass(){
-            this.dataList = new ArrayList<ImageResponderData>(){{add(new ImageResponderData("/qt","qt",TriggerType.Equal,ResponseType.Any));}};
+            this.dataList = new ArrayList<ImageResponderData>(){{add(new ImageResponderData("/qt","qt","感谢使用七筒开放版。",TriggerType.Equal,ResponseType.Any));}};
         }
     }
 
@@ -66,7 +67,7 @@ public class ImageResponder {
         getINSTANCE().dataListClass = new DataListClass();
         if(Touch.file(IMAGE_DATA_PATH)){
             try {
-                getINSTANCE().dataListClass = new Gson().fromJson(new String(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(IMAGE_DATA_PATH)))).getBytes("GBK"),StandardCharsets.UTF_8), DataListClass.class);
+                getINSTANCE().dataListClass = new Gson().fromJson(new String(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(IMAGE_DATA_PATH)))).getBytes("GBK")), DataListClass.class);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -81,7 +82,7 @@ public class ImageResponder {
 
     static DataListClass readRecord(){
         try {
-            return new Gson().fromJson(new String(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(IMAGE_DATA_PATH)))).getBytes("GBK"),StandardCharsets.UTF_8), DataListClass.class);
+            return new Gson().fromJson(new String(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(IMAGE_DATA_PATH)))).getBytes("GBK")), DataListClass.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -237,9 +238,17 @@ public class ImageResponder {
         }
 
         //发送图片
+
+        if(!ird.text.equals("")){
+            event.getSubject().sendMessage(ird.text);
+            Harbor.count(event);
+        }
+
         ExternalResource er = ExternalResource.create(image);
         event.getSubject().sendMessage(event.getSubject().uploadImage(er));
         er.getClosed();
+
+        Harbor.count(event);
 
     }
 

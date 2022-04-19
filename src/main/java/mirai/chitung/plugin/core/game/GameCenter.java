@@ -16,7 +16,6 @@ public class GameCenter {
 
         if(event instanceof GroupMessageEvent){
             if(GroupConfigManager.gameConfig((GroupMessageEvent) event) && ConfigHandler.getINSTANCE().config.getGroupFC().isGame()) {
-                if(GroupConfigManager.fishConfig((GroupMessageEvent) event)&&ConfigHandler.getINSTANCE().config.getGroupFC().isFish())Fishing.go(event);
                 MahjongRiddle.riddleStart((GroupMessageEvent) event);
                 if(GroupConfigManager.casinoConfig((GroupMessageEvent) event)&&ConfigHandler.getINSTANCE().config.getGroupFC().isCasino()){
                     CasinoCroupier.handle(event);
@@ -26,9 +25,8 @@ public class GameCenter {
         }
 
         if(event instanceof FriendMessageEvent){
-            if(ConfigHandler.getINSTANCE().config.getGroupFC().isGame()) {
-                if(ConfigHandler.getINSTANCE().config.getGroupFC().isFish()) Fishing.go(event);
-                if(ConfigHandler.getINSTANCE().config.getGroupFC().isCasino()){
+            if(ConfigHandler.getINSTANCE().config.getFriendFC().isGame()) {
+                if(ConfigHandler.getINSTANCE().config.getFriendFC().isCasino()){
                     SenoritaCounter.go(event);
                     CasinoCroupier.handle(event);
                 }

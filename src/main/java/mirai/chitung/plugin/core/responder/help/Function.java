@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class FunctTemporary implements MessageResponder<MessageEvent> {
+public class Function implements MessageResponder<MessageEvent> {
 
     static final List<MessageType> types = new ArrayList<>(Arrays.asList(MessageType.FRIEND, MessageType.GROUP));
 

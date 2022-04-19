@@ -11,7 +11,7 @@ import mirai.chitung.plugin.core.responder.feastinghelper.dinnerpicker.PizzaPick
 import mirai.chitung.plugin.core.responder.feastinghelper.drinkpicker.DrinkPicker;
 import mirai.chitung.plugin.core.responder.feedback.FeedBack;
 import mirai.chitung.plugin.core.responder.fursona.FursonaPunk;
-import mirai.chitung.plugin.core.responder.help.FunctTemporary;
+import mirai.chitung.plugin.core.responder.help.Function;
 import mirai.chitung.plugin.core.responder.lotterywinner.LotteryBummerMessageHandler;
 import mirai.chitung.plugin.core.responder.lotterywinner.LotteryC4MessageHandler;
 import mirai.chitung.plugin.core.responder.lotterywinner.LotteryWinnerMessageHandler;
@@ -120,7 +120,7 @@ public class ResponderManager {
         register(AntiDirtyWord::new);
         register(Greeting::new);
         register(HeroLinesSelector::new);
-        register(FunctTemporary::new);
+        register(Function::new);
         register(FeedBack::new);
         System.out.println("Initialize Responder Manager");
     }

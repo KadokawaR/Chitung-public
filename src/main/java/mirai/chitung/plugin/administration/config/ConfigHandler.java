@@ -38,7 +38,7 @@ public class ConfigHandler {
         getINSTANCE().config = new Config();
         if(Touch.file(BASIC_CONFIGURATION_PATH)){
             try {
-                getINSTANCE().config = new Gson().fromJson(new String(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(BASIC_CONFIGURATION_PATH)))).getBytes("GBK"), StandardCharsets.UTF_8), Config.class);
+                getINSTANCE().config = new Gson().fromJson(new String(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(BASIC_CONFIGURATION_PATH)))).getBytes("GBK")), Config.class);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -49,7 +49,7 @@ public class ConfigHandler {
 
     static Config readRecord(){
         try {
-            return new Gson().fromJson(new String(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(BASIC_CONFIGURATION_PATH)))).getBytes("GBK"), StandardCharsets.UTF_8), Config.class);
+            return new Gson().fromJson(new String(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(BASIC_CONFIGURATION_PATH)))).getBytes("GBK")), Config.class);
         } catch (IOException e) {
             e.printStackTrace();
         }

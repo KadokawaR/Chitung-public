@@ -1,8 +1,11 @@
 package mirai.chitung.plugin.core.game.fish;
 
+import mirai.chitung.plugin.administration.config.ConfigHandler;
 import mirai.chitung.plugin.core.bank.PumpkinPesoWindow;
 import com.google.gson.Gson;
 
+import mirai.chitung.plugin.core.groupconfig.GroupConfigManager;
+import mirai.chitung.plugin.core.harbor.Harbor;
 import mirai.chitung.plugin.utils.image.ImageSender;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
@@ -92,6 +95,13 @@ public class Fishing extends FishingUtil{
     static final String HANDBOOK_PATH = "/pics/fishing/handbook.png";
 
     public static void go(MessageEvent event){
+
+        if(event instanceof GroupMessageEvent) {
+            if (!GroupConfigManager.fishConfig((GroupMessageEvent) event) || !ConfigHandler.getINSTANCE().config.getGroupFC().isFish()) return;
+        } else {
+            if(!ConfigHandler.getINSTANCE().config.getFriendFC().isFish()) return;
+        }
+
         if(event.getMessage().contentToString().equals("/fishhelp")){
 
             try (InputStream img = Fishing.class.getResourceAsStream(FISH_INFO_PATH)) {
@@ -100,6 +110,8 @@ public class Fishing extends FishingUtil{
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            Harbor.count(event);
 
             return;
         }
@@ -111,6 +123,9 @@ public class Fishing extends FishingUtil{
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            Harbor.count(event);
+
             return;
         }
 
@@ -124,20 +139,32 @@ public class Fishing extends FishingUtil{
                 e.printStackTrace();
             }
 
+            Harbor.count(event);
+
             return;
         }
 
-        if (event.getMessage().contentToString().contains("/fish")){
+        if (event.getMessage().contentToString().toLowerCase().contains("/fish")){
             if (!isInFishingProcessFlag.contains(event.getSender().getId())){
+
                 isInFishingProcessFlag.add(event.getSender().getId());
                 getFish(event,getWater(event.getMessage().contentToString()));
+
+                Harbor.count(event);
+                return;
+
             } else {
                 MessageChainBuilder mcb = new MessageChainBuilder();
+
                 if (event.getClass().equals(GroupMessageEvent.class)){
                     mcb.append((new At(event.getSender().getId()))).append(" ");
                 }
+
                 mcb.append("上次抛竿还在进行中。");
                 event.getSubject().sendMessage(mcb.asMessageChain());
+                Harbor.count(event);
+                return;
+
             }
         }
 
@@ -152,6 +179,9 @@ public class Fishing extends FishingUtil{
             } else {
                 event.getSubject().sendMessage(mcb.append("您未在钓鱼中。").asMessageChain());
             }
+
+            Harbor.count(event);
+
         }
 
     }

@@ -2,6 +2,7 @@ package mirai.chitung.plugin.core.responder.universalrespond;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import mirai.chitung.plugin.core.harbor.Harbor;
 import mirai.chitung.plugin.utils.IdentityUtil;
 import mirai.chitung.plugin.utils.fileutils.Read;
 import mirai.chitung.plugin.utils.fileutils.Touch;
@@ -216,13 +217,17 @@ public class URManager {
 
     static void respond(MessageEvent event){
         for(UniversalResponder ur:getINSTANCE().urList.universalRespondList) {
+
             if(!kindMatch(event,ur)) continue;
             if(!contentMatch(event.getMessage().contentToString(),ur)) continue;
             if(!IDMatch(event,ur)) continue;
+
             Random random = new Random();
             int n = random.nextInt(ur.getAnswer().size());
             event.getSubject().sendMessage(ur.getAnswer().get(n));
-            break;
+
+            Harbor.count(event);
+            return;
         }
     }
 

@@ -1,6 +1,7 @@
 package mirai.chitung.plugin.core.responder.help;
 
 import mirai.chitung.plugin.administration.config.ConfigHandler;
+import mirai.chitung.plugin.core.harbor.Harbor;
 import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.event.events.MessageEvent;
 
@@ -42,6 +43,7 @@ public class NewHelp {
             for(String keyWord:helpFunctionListMap.get(hf)){
                 if(event.getMessage().contentToString().equals(keyWord)){
                     event.getSubject().sendMessage(hf.getString());
+                    Harbor.count(event);
                     return;
                 }
             }
@@ -53,7 +55,6 @@ public class NewHelp {
                 "/intro "+ ConfigHandler.getName(Bot.getInstances().get(0))+"简介\n" +
                 "/usage 如何在自己的群中使用"+ConfigHandler.getName(Bot.getInstances().get(0))+"\n" +
                 "/discl 免责协议\n" +
-                "/funct 功能列表\n" +
                 "/conta 联系运营者和开发者";
         public static String INTRO = "本机器人使用七筒开放版——一个致力于服务简体中文 Furry 社群的 QQ 机器人项目，皆在试图为群聊增加一些乐趣。请发送/funct 来了解如何使用本机器人。注意，不要和我，也不要和生活太较真。";
         public static String USAGE = "点击头像添加"+ConfigHandler.getName(Bot.getInstances().get(0)) +"为好友，并将其邀请到QQ群聊中，即可在该群聊中使用服务。" + "如果需要查看功能列表，请输入/funct。";

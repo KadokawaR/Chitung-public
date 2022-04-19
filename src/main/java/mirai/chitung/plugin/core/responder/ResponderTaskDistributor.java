@@ -66,7 +66,4 @@ public class ResponderTaskDistributor {
         }
     }
 
-    public static class RequestInfos{
-
-    }
 }

@@ -1,7 +1,10 @@
 package mirai.chitung.plugin.core.harbor;
 
 import com.google.common.collect.Maps;
+import mirai.chitung.plugin.utils.IdentityUtil;
 import mirai.chitung.plugin.utils.StandardTimeUtil;
+import net.mamoe.mirai.event.events.GroupMessageEvent;
+import net.mamoe.mirai.event.events.MessageEvent;
 
 import java.util.Map;
 import java.util.Timer;
@@ -55,6 +58,14 @@ public class Harbor {
         thresholds[1].count(id);
     }
 
+    public static void count(MessageEvent event) {
+        if(event instanceof GroupMessageEvent){
+            count(PortRequestInfos.GROUP_MINUTE,((GroupMessageEvent) event).getGroup().getId());
+        }
+        count(PortRequestInfos.PERSONAL,event.getSender().getId());
+        count(PortRequestInfos.TOTAL_DAILY,0);
+    }
+
     public static int getMinutePortRecordById(PortRequestInfo requestInfo, long id) {
         return acquire(requestInfo)[0].get(id);
     }
@@ -76,6 +87,16 @@ public class Harbor {
         Threshold[] thresholds = acquire(requestInfo);
         thresholds[0].clear();
         thresholds[1].clear();
+    }
+
+    public static boolean isReachingPortLimit(MessageEvent event){
+        if(IdentityUtil.isAdmin(event.getSender().getId())) return false;
+        if(isReachingPortLimit(PortRequestInfos.TOTAL_DAILY, 0)) return true;
+        if(event instanceof GroupMessageEvent){
+            return isReachingPortLimit(PortRequestInfos.PERSONAL,event.getSender().getId())||isReachingPortLimit(PortRequestInfos.GROUP_MINUTE,((GroupMessageEvent) event).getGroup().getId());
+        } else {
+            return isReachingPortLimit(PortRequestInfos.PERSONAL,event.getSender().getId());
+        }
     }
 
 
