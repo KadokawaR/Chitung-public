@@ -94,7 +94,8 @@ Public Chitung allows users to run, customize and manage their own Chitung.
             "onlineText": "机器人已经上线。",//上线文本
             "welcomeText": "欢迎。",//新成员加群文本
             "permissionChangedText": "谢谢，各位将获得更多的乐趣。",//机器人权限更改文本
-            "groupNameChangedText": "好名字。"//群名称更改文本
+            "groupNameChangedText": "好名字。",//群名称更改文本
+            "nudgeText": "啥事？"//被戳文本
         }
     }
 
