@@ -1,5 +1,6 @@
 package mirai.chitung.plugin.core.responder.imageresponder;
 
+import kotlinx.serialization.json.Json;
 import mirai.chitung.plugin.core.harbor.Harbor;
 import mirai.chitung.plugin.core.responder.universalrespond.URManager;
 import mirai.chitung.plugin.utils.fileutils.Copy;
@@ -9,6 +10,7 @@ import mirai.chitung.plugin.utils.IdentityUtil;
 import mirai.chitung.plugin.utils.fileutils.Read;
 import mirai.chitung.plugin.utils.fileutils.Touch;
 import mirai.chitung.plugin.utils.fileutils.Write;
+import mirai.chitung.plugin.utils.json.JsonUtil;
 import net.mamoe.mirai.event.events.FriendMessageEvent;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
 import net.mamoe.mirai.event.events.MessageEvent;
@@ -33,7 +35,7 @@ public class ImageResponder {
 
     private static final ImageResponder INSTANCE;
 
-    static class DataListClass{
+    public static class DataListClass{
         List<ImageResponderData> dataList;
         DataListClass(){
             this.dataList = new ArrayList<ImageResponderData>(){{add(new ImageResponderData("/qt","qt","感谢使用七筒开放版。",TriggerType.Equal,ResponseType.Any));}};
@@ -62,6 +64,8 @@ public class ImageResponder {
         return INSTANCE;
     }
 
+    static JsonUtil<DataListClass> jsonUtil = new JsonUtil<>();
+
     static void initialize(){
 
         getINSTANCE().dataListClass = new DataListClass();
@@ -81,12 +85,7 @@ public class ImageResponder {
     }
 
     static DataListClass readRecord(){
-        try {
-            return new Gson().fromJson(new String(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(IMAGE_DATA_PATH)))).getBytes("GBK")), DataListClass.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return jsonUtil.read(IMAGE_DATA_PATH);
     }
 
     static void writeRecord(){

@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder;
 import mirai.chitung.plugin.utils.fileutils.Read;
 import mirai.chitung.plugin.utils.fileutils.Touch;
 import mirai.chitung.plugin.utils.fileutils.Write;
+import mirai.chitung.plugin.utils.json.JsonUtil;
 import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.event.events.BotJoinGroupEvent;
 import net.mamoe.mirai.event.events.BotLeaveEvent;
@@ -30,6 +31,8 @@ public class ConfigHandler {
 
     public Config config;
 
+    static JsonUtil<Config> jsonUtil = new JsonUtil<>();
+
     public static ConfigHandler getINSTANCE() {
         return INSTANCE;
     }
@@ -37,33 +40,18 @@ public class ConfigHandler {
     static void initialize(){
         getINSTANCE().config = new Config();
         if(Touch.file(BASIC_CONFIGURATION_PATH)){
-            try {
-                getINSTANCE().config = new Gson().fromJson(new String(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(BASIC_CONFIGURATION_PATH)))).getBytes("GBK")), Config.class);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            getINSTANCE().config = jsonUtil.read(BASIC_CONFIGURATION_PATH);
         } else {
             writeRecord();
         }
     }
 
     static Config readRecord(){
-        try {
-            return new Gson().fromJson(new String(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(BASIC_CONFIGURATION_PATH)))).getBytes("GBK")), Config.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return jsonUtil.read(BASIC_CONFIGURATION_PATH);
     }
 
     static void writeRecord(){
-        String jsonString = null;
-        try {
-            jsonString = new String(new GsonBuilder().setPrettyPrinting().create().toJson(getINSTANCE().config).getBytes("GBK"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        Write.cover(jsonString, BASIC_CONFIGURATION_PATH);
+        jsonUtil.write(BASIC_CONFIGURATION_PATH);
     }
 
     static void getCurrentBotConfig(MessageEvent event){
