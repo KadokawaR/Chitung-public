@@ -56,6 +56,9 @@ public final class JavaPluginMain extends JavaPlugin {
 
         // 上线事件
         GlobalEventChannel.INSTANCE.subscribeAlways(BotOnlineEvent.class, event -> {
+
+            if(ConfigHandler.getINSTANCE().config.getCc().getNudgeText().equals("")) return;
+
             for(Long groupID: IdentityUtil.getDevGroup()){
                 if(event.getBot().getGroup(groupID)!=null) {
                     Objects.requireNonNull(event.getBot().getGroup(groupID)).sendMessage(ConfigHandler.getINSTANCE().config.getCc().getOnlineText());
