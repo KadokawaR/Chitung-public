@@ -58,8 +58,8 @@ public class ConfigHandler {
     }
 
     static void writeRecord(){
-        String jsonString =  new String(new GsonBuilder().setPrettyPrinting().create().toJson(getINSTANCE().config).getBytes(StandardCharsets.UTF_8));
-        Write.cover(jsonString, BASIC_CONFIGURATION_PATH);
+        String jsonString =  new GsonBuilder().setPrettyPrinting().create().toJson(getINSTANCE().config);
+        Write.cover(jsonString, BASIC_CONFIGURATION_PATH,true);
     }
 
     static void getCurrentBotConfig(MessageEvent event){

@@ -90,8 +90,8 @@ public class ImageResponder {
     }
 
     static void writeRecord(){
-        String jsonString = new String(new GsonBuilder().setPrettyPrinting().create().toJson(getINSTANCE().dataListClass).getBytes(StandardCharsets.UTF_8));
-        Write.cover(jsonString, IMAGE_DATA_PATH);
+        String jsonString = new GsonBuilder().setPrettyPrinting().create().toJson(getINSTANCE().dataListClass);
+        Write.cover(jsonString, IMAGE_DATA_PATH,true);
     }
 
     static BufferedImage getImage(String path){

@@ -77,8 +77,8 @@ public class URManager {
     }
 
     public static void writeRecord(){
-        String jsonString = jsonString = new String(new GsonBuilder().setPrettyPrinting().create().toJson(getINSTANCE().urList).getBytes(StandardCharsets.UTF_8));
-        Write.cover(jsonString, UR_PATH);
+        String jsonString = new GsonBuilder().setPrettyPrinting().create().toJson(getINSTANCE().urList);
+        Write.cover(jsonString, UR_PATH,true);
     }
 
     static int encodeMessageStatus(MessageEvent event, UniversalResponder ur){
