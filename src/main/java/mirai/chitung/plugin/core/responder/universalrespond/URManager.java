@@ -45,8 +45,8 @@ public class URManager {
         getINSTANCE().urList = new URList();
         if(Touch.file(UR_PATH)){
             try {
-                getINSTANCE().urList = new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(UR_PATH)))), URList.class);
-                //getINSTANCE().urList = new Gson().fromJson(new String(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(UR_PATH)))).getBytes("GBK"),StandardCharsets.UTF_8), URList.class);
+                //getINSTANCE().urList = new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(UR_PATH)))), URList.class);
+                getINSTANCE().urList = new Gson().fromJson(new String(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(UR_PATH)))).getBytes(StandardCharsets.UTF_8)), URList.class);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -58,8 +58,8 @@ public class URManager {
     public static URList readRecord(){
         URList urList = new URList();
         try {
-            urList = new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(UR_PATH)))), URList.class);
-            //urList = new Gson().fromJson(new String(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(UR_PATH)))).getBytes("GBK"),StandardCharsets.UTF_8), URList.class);
+            //urList = new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(UR_PATH)))), URList.class);
+            urList = new Gson().fromJson(new String(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(UR_PATH)))).getBytes(StandardCharsets.UTF_8)), URList.class);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -38,8 +38,8 @@ public class ConfigHandler {
         getINSTANCE().config = new Config();
         if(Touch.file(BASIC_CONFIGURATION_PATH)){
             try {
-                //getINSTANCE().config = new Gson().fromJson(new String(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(BASIC_CONFIGURATION_PATH)))).getBytes("GBK")), Config.class);
-                getINSTANCE().config = new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(BASIC_CONFIGURATION_PATH)))), Config.class);
+                getINSTANCE().config = new Gson().fromJson(new String(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(BASIC_CONFIGURATION_PATH)))).getBytes(StandardCharsets.UTF_8)), Config.class);
+                //getINSTANCE().config = new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(BASIC_CONFIGURATION_PATH)))), Config.class);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -50,7 +50,8 @@ public class ConfigHandler {
 
     static Config readRecord(){
         try {
-            return new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(BASIC_CONFIGURATION_PATH)))), Config.class);
+            //return new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(BASIC_CONFIGURATION_PATH)))), Config.class);
+            return new Gson().fromJson(new String(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(BASIC_CONFIGURATION_PATH)))).getBytes(StandardCharsets.UTF_8)), Config.class);
         } catch (IOException e) {
             e.printStackTrace();
         }

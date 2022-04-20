@@ -67,7 +67,7 @@ public class ImageResponder {
         getINSTANCE().dataListClass = new DataListClass();
         if(Touch.file(IMAGE_DATA_PATH)){
             try {
-                getINSTANCE().dataListClass = new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(IMAGE_DATA_PATH)))), DataListClass.class);
+                getINSTANCE().dataListClass = new Gson().fromJson(new String(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(IMAGE_DATA_PATH)))).getBytes(StandardCharsets.UTF_8)), DataListClass.class);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -82,7 +82,7 @@ public class ImageResponder {
 
     static DataListClass readRecord(){
         try {
-            return new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(IMAGE_DATA_PATH)))), DataListClass.class);
+            return new Gson().fromJson(new String(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(IMAGE_DATA_PATH)))).getBytes(StandardCharsets.UTF_8)), DataListClass.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
