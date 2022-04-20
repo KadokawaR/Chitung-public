@@ -10,6 +10,11 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
@@ -60,7 +65,7 @@ public class FishingUtil {
 
     public static FishingRecord openRecord() throws IOException {
         touchRecord();
-        InputStreamReader is = new InputStreamReader(new FileInputStream(FISHING_RECORD_PATH));
+        InputStreamReader is = new InputStreamReader(Files.newInputStream(Paths.get(FISHING_RECORD_PATH)), StandardCharsets.UTF_8);
         BufferedReader br = new BufferedReader(is);
         Gson gson = new Gson();
         return gson.fromJson(Read.fromReader(br), FishingRecord.class);

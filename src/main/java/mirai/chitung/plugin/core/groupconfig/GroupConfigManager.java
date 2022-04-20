@@ -18,6 +18,9 @@ import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.SingleMessage;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -57,7 +60,7 @@ public class GroupConfigManager {
         getINSTANCE().groupConfigs = new GroupConfigs();
         if(Touch.file(GC_PATH)){
             try {
-                getINSTANCE().groupConfigs = new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(GC_PATH)))), GroupConfigs.class);
+                getINSTANCE().groupConfigs = new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(Files.newInputStream(Paths.get(GC_PATH)), StandardCharsets.UTF_8))), GroupConfigs.class);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -68,7 +71,7 @@ public class GroupConfigManager {
 
     static void readRecord(){
         try {
-            getINSTANCE().groupConfigs = new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(GC_PATH)))), GroupConfigs.class);
+            getINSTANCE().groupConfigs = new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(Files.newInputStream(Paths.get(GC_PATH)), StandardCharsets.UTF_8))), GroupConfigs.class);
         } catch (IOException e) {
             e.printStackTrace();
         }

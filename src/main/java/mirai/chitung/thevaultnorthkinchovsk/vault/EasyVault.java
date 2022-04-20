@@ -7,6 +7,8 @@ import com.google.gson.reflect.TypeToken;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -202,14 +204,14 @@ public class EasyVault implements Vault<Long,Currency> {
         lock.lock();
         try {
             if(!serializePath.exists()){
-                try(BufferedWriter out = new BufferedWriter(new FileWriter(serializePath))){
-                    out.write("{}");
+                try(BufferedWriter out = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(serializePath.toPath()),StandardCharsets.UTF_8))) {
                     serializePath.createNewFile();
+                    out.write("{}");
                 } catch(IOException e){
                     e.printStackTrace();
                 }
             }
-            try(BufferedReader in = new BufferedReader(new FileReader(serializePath))) {
+            try(BufferedReader in = new BufferedReader(new InputStreamReader(Files.newInputStream(serializePath.toPath()), StandardCharsets.UTF_8))) {
                 core = gson.fromJson(in, TYPE);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -222,10 +224,10 @@ public class EasyVault implements Vault<Long,Currency> {
     private void save(){
         lock.lock();
         try {
-            try(BufferedWriter out = new BufferedWriter(new FileWriter(serializePath))) {
-                out.write(gson.toJson(core, TYPE));
-            } catch (IOException e) {
-                e.printStackTrace();
+            try (OutputStreamWriter writer = new OutputStreamWriter(Files.newOutputStream(serializePath.toPath()), StandardCharsets.UTF_8)) {
+                writer.write(gson.toJson(core, TYPE));
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
             }
         } finally {
             lock.unlock();

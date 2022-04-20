@@ -1,10 +1,9 @@
 package mirai.chitung.plugin.utils.fileutils;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class Read {
 
@@ -17,19 +16,15 @@ public class Read {
         return builder.toString();
     }
 
-    public static String fromFile(String path) {
-        InputStream is = Read.class.getResourceAsStream(path);
-        assert is != null;
-        String res = "";
-        BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-        try {
-            res = fromReader(br);
-            is.close();
-            br.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+    public static String fromFile(String path) throws IOException {
+        StringBuilder builder = new StringBuilder();
+        String line;
+        try(BufferedReader reader = new BufferedReader(new InputStreamReader(Files.newInputStream(Paths.get(path)), StandardCharsets.UTF_8))){
+            while((line=reader.readLine())!=null){
+                builder.append(line);
+            }
         }
-        return res;
+        return builder.toString();
     }
 
 }

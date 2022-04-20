@@ -2,54 +2,25 @@ package mirai.chitung.plugin.utils.fileutils;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class Write {
     //追加写入
     public static void append(String content, String PATH) {
-        BufferedWriter out;
-        try {
-            out = new BufferedWriter(new FileWriter(PATH, true));
-            out.write(content);
-            out.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        try (OutputStreamWriter writer = new OutputStreamWriter(Files.newOutputStream(Paths.get(PATH)), StandardCharsets.UTF_8)) {
+            writer.append(content);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
         }
     }
 
     //覆盖写入
     public static void cover(String content, String PATH) {
-        BufferedWriter out;
-        try {
-            out = new BufferedWriter(new FileWriter(PATH));
-            out.write(content);
-            out.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void cover(String content, String PATH, String Charsets){
-        try {
-            OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(PATH), Charsets);
+        try (OutputStreamWriter writer = new OutputStreamWriter(Files.newOutputStream(Paths.get(PATH)), StandardCharsets.UTF_8)) {
             writer.write(content);
-            writer.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void cover(String content, String PATH, boolean isUTF8){
-        try {
-            OutputStreamWriter writer;
-            if(isUTF8) {
-                writer = new OutputStreamWriter(new FileOutputStream(PATH), StandardCharsets.UTF_8);
-            } else {
-                writer = new OutputStreamWriter(new FileOutputStream(PATH));
-            }
-            writer.write(content);
-            writer.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
         }
     }
 }

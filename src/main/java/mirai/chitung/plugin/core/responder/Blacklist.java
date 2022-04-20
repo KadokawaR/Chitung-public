@@ -10,6 +10,9 @@ import net.mamoe.mirai.event.events.GroupMessageEvent;
 import net.mamoe.mirai.event.events.MessageEvent;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -46,7 +49,7 @@ public class Blacklist {
         getINSTANCE().blackListClass = new BlackListClass();
         if(Touch.file(BLACKLIST_PATH)){
             try {
-                getINSTANCE().blackListClass = new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(BLACKLIST_PATH)))), BlackListClass.class);
+                getINSTANCE().blackListClass = new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(Files.newInputStream(Paths.get(BLACKLIST_PATH)), StandardCharsets.UTF_8))), BlackListClass.class);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -57,7 +60,7 @@ public class Blacklist {
 
     static BlackListClass readRecord(){
         try {
-            return new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(BLACKLIST_PATH)))), BlackListClass.class);
+            return new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(Files.newInputStream(Paths.get(BLACKLIST_PATH)), StandardCharsets.UTF_8))), BlackListClass.class);
         } catch (IOException e) {
             e.printStackTrace();
         }

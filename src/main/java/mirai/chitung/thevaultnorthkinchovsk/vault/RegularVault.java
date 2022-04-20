@@ -7,6 +7,9 @@ import com.google.gson.reflect.TypeToken;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -199,14 +202,14 @@ public class RegularVault<U,V extends Valuable> implements Vault<U,V> {
         lock.lock();
         try {
             if(!serializePath.exists()){
-                try(BufferedWriter out = new BufferedWriter(new FileWriter(serializePath))){
-                    out.write("{}");
+                try(BufferedWriter out = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(serializePath.toPath()),StandardCharsets.UTF_8))){
                     serializePath.createNewFile();
+                    out.write("{}");
                 } catch(IOException e){
                     e.printStackTrace();
                 }
             }
-            try(BufferedReader in = new BufferedReader(new FileReader(serializePath))) {
+            try(BufferedReader in = new BufferedReader(new InputStreamReader(Files.newInputStream(serializePath.toPath()), StandardCharsets.UTF_8))) {
                 core = gson.fromJson(in, type);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -219,10 +222,10 @@ public class RegularVault<U,V extends Valuable> implements Vault<U,V> {
     private void save(){
         lock.lock();
         try {
-            try(BufferedWriter out = new BufferedWriter(new FileWriter(serializePath))) {
-                out.write(gson.toJson(core, type));
-            } catch (IOException e) {
-                e.printStackTrace();
+            try (OutputStreamWriter writer = new OutputStreamWriter(Files.newOutputStream(serializePath.toPath()), StandardCharsets.UTF_8)) {
+                writer.write(gson.toJson(core, type));
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
             }
         } finally {
             lock.unlock();
