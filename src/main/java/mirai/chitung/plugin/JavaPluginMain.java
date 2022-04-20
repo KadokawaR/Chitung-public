@@ -43,7 +43,7 @@ public final class JavaPluginMain extends JavaPlugin {
     public static final JavaPluginMain INSTANCE = new JavaPluginMain();
 
     private JavaPluginMain() {
-        super(new JvmPluginDescriptionBuilder("mirai.chitung-public", "0.1.1")
+        super(new JvmPluginDescriptionBuilder("mirai.chitung-public", "0.1.0")
                 .info("Open version of Chitung")
                 .build());
     }

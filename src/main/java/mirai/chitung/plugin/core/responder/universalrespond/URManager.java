@@ -7,7 +7,6 @@ import mirai.chitung.plugin.utils.IdentityUtil;
 import mirai.chitung.plugin.utils.fileutils.Read;
 import mirai.chitung.plugin.utils.fileutils.Touch;
 import mirai.chitung.plugin.utils.fileutils.Write;
-import mirai.chitung.plugin.utils.json.JsonUtil;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
 import net.mamoe.mirai.event.events.MessageEvent;
 
@@ -23,8 +22,6 @@ public class URManager {
     URManager(){}
 
     private static final URManager INSTANCE;
-
-    static JsonUtil<URList> jsonUtil = new JsonUtil<>();
 
     static class URList{
         List<UniversalResponder> universalRespondList;
@@ -47,27 +44,27 @@ public class URManager {
     public static void initialize(){
         getINSTANCE().urList = new URList();
         if(Touch.file(UR_PATH)){
-            /*
             try {
                 //getINSTANCE().urList = new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(UR_PATH)))), URList.class);
                 getINSTANCE().urList = new Gson().fromJson(new String(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(UR_PATH)))).getBytes("GBK"),StandardCharsets.UTF_8), URList.class);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-             */
-            getINSTANCE().urList= jsonUtil.read(UR_PATH);
         } else {
             writeRecord();
         }
     }
 
     public static URList readRecord(){
-        URList urList = jsonUtil.read(UR_PATH);
-
-        //urList = new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(UR_PATH)))), URList.class);
-        //urList = new Gson().fromJson(new String(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(UR_PATH)))).getBytes("GBK"),StandardCharsets.UTF_8), URList.class);
-
-        for(UniversalResponder ur: urList.universalRespondList){
+        URList urList = new URList();
+        try {
+            //urList = new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(UR_PATH)))), URList.class);
+            urList = new Gson().fromJson(new String(Read.fromReader(new BufferedReader(new InputStreamReader(new FileInputStream(UR_PATH)))).getBytes("GBK"),StandardCharsets.UTF_8), URList.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        URList copiedURList = urList;
+        for(UniversalResponder ur:copiedURList.universalRespondList){
             if(ur.getMessageKind()==null||ur.getListKind()==null||ur.getListResponceKind()==null){
                 urList.universalRespondList.remove(ur);
                 urList.universalRespondList.add(new UniversalResponder(ur));
@@ -80,7 +77,14 @@ public class URManager {
     }
 
     public static void writeRecord(){
-        jsonUtil.write(UR_PATH);
+        //String jsonString = new GsonBuilder().setPrettyPrinting().create().toJson(getINSTANCE().urList);
+        String jsonString = null;
+        try {
+            jsonString = new String(new GsonBuilder().setPrettyPrinting().create().toJson(getINSTANCE().urList).getBytes("GBK"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        Write.cover(jsonString, UR_PATH);
     }
 
     static int encodeMessageStatus(MessageEvent event, UniversalResponder ur){
