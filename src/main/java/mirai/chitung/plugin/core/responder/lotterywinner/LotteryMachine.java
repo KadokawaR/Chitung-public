@@ -159,7 +159,6 @@ public class LotteryMachine {
                     //设置5分钟后解禁
                     builder.addTask(() -> EXECUTOR.schedule(() -> event.getGroup().getSettings().setMuteAll(false), StandardTimeUtil.getPeriodLengthInMS(0, 0, 5, 0), TimeUnit.MILLISECONDS));
 
-
                 } else {
                     builder.addMessage(new At(event.getSender().getId()).plus("没有中！"));
                 }
