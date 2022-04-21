@@ -16,6 +16,7 @@ import mirai.chitung.plugin.utils.*;
 import mirai.chitung.plugin.core.broadcast.BroadcastSystem;
 import mirai.chitung.plugin.core.game.GameCenter;
 import mirai.chitung.plugin.core.responder.ResponderManager;
+import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.console.plugin.jvm.JavaPlugin;
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescriptionBuilder;
 import net.mamoe.mirai.contact.MemberPermission;
@@ -50,6 +51,8 @@ public final class JavaPluginMain extends JavaPlugin {
         getLogger().info("日志");
 
         InitializeUtil.initialize();
+
+        BotLoginUtil.botLogin();
 
         // 上线事件
         GlobalEventChannel.INSTANCE.subscribeAlways(BotOnlineEvent.class, event -> {

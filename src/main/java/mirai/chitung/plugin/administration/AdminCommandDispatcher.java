@@ -2,6 +2,7 @@ package mirai.chitung.plugin.administration;
 
 import mirai.chitung.plugin.administration.config.ConfigHandler;
 import mirai.chitung.plugin.core.responder.Blacklist;
+import mirai.chitung.plugin.utils.BotLoginUtil;
 import mirai.chitung.plugin.utils.IdentityUtil;
 import net.mamoe.mirai.event.events.MessageEvent;
 import java.util.concurrent.ExecutorService;
@@ -30,6 +31,8 @@ public class AdminCommandDispatcher {
         ConfigHandler.react(event);
         //管理帮助
         AdminHelp.send(event);
+        //机器人登陆管理
+        BotLoginUtil.react(event);
     }
 
     public void close() {
