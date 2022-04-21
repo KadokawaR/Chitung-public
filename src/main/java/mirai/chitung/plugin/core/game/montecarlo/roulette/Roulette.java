@@ -65,13 +65,14 @@ public class Roulette extends RouletteUtils {
     static final String ROULETTE_INSTRUCTIONS_PATH = "/pics/casino/roulette_instructions.png";
 
     public static void go(MessageEvent event) {
-        start(event);
-        preBet(event);
-        bet(event);
+        String message = event.getMessage().contentToString();
+        start(event,message);
+        preBet(event,message);
+        bet(event,message);
     }
 
-    public static void start(MessageEvent event) {
-        if (!isRoulette(event)) return;
+    public static void start(MessageEvent event,String message) {
+        if (!isRoulette(message)) return;
         if (isInGamingProcess(event)) return;
 
         //全局取消标记
@@ -245,8 +246,8 @@ public class Roulette extends RouletteUtils {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public static void preBet(MessageEvent event) {
-        if (!isBet(event)) return;
+    public static void preBet(MessageEvent event,String message) {
+        if (!isBet(event,message)) return;
         if (!isInGamingProcess(event)) return;
         if (isGroupMessage(event)) {
             if (getINSTANCE().GroupStatusMap.get(event.getSubject().getId()).equals(StatusType.Bet) || getINSTANCE().GroupStatusMap.get(event.getSubject().getId()).equals(StatusType.End))
@@ -259,7 +260,7 @@ public class Roulette extends RouletteUtils {
         Integer bet = null;
 
         try {
-            bet = getBet(event.getMessage().contentToString());
+            bet = getBet(message);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -492,14 +493,14 @@ public class Roulette extends RouletteUtils {
         }
     }
 
-    static void bet(MessageEvent event) {
+    static void bet(MessageEvent event,String message) {
         if (isGroupMessage(event)) {
             if (getINSTANCE().GroupStatusMap.get(event.getSubject().getId()) != StatusType.Bet) return;
         } else {
             if (getINSTANCE().FriendStatusMap.get(event.getSubject().getId()) != StatusType.Bet) return;
         }
 
-        if (!hasIndicator(event.getMessage().contentToString())) return;
+        if (!hasIndicator(message)) return;
 
         if (isGroupMessage(event)) {
             if (!getINSTANCE().GroupBet.rowKeySet().contains(event.getSubject().getId())) return;
@@ -508,7 +509,7 @@ public class Roulette extends RouletteUtils {
             if (!getINSTANCE().FriendBet.containsKey(event.getSubject().getId())) return;
         }
 
-        List<RouletteBet> rouletteBetList = processString(event.getMessage().contentToString());
+        List<RouletteBet> rouletteBetList = processString(message);
         List<RouletteBet> trueBetList = getDeFactoBets(rouletteBetList);
         int betAmount = getBetAmount(trueBetList);
 

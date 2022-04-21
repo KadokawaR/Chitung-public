@@ -10,8 +10,8 @@ import net.mamoe.mirai.message.data.SingleMessage;
 import java.math.BigDecimal;
 
 public class PumpkinPesoWindow {
-    public static void checkMoney(MessageEvent event) {
-        if (event.getMessage().contentToString().equals("/bank") || event.getMessage().contentToString().equals("查询余额")) {
+    public static void checkMoney(MessageEvent event,String message) {
+        if (message.equals("/bank") || message.equals("查询余额")) {
             MessageChainBuilder mcb = new MessageChainBuilder();
 
             if (event.getClass().equals(GroupMessageEvent.class)) {
@@ -28,11 +28,12 @@ public class PumpkinPesoWindow {
         }
 
         if (event instanceof GroupMessageEvent) {
-            if (event.getMessage().contentToString().toLowerCase().startsWith("/bank") && event.getMessage().contentToString().contains("@")) {
+            if (message.toLowerCase().startsWith("/bank") && message.contains("@")) {
                 if (IdentityUtil.isAdmin(event)) {
                     for (SingleMessage sm : event.getMessage()) {
-                        if (sm.contentToString().startsWith("@")) {
-                            long ID = Long.parseLong(sm.contentToString().replace("@", ""));
+                        String SMM = sm.contentToString();
+                        if (SMM.startsWith("@")) {
+                            long ID = Long.parseLong(SMM.replace("@", ""));
                             String money = SenoritaCounter.getDisplayNumber(ID, Currencies.PUMPKIN_PESO);
                             if (money == null) {
                                 event.getSubject().sendMessage("未能查询该用户");
@@ -50,8 +51,7 @@ public class PumpkinPesoWindow {
             }
         }
 
-        if (IdentityUtil.isAdmin(event) && event.getMessage().contentToString().startsWith("/bank ")) {
-            String message = event.getMessage().contentToString();
+        if (IdentityUtil.isAdmin(event) && message.toLowerCase().startsWith("/bank ")) {
             String[] messageSplit = message.split(" ");
             if (messageSplit.length != 2) {
                 event.getSubject().sendMessage("查询格式错误。");
@@ -66,10 +66,8 @@ public class PumpkinPesoWindow {
         }
     }
 
-    public static void moneyLaundry(MessageEvent event) {
+    public static void moneyLaundry(MessageEvent event,String message) {
         if (!IdentityUtil.isAdmin(event)) return;
-
-        String message = event.getMessage().contentToString();
 
         if (message.startsWith("/laundry ")) {
             //如果有负号就是扣钱了

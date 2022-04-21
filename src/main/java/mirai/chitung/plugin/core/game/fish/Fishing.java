@@ -96,13 +96,15 @@ public class Fishing extends FishingUtil{
 
     public static void go(MessageEvent event){
 
+        String message = event.getMessage().contentToString();
+
         if(event instanceof GroupMessageEvent) {
             if (!GroupConfigManager.fishConfig((GroupMessageEvent) event) || !ConfigHandler.getINSTANCE().config.getGroupFC().isFish()) return;
         } else {
             if(!ConfigHandler.getINSTANCE().config.getFriendFC().isFish()) return;
         }
 
-        if(event.getMessage().contentToString().equals("/fishhelp")){
+        if(message.toLowerCase().equals("/fishhelp")){
 
             try (InputStream img = Fishing.class.getResourceAsStream(FISH_INFO_PATH)) {
                 assert img != null;
@@ -116,7 +118,7 @@ public class Fishing extends FishingUtil{
             return;
         }
 
-        if(event.getMessage().contentToString().equals("/handbook")){
+        if(message.equalsIgnoreCase("/handbook")){
             try (InputStream img = Fishing.class.getResourceAsStream(HANDBOOK_PATH)) {
                 assert img != null;
                 event.getSubject().sendMessage(Contact.uploadImage(event.getSubject(), img));
@@ -129,7 +131,7 @@ public class Fishing extends FishingUtil{
             return;
         }
 
-        if(event.getMessage().contentToString().equals("/collection")){
+        if(message.equalsIgnoreCase("/collection")){
             MessageChainBuilder mcb = mcbProcessor(event);
             mcb.append("您的图鉴完成度目前为").append(String.valueOf(handbookProportion(event.getSender().getId()))).append("%\n\n");
             try {
@@ -144,11 +146,11 @@ public class Fishing extends FishingUtil{
             return;
         }
 
-        if (event.getMessage().contentToString().toLowerCase().contains("/fish")){
+        if (message.toLowerCase().contains("/fish")){
             if (!isInFishingProcessFlag.contains(event.getSender().getId())){
 
                 isInFishingProcessFlag.add(event.getSender().getId());
-                getFish(event,getWater(event.getMessage().contentToString()));
+                getFish(event,getWater(message));
 
                 Harbor.count(event);
                 return;
@@ -168,7 +170,7 @@ public class Fishing extends FishingUtil{
             }
         }
 
-        if(event.getMessage().contentToString().equals("/endfish")){
+        if(message.equalsIgnoreCase("/endfish")){
             MessageChainBuilder mcb = new MessageChainBuilder();
             if (event.getClass().equals(GroupMessageEvent.class)){
                 mcb.append((new At(event.getSender().getId()))).append(" ");

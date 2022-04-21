@@ -14,9 +14,11 @@ public class GameCenter {
 
     public static void handle(MessageEvent event){
 
+        String message = event.getMessage().contentToString();
+
         if(event instanceof GroupMessageEvent){
             if(GroupConfigManager.gameConfig((GroupMessageEvent) event) && ConfigHandler.getINSTANCE().config.getGroupFC().isGame()) {
-                MahjongRiddle.riddleStart((GroupMessageEvent) event);
+                MahjongRiddle.riddleStart((GroupMessageEvent) event,message);
                 if(GroupConfigManager.casinoConfig((GroupMessageEvent) event)&&ConfigHandler.getINSTANCE().config.getGroupFC().isCasino()){
                     CasinoCroupier.handle(event);
                     SenoritaCounter.go(event);

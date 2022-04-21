@@ -18,18 +18,18 @@ public class BlackJackUtils {
     static final int CARD_NUMBER = 4;
 
     //判定消息里面是否有触发关键词
-    public static boolean isBlackJack(MessageEvent event){
-        return event.getMessage().contentToString().equals("/blackjack")||event.getMessage().contentToString().equals("二十一点");
+    public static boolean isBlackJack(String message){
+        return message.equals("/blackjack")||message.equals("二十一点");
     }
 
     //判定是否是下注
-    public static boolean isBet(MessageEvent event){
-        return event.getMessage().contentToString().contains("/bet")||event.getMessage().contentToString().contains("下注");
+    public static boolean isBet(String message){
+        return message.toLowerCase().contains("/bet")||message.toLowerCase().contains("下注");
     }
 
     //判定是哪种操作
-    public static BlackJackOperation bjOperation(MessageEvent event){
-        switch(event.getMessage().contentToString()){
+    public static BlackJackOperation bjOperation(MessageEvent event,String message){
+        switch(message){
             case "/assurance":
             case "/Assurance":
             case "买保险":
@@ -70,8 +70,7 @@ public class BlackJackUtils {
     }
 
     //返回下注的钱，不行返回null
-    public static Integer getBet(MessageEvent event){
-        String message = event.getMessage().contentToString();
+    public static Integer getBet(MessageEvent event,String message){
         message = message.replace(" ","");
         if (message.contains("/bet")){
             message = message.replace("/bet","");
@@ -191,12 +190,12 @@ public class BlackJackUtils {
     }
 
     //管理员工具
-    public static void adminToolsInBlackJack(MessageEvent event){
+    public static void adminToolsInBlackJack(MessageEvent event,String message){
         if (!IdentityUtil.isAdmin(event.getSender().getId())) return;
-        if (event.getMessage().contentToString().equals("/endbet")){
+        if (message.equalsIgnoreCase("/endbet")){
             BlackJack.endBetActivity(event);
         }
-        if(event.getMessage().contentToString().equals("/cardpile")){
+        if(message.equalsIgnoreCase("/cardpile")){
             StringBuilder res = new StringBuilder();
             for (int i =0;i<15;i++){
                 if (isGroupMessage(event)){
@@ -208,11 +207,11 @@ public class BlackJackUtils {
             }
             event.getSubject().sendMessage(res.toString());
         }
-        if(event.getMessage().contentToString().equals("/endoperation")){
+        if(message.equalsIgnoreCase("/endoperation")){
             BlackJack.foldEveryoneInSixtySeconds(event);
         }
 
-        if(event.getMessage().contentToString().equals("/adminassurance")){
+        if(message.equalsIgnoreCase("/adminassurance")){
             if(isGroupMessage(event)){
                 BlackJack.getINSTANCE().globalGroupData.get(BlackJack.indexInTheList(event)).getBlackJackPlayerList().get(BlackJack.indexOfTheBookMaker(event)).getCards().set(0,1);
             } else {
@@ -221,7 +220,7 @@ public class BlackJackUtils {
             event.getSubject().sendMessage("测试工具：已设置庄家首张牌为1");
         }
 
-        if(event.getMessage().contentToString().equals("/adminassurancewin")){
+        if(message.equalsIgnoreCase("/adminassurancewin")){
             if(isGroupMessage(event)){
                 BlackJack.getINSTANCE().globalGroupData.get(BlackJack.indexInTheList(event)).getBlackJackPlayerList().get(BlackJack.indexOfTheBookMaker(event)).getCards().set(1,10);
             } else {
@@ -230,7 +229,7 @@ public class BlackJackUtils {
             event.getSubject().sendMessage("测试工具：已设置庄家第二张牌张牌为10");
         }
 
-        if(event.getMessage().contentToString().equals("/adminpair")){
+        if(message.equalsIgnoreCase("/adminpair")){
             if(isGroupMessage(event)){
                 Integer firstCard = BlackJack.getINSTANCE().globalGroupData.get(BlackJack.indexInTheList(event)).getBlackJackPlayerList().get(BlackJack.indexOfTheBookMaker(event)).getCards().get(0);
                 BlackJack.getINSTANCE().globalGroupData.get(BlackJack.indexInTheList(event)).getBlackJackPlayerList().get(BlackJack.indexOfTheBookMaker(event)).getCards().set(1,firstCard);
@@ -241,7 +240,7 @@ public class BlackJackUtils {
             event.getSubject().sendMessage("测试工具：已设置庄家前两张牌相同");
         }
 
-        if(event.getMessage().contentToString().equals("/adminsplit")){
+        if(message.equalsIgnoreCase("/adminsplit")){
             if(isGroupMessage(event)){
                 Integer firstCard = BlackJack.getINSTANCE().globalGroupData.get(BlackJack.indexInTheList(event)).getBlackJackPlayerList().get(BlackJack.indexOfThePlayer(event)).getCards().get(0);
                 BlackJack.getINSTANCE().globalGroupData.get(BlackJack.indexInTheList(event)).getBlackJackPlayerList().get(BlackJack.indexOfThePlayer(event)).getCards().set(1,firstCard+13);
@@ -252,7 +251,7 @@ public class BlackJackUtils {
             event.getSubject().sendMessage("测试工具：已设置玩家前两张牌相同");
         }
 
-        if(event.getMessage().contentToString().equals("/admin777")){
+        if(message.equalsIgnoreCase("/admin777")){
             if(isGroupMessage(event)){
                 List<Integer> cardList = BlackJack.getINSTANCE().globalGroupData.get(BlackJack.indexInTheList(event)).getBlackJackPlayerList().get(BlackJack.indexOfThePlayer(event)).getCards();
                 BlackJack.getINSTANCE().globalGroupData.get(BlackJack.indexInTheList(event)).getBlackJackPlayerList().get(BlackJack.indexOfThePlayer(event)).getCards().removeAll(cardList);
@@ -269,7 +268,7 @@ public class BlackJackUtils {
             event.getSubject().sendMessage("测试工具：已设置玩家三张牌是6 7 8");
         }
 
-        if(event.getMessage().contentToString().equals("/admindouble")){
+        if(message.equalsIgnoreCase("/admindouble")){
             List<Integer> cardList = new ArrayList<>();
             cardList.add(1);
             cardList.add(10);

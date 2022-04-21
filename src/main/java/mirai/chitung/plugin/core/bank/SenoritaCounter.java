@@ -30,8 +30,9 @@ public class SenoritaCounter {
 
 
     public static void go(MessageEvent event){
-        PumpkinPesoWindow.checkMoney(event);
-        PumpkinPesoWindow.moneyLaundry(event);
+        String message = event.getMessage().contentToString();
+        PumpkinPesoWindow.checkMoney(event,message);
+        PumpkinPesoWindow.moneyLaundry(event,message);
     }
 
     public static Vault<Long, Currency> getVAULT() {

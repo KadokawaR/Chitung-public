@@ -89,8 +89,8 @@ public class BlackJack extends BlackJackUtils {
 
 
     //对话框中输入/blackjack或者二十一点
-    public static void checkBlackJack(MessageEvent event) {
-        if (!isBlackJack(event)) return;
+    public static void checkBlackJack(MessageEvent event,String message) {
+        if (!isBlackJack(message)) return;
         if (isInTheList(event, getGlobalData(event))) return;
 
 
@@ -243,15 +243,15 @@ public class BlackJack extends BlackJackUtils {
 
 
     //对话框中输入/bet或者下注
-    public static void checkBet(MessageEvent event) {
-        if (!isBet(event)) return;
+    public static void checkBet(MessageEvent event,String message) {
+        if (!isBet(message)) return;
         if (!isInGamingProcess(event)) return;
         if (getGlobalData(event).get(indexInTheList(event)).getPhase() == BlackJackPhase.Operation) return;
 
         //判定数值是否正确
         Integer bet = null;
         try {
-            bet = getBet(event);
+            bet = getBet(event,message);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -572,13 +572,13 @@ public class BlackJack extends BlackJackUtils {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     //开始玩家操作
-    public static void playerOperation(MessageEvent event) {
-        if (bjOperation(event) == null) return;
+    public static void playerOperation(MessageEvent event,String message) {
+        if (bjOperation(event,message) == null) return;
         if (!isInGamingProcess(event)) return;
         if (!operationAvailabilityCheck(event)) return;
 
         //主操作
-        startOperation(event);
+        startOperation(event,message);
         //操作完之后判定是否都fold
         if (!haveAllFolded(event)) return;
         endOperationTimer(event);
@@ -587,8 +587,8 @@ public class BlackJack extends BlackJackUtils {
     }
 
     //playOperation里面使用的Switch
-    public static void startOperation(MessageEvent event) {
-        switch (Objects.requireNonNull(bjOperation(event))) {
+    public static void startOperation(MessageEvent event,String message) {
+        switch (Objects.requireNonNull(bjOperation(event,message))) {
             case Assurance:
                 assurance(event);
                 break;
@@ -1158,9 +1158,10 @@ public class BlackJack extends BlackJackUtils {
 
     //主方法
     public static void go(MessageEvent event) {
-        checkBlackJack(event);
-        checkBet(event);
-        playerOperation(event);
-        adminToolsInBlackJack(event);
+        String message = event.getMessage().contentToString();
+        checkBlackJack(event,message);
+        checkBet(event,message);
+        playerOperation(event,message);
+        adminToolsInBlackJack(event,message);
     }
 }

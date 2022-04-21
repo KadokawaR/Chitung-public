@@ -8,12 +8,12 @@ import java.util.*;
 
 public class RouletteUtils extends IndicatorProcessor{
 
-    static boolean isRoulette(MessageEvent event){
-        return (event.getMessage().contentToString().equals("/roulette")||event.getMessage().contentToString().equals("轮盘"));
+    static boolean isRoulette(String message){
+        return (message.equalsIgnoreCase("/roulette")||message.equalsIgnoreCase("轮盘"));
     }
 
-    static boolean isBet(MessageEvent event){
-        return (event.getMessage().contentToString().contains("/bet")||event.getMessage().contentToString().contains("下注"));
+    static boolean isBet(MessageEvent event,String message){
+        return (message.toLowerCase().contains("/bet")||message.toLowerCase().contains("下注"));
     }
 
     static Integer getBet(String string){
