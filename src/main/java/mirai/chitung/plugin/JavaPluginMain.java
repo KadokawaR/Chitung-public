@@ -52,8 +52,6 @@ public final class JavaPluginMain extends JavaPlugin {
 
         InitializeUtil.initialize();
 
-        BotLoginUtil.botLogin();
-
         // 上线事件
         GlobalEventChannel.INSTANCE.subscribeAlways(BotOnlineEvent.class, event -> {
 

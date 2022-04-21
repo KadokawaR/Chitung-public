@@ -1,12 +1,13 @@
 package mirai.chitung.plugin.utils;
 
 import com.google.gson.Gson;
-import mirai.chitung.plugin.core.responder.Blacklist;
 import mirai.chitung.plugin.utils.fileutils.Read;
 import mirai.chitung.plugin.utils.fileutils.Touch;
+import mirai.chitung.plugin.utils.fileutils.Write;
 import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.BotFactory;
 import net.mamoe.mirai.event.events.MessageEvent;
+import net.mamoe.mirai.utils.BotConfiguration;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,15 +16,13 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class BotLoginUtil {
 
 
-    static String BLACKLIST_PATH = System.getProperty("user.dir") +  "AutoLogin.json";
+    static String AUTO_LOGIN_PATH = System.getProperty("user.dir") + File.separator +  "AutoLogin.json";
 
     BotLoginUtil(){}
 
@@ -34,12 +33,13 @@ public class BotLoginUtil {
         initialize();
     }
 
-    public Map<Long,String> loginInfos;
+    public LoginInfoClass loginInfos;
 
-    static class loginInfoClass{
+    static class LoginInfoClass{
         Map<Long,String> loginInfos;
-        loginInfoClass(){
+        LoginInfoClass(){
             this.loginInfos = new HashMap<>();
+            this.loginInfos.put(0L,"");
         }
     }
 
@@ -48,19 +48,21 @@ public class BotLoginUtil {
     }
 
     static void initialize(){
-        getINSTANCE().loginInfos = new loginInfoClass().loginInfos;
-        if(Touch.file(BLACKLIST_PATH)){
+        getINSTANCE().loginInfos = new LoginInfoClass();
+        if(Touch.file(AUTO_LOGIN_PATH)){
             try {
-                getINSTANCE().loginInfos = new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(Files.newInputStream(Paths.get(BLACKLIST_PATH)), StandardCharsets.UTF_8))), loginInfoClass.class).loginInfos;
+                getINSTANCE().loginInfos = new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(Files.newInputStream(Paths.get(AUTO_LOGIN_PATH)), StandardCharsets.UTF_8))), LoginInfoClass.class);
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        } else {
+            Write.cover(new Gson().toJson(getINSTANCE().loginInfos),AUTO_LOGIN_PATH);
         }
     }
 
-    static Map<Long,String> readRecord(){
+    static LoginInfoClass readRecord(){
         try {
-            return new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(Files.newInputStream(Paths.get(BLACKLIST_PATH)), StandardCharsets.UTF_8))), loginInfoClass.class).loginInfos;
+            return new Gson().fromJson(Read.fromReader(new BufferedReader(new InputStreamReader(Files.newInputStream(Paths.get(AUTO_LOGIN_PATH)), StandardCharsets.UTF_8))), LoginInfoClass.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -68,10 +70,16 @@ public class BotLoginUtil {
     }
 
     public static void botLogin(){
-        for(long ID:getINSTANCE().loginInfos.keySet()) {
+        if(getINSTANCE().loginInfos==null) return;
+        for(long ID:getINSTANCE().loginInfos.loginInfos.keySet()) {
+            if(ID==0) continue;
             try {
-                Bot bot = BotFactory.INSTANCE.newBot(ID, getINSTANCE().loginInfos.get(ID));
-                if (!bot.isOnline()) bot.login();
+                Bot bot = BotFactory.INSTANCE.newBot(ID, getINSTANCE().loginInfos.loginInfos.get(ID), new BotConfiguration() {{
+                    fileBasedDeviceInfo();
+                }});
+                if (!bot.isOnline()) {
+                    bot.login();
+                }
             } catch(Exception e){
                 e.printStackTrace();
             }
@@ -108,15 +116,15 @@ public class BotLoginUtil {
                 return;
             }
 
-            if(!getINSTANCE().loginInfos.containsKey(ID)){
+            if(!getINSTANCE().loginInfos.loginInfos.containsKey(ID)){
                 event.getSubject().sendMessage("登陆列表内没有该QQ号。");
                 return;
             }
 
-            for(long id:getINSTANCE().loginInfos.keySet()) {
+            for(long id:getINSTANCE().loginInfos.loginInfos.keySet()) {
                 if(id==ID) {
                     try {
-                        Bot bot = BotFactory.INSTANCE.newBot(ID, getINSTANCE().loginInfos.get(ID));
+                        Bot bot = BotFactory.INSTANCE.newBot(ID, getINSTANCE().loginInfos.loginInfos.get(ID));
                         if (!bot.isOnline()){
                             bot.login();
                             event.getSubject().sendMessage(id+"已经成功登录。");

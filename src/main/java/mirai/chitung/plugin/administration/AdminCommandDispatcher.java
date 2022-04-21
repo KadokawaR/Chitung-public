@@ -31,8 +31,6 @@ public class AdminCommandDispatcher {
         ConfigHandler.react(event);
         //管理帮助
         AdminHelp.send(event);
-        //机器人登陆管理
-        BotLoginUtil.react(event);
     }
 
     public void close() {
