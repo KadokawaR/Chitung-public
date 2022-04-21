@@ -14,6 +14,7 @@ import net.mamoe.mirai.message.data.MessageChainBuilder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -36,17 +37,17 @@ public class BlackJack extends BlackJackUtils {
     public List<BlackJackData> globalGroupData = new ArrayList<>();
     public List<BlackJackData> globalFriendData = new ArrayList<>();
 
-    public Map<Long, Timer> groupBlackjackCancelTimer = new HashMap<>();
-    public Map<Long, Timer> friendBlackjackCancelTimer = new HashMap<>();
-    public Map<Long, Timer> groupEndBetTimer = new HashMap<>();
-    public Map<Long, Timer> groupEndOperationTimer = new HashMap<>();
-    public Map<Long, Timer> friendEndOperationTimer = new HashMap<>();
+    public ConcurrentHashMap<Long, Timer> groupBlackjackCancelTimer = new ConcurrentHashMap<>();
+    public ConcurrentHashMap<Long, Timer> friendBlackjackCancelTimer = new ConcurrentHashMap<>();
+    public ConcurrentHashMap<Long, Timer> groupEndBetTimer = new ConcurrentHashMap<>();
+    public ConcurrentHashMap<Long, Timer> groupEndOperationTimer = new ConcurrentHashMap<>();
+    public ConcurrentHashMap<Long, Timer> friendEndOperationTimer = new ConcurrentHashMap<>();
 
     static ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 
     List<Long> isInBetProcess = new ArrayList<>();
-    Map<Date, Long> GroupResetMark = new HashMap<>();
-    Map<Date, Long> FriendResetMark = new HashMap<>();
+    ConcurrentHashMap<Date, Long> GroupResetMark = new ConcurrentHashMap<>();
+    ConcurrentHashMap<Date, Long> FriendResetMark = new ConcurrentHashMap<>();
 
     BlackJack() {
     }
