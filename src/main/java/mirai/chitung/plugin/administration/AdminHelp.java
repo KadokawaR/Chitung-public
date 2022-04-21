@@ -22,8 +22,8 @@ public class AdminHelp {
             "/config -h：查看 config 的帮助\n" +
             "/config 空格 数字序号 空格 true/false：开关相应配置\n\n" +
             "Data：\n" +
-            "/numf：查看好友数量\n" +
-            "/numg：查看群聊数量\n" +
+            "/num -f：查看好友数量\n" +
+            "/num -g：查看群聊数量\n" +
             "/coverage：查看总覆盖人数";
 
     public static void send(MessageEvent event){

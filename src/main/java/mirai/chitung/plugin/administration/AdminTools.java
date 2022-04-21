@@ -20,19 +20,19 @@ public class AdminTools {
 
     public void handleAdminCommand(MessageEvent event) {
 
-        if (event.getMessage().contentToString().contains("/optimize")) {
+        if (event.getMessage().contentToString().equalsIgnoreCase("/optimize")) {
             optimizeManually(event);
         }
 
-        if (event.getMessage().contentToString().contains("/coverage")) {
+        if (event.getMessage().contentToString().equalsIgnoreCase("/coverage")) {
             getCoverage(event);
         }
 
-        if (event.getMessage().contentToString().contains("/numf")) {
+        if (event.getMessage().contentToString().equalsIgnoreCase("/num -f")) {
             getFriendNum(event);
         }
 
-        if (event.getMessage().contentToString().contains("/numg")) {
+        if (event.getMessage().contentToString().equalsIgnoreCase("/num -g")) {
             getGroupNum(event);
         }
 

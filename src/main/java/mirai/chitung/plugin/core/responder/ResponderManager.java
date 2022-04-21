@@ -49,7 +49,7 @@ public class ResponderManager {
                                }
                            }
                        },
-                StandardTimeUtil.getStandardFirstTime(0, 30, 1),
+                StandardTimeUtil.getStandardFirstTime(0, 0, 1),
                 StandardTimeUtil.getPeriodLengthInMS(0, 6, 0, 0));
     }
 

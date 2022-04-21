@@ -5,6 +5,7 @@ import net.mamoe.mirai.event.events.GroupMessageEvent;
 import net.mamoe.mirai.event.events.MessageEvent;
 import net.mamoe.mirai.message.data.At;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
+import net.mamoe.mirai.message.data.SingleMessage;
 
 import java.math.BigDecimal;
 
@@ -26,7 +27,30 @@ public class PumpkinPesoWindow {
             return;
         }
 
-        if (IdentityUtil.isAdmin(event) && event.getMessage().contentToString().contains("/bank ")) {
+        if(event instanceof GroupMessageEvent) {
+            if (event.getMessage().contentToString().toLowerCase().startsWith("/bank") && event.getMessage().contentToString().contains("@")) {
+                if (IdentityUtil.isAdmin(event)) {
+                    for (SingleMessage sm : event.getMessage()) {
+                        if (sm.contentToString().startsWith("@")) {
+                            long ID = Long.parseLong(sm.contentToString().replace("@", ""));
+                            String money = SenoritaCounter.getDisplayNumber(ID, Currencies.PUMPKIN_PESO);
+                            if (money == null) {
+                                event.getSubject().sendMessage("未能查询该用户");
+                            } else {
+                                MessageChainBuilder mcb = new MessageChainBuilder().append(new At(ID))
+                                        .append("的余额是")
+                                        .append(money)
+                                        .append("南瓜比索。");
+                                event.getSubject().sendMessage(mcb.asMessageChain());
+                            }
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (IdentityUtil.isAdmin(event) && event.getMessage().contentToString().startsWith("/bank ")) {
             String message = event.getMessage().contentToString();
             String[] messageSplit = message.split(" ");
             if (messageSplit.length != 2) {
