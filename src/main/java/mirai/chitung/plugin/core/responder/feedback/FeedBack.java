@@ -18,8 +18,8 @@ public class FeedBack implements MessageResponder<MessageEvent> {
     }
 
     @Override
-    public boolean match(MessageEvent event) {
-        return event.getMessage().contentToString().contains("意见反馈");
+    public boolean match(String content) {
+        return content.contains("意见反馈");
     }
 
     @Override

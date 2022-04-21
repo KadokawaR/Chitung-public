@@ -12,7 +12,7 @@ import java.util.UUID;
  */
 public interface MessageResponder<T extends MessageEvent> {
 
-    boolean match(T event);
+    boolean match(String content);
 
     RespondTask handle(T event);
 

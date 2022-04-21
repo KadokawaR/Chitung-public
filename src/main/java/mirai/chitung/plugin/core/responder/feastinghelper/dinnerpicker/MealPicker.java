@@ -21,8 +21,8 @@ public class MealPicker implements MessageResponder<MessageEvent> {
 
 
     @Override
-    public boolean match(MessageEvent event) {
-        return REG_PATTERN.matcher(event.getMessage().contentToString()).matches();
+    public boolean match(String content) {
+        return REG_PATTERN.matcher(content).matches();
     }
 
     @Override

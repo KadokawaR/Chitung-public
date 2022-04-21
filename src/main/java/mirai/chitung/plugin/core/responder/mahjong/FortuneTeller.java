@@ -90,8 +90,8 @@ public class FortuneTeller implements MessageResponder<MessageEvent> {
     }
 
     @Override
-    public boolean match(MessageEvent event) {
-        return event.getMessage().contentToString().equals("麻将") || event.getMessage().contentToString().contains("求签");
+    public boolean match(String content) {
+        return content.equals("麻将") || content.contains("求签");
     }
 
 

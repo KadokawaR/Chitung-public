@@ -112,9 +112,9 @@ public class DrinkPicker implements MessageResponder<MessageEvent> {
     }
 
     @Override
-    public boolean match(MessageEvent event) {
+    public boolean match(String content) {
         for (Pattern pattern : REG_PATTERN) {
-            if (pattern.matcher(event.getMessage().contentToString()).matches()) {
+            if (pattern.matcher(content).matches()) {
                 return true;
             }
         }

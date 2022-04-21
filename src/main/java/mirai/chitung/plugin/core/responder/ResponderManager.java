@@ -220,8 +220,9 @@ public class ResponderManager {
         }
 
         boolean match(MessageEvent event, MessageResponder.MessageType messageType) {
+            String content = event.getMessage().contentToString();
             if (fit(messageType))
-                return handler.match(event);
+                return handler.match(content);
             return false;
         }
 

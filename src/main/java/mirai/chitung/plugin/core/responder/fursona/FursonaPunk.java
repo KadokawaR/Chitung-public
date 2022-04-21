@@ -27,8 +27,8 @@ public class FursonaPunk implements MessageResponder<MessageEvent> {
     }
 
     @Override
-    public boolean match(MessageEvent event) {
-        return event.getMessage().contentToString().equals("兽设");
+    public boolean match(String content) {
+        return content.equals("兽设");
     }
 
     @Override

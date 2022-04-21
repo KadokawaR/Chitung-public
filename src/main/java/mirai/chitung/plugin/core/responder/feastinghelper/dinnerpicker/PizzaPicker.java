@@ -21,8 +21,8 @@ public class PizzaPicker implements MessageResponder<MessageEvent> {
     static final Pattern REG_PATTERN = Pattern.compile("(/[Pp]izza)|([oO][kK] [Pp]izza)");
 
     @Override
-    public boolean match(MessageEvent event) {
-        return REG_PATTERN.matcher(event.getMessage().contentToString()).matches();
+    public boolean match(String content) {
+        return REG_PATTERN.matcher(content).matches();
     }
 
     @Override

@@ -13,23 +13,11 @@ import java.util.regex.Pattern;
 
 public class HeroLinesSelector implements MessageResponder<GroupMessageEvent> {
     static final List<MessageType> TYPES = new ArrayList<>(Collections.singletonList(MessageType.GROUP));
-    static final List<Pattern> REG_PATTERN = new ArrayList<>();
-
-    static {
-        {
-            REG_PATTERN.add(Pattern.compile("大招"));
-            REG_PATTERN.add(Pattern.compile("英雄不朽"));
-        }
-    }
+    static final Pattern REG_PATTERN = Pattern.compile("((大招)|(英雄不朽))");
 
     @Override
-    public boolean match(GroupMessageEvent event) {
-        for (Pattern pattern : REG_PATTERN) {
-            if (pattern.matcher(event.getMessage().contentToString()).matches()) {
-                return true;
-            }
-        }
-        return false;
+    public boolean match(String content) {
+        return REG_PATTERN.matcher(content).matches();
     }
 
     @Override

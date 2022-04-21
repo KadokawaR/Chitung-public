@@ -14,14 +14,12 @@ import java.util.regex.Pattern;
 
 public class Greeting implements MessageResponder<GroupMessageEvent> {
     static final List<MessageType> TYPES = new ArrayList<>(Collections.singletonList(MessageType.GROUP));
-    static final List<Pattern> REG_PATTERN = new ArrayList<>();
+    static final Pattern REG_PATTERN = Pattern.compile("[Hh]((ello)|(i))");
     static final List<String> REPLIES = new ArrayList<>();
     static final Random rand = new Random();
 
     static {
         {
-            REG_PATTERN.add(Pattern.compile("[Hh]ello"));
-            REG_PATTERN.add(Pattern.compile("[Hh]i"));
             REPLIES.add("Hi");
             REPLIES.add("Hello");
             REPLIES.add("Hey");
@@ -29,13 +27,8 @@ public class Greeting implements MessageResponder<GroupMessageEvent> {
     }
 
     @Override
-    public boolean match(GroupMessageEvent event) {
-        for (Pattern pattern : REG_PATTERN) {
-            if (pattern.matcher(event.getMessage().contentToString()).matches()) {
-                return true;
-            }
-        }
-        return false;
+    public boolean match(String content) {
+        return REG_PATTERN.matcher(content).matches();
     }
 
     @Override

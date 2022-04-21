@@ -16,8 +16,8 @@ public class LotteryBummerMessageHandler implements MessageResponder<GroupMessag
     static final Pattern REG_PATTERN = Pattern.compile("(/[Bb]ummer)|([oO][kK] [Bb]ummer)");
 
     @Override
-    public boolean match(GroupMessageEvent event) {
-        return REG_PATTERN.matcher(event.getMessage().contentToString()).matches();
+    public boolean match(String content) {
+        return REG_PATTERN.matcher(content).matches();
     }
 
     @Override

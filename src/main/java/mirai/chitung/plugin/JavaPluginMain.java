@@ -8,11 +8,10 @@ import mirai.chitung.plugin.core.groupconfig.GroupConfigManager;
 import mirai.chitung.plugin.core.harbor.Harbor;
 import mirai.chitung.plugin.core.responder.Blacklist;
 import mirai.chitung.plugin.core.responder.ResponderCenter;
-import mirai.chitung.plugin.core.responder.basic.Repeater;
+import mirai.chitung.plugin.core.responder.repeater.Repeater;
 import mirai.chitung.plugin.core.responder.help.NewHelp;
 import mirai.chitung.plugin.core.responder.imageresponder.ImageResponder;
 import mirai.chitung.plugin.core.responder.universalrespond.URManager;
-import mirai.chitung.plugin.core.responder.universalrespond.UniversalResponder;
 import mirai.chitung.plugin.utils.*;
 import mirai.chitung.plugin.core.broadcast.BroadcastSystem;
 import mirai.chitung.plugin.core.game.GameCenter;
@@ -22,8 +21,6 @@ import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescriptionBuilder;
 import net.mamoe.mirai.contact.MemberPermission;
 import net.mamoe.mirai.event.GlobalEventChannel;
 import net.mamoe.mirai.event.events.*;
-import net.mamoe.mirai.message.data.At;
-import net.mamoe.mirai.message.data.SingleMessage;
 
 import java.util.Objects;
 

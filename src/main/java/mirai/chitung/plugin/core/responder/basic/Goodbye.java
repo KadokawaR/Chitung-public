@@ -13,24 +13,11 @@ import java.util.regex.Pattern;
 
 public class Goodbye implements MessageResponder<MessageEvent> {
     static final List<MessageType> TYPES = new ArrayList<>(Arrays.asList(MessageType.FRIEND, MessageType.GROUP));
-    static final List<Pattern> REG_PATTERN = new ArrayList<>();
-
-    static {
-        {
-            REG_PATTERN.add(Pattern.compile(".*" + "下线了" + ".*"));
-            REG_PATTERN.add(Pattern.compile(".*" + "我走了" + ".*"));
-            REG_PATTERN.add(Pattern.compile(".*" + "拜拜" + ".*"));
-        }
-    }
+    static final Pattern REG_PATTERN = Pattern.compile(".*" + "((下线了)|(我走了)|(拜拜))" + ".*");
 
     @Override
-    public boolean match(MessageEvent event) {
-        for (Pattern pattern : REG_PATTERN) {
-            if (pattern.matcher(event.getMessage().contentToString()).matches()) {
-                return true;
-            }
-        }
-        return false;
+    public boolean match(String content) {
+        return REG_PATTERN.matcher(content).matches();
     }
 
     @Override

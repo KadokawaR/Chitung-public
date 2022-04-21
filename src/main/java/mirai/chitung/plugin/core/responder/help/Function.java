@@ -18,14 +18,14 @@ public class Function implements MessageResponder<MessageEvent> {
     static final List<MessageType> types = new ArrayList<>(Arrays.asList(MessageType.FRIEND, MessageType.GROUP));
 
     @Override
-    public boolean match(MessageEvent event){
-        return event.getMessage().contentToString().equals("/funct")||event.getMessage().contentToString().equals("查看功能");
+    public boolean match(String content){
+        return content.equals("/funct")|| content.equals("查看功能");
     }
 
     @Override
     public RespondTask handle(MessageEvent event){
         RespondTask.Builder builder = new RespondTask.Builder(event, this);
-        if (match(event)){
+        if (match(event.getMessage().contentToString())){
             builder.addTask(()-> send(event.getSubject()));
         }
         return builder.build();

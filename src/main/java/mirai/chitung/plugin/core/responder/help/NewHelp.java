@@ -10,7 +10,6 @@ import java.util.*;
 public class NewHelp {
 
     enum HelpFunction{
-
         Help(Speech.HELP),
         Disclaimer(Speech.DISCL),
         Contact(Speech.CONTA),

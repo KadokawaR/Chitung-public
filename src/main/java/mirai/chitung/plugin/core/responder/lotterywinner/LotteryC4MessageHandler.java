@@ -17,8 +17,8 @@ public class LotteryC4MessageHandler implements MessageResponder<GroupMessageEve
 
 
     @Override
-    public boolean match(GroupMessageEvent event) {
-        return REG_PATTERN.matcher(event.getMessage().contentToString()).matches();
+    public boolean match(String content) {
+        return REG_PATTERN.matcher(content).matches();
     }
 
     @Override

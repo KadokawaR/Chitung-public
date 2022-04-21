@@ -13,7 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PlayDice implements MessageResponder<MessageEvent> {
-    static final List<Pattern> REG_PATTERN = new ArrayList<>();
+    static final Pattern REG_PATTERN = Pattern.compile("(((/dice|/d|/Dice|/D)\\s?([1-9]\\d{0,7}))|(\\.([1-9]\\d{0,2})([dD])[1-9]\\d{0,7})|(\\.([dD])[1-9]\\d{0,7}))");
     static final Pattern PATTERN_COMMON_COMMAND = Pattern.compile("(/dice|/d|/Dice|/D)\\s?([1-9]\\d{0,7})");
     static final Pattern PATTERN_DND = Pattern.compile("\\.([1-9]\\d{0,2})([dD])[1-9]\\d{0,7}");
     static final Pattern PATTERN_DND_SINGLE_ROLL = Pattern.compile("\\.([dD])[1-9]\\d{0,7}");
@@ -21,22 +21,12 @@ public class PlayDice implements MessageResponder<MessageEvent> {
     static final Pattern CAPTURE_PATTERN_DND = Pattern.compile("\\.([1-9]\\d{0,2})([dD])([1-9]\\d{0,7})");
     static final Pattern CAPTURE_PATTERN_DND_SINGLE_ROLL = Pattern.compile("\\.([dD])([1-9]\\d{0,7})");
 
-    static {
-        {
-            REG_PATTERN.add(Pattern.compile("(/dice|/d|/Dice|/D)\\s?([1-9]\\d{0,7})"));
-            REG_PATTERN.add(Pattern.compile("\\.([1-9]\\d{0,2})([dD])[1-9]\\d{0,7}"));
-            REG_PATTERN.add(Pattern.compile("\\.([dD])[1-9]\\d{0,7}"));
-        }
-    }
-
     static final List<MessageType> type = new ArrayList<>(Arrays.asList(MessageType.FRIEND, MessageType.GROUP));
 
     @Override
-    public boolean match(MessageEvent event) {
-        for (Pattern pattern : REG_PATTERN) {
-            if (pattern.matcher(event.getMessage().contentToString()).matches()) {
-                return true;
-            }
+    public boolean match(String content) {
+        if(content.length()<10){
+            return REG_PATTERN.matcher(content).matches();
         }
         return false;
     }

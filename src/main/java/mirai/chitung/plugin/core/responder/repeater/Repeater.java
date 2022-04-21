@@ -1,4 +1,4 @@
-package mirai.chitung.plugin.core.responder.basic;
+package mirai.chitung.plugin.core.responder.repeater;
 
 import net.mamoe.mirai.event.events.GroupMessageEvent;
 import net.mamoe.mirai.message.data.MessageChain;
