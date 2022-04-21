@@ -51,7 +51,7 @@ public class Nudge {
     }
 
     private static boolean overCount(long groupID){
-        if(!getINSTANCE().groupNudgeCount.containsKey(groupID)) return true;
+        if(!getINSTANCE().groupNudgeCount.containsKey(groupID)) return false;
         return getINSTANCE().groupNudgeCount.get(groupID)>MAX_COUNT;
     }
 
@@ -67,11 +67,14 @@ public class Nudge {
     }
 
     public static void mentionNudge(GroupMessageEvent event){
+        if(Harbor.isReachingPortLimit(event)) return;
         if(IdentityUtil.isBot(event.getSender().getId())) return;
         if(overCount(event.getGroup().getId())) return;
         if (event.getMessage().contentToString().contains(String.valueOf(event.getBot().getId()))){
             event.getSender().nudge().sendTo(event.getSubject());
             addCount(event.getSubject().getId());
+
+            Harbor.count(event);
         }
     }
 }
