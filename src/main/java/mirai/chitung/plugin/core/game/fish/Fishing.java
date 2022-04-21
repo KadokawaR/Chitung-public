@@ -149,7 +149,6 @@ public class Fishing extends FishingUtil{
         if (message.toLowerCase().contains("/fish")){
             if (!isInFishingProcessFlag.contains(event.getSender().getId())){
 
-                isInFishingProcessFlag.add(event.getSender().getId());
                 getFish(event,getWater(message));
 
                 Harbor.count(event);
@@ -197,6 +196,7 @@ public class Fishing extends FishingUtil{
             if(PumpkinPesoWindow.hasEnoughMoney(event,FISHING_COST)){
                 PumpkinPesoWindow.minusMoney(event.getSender().getId(),FISHING_COST);
                 mcb.append("已收到您的捕鱼费用").append(String.valueOf(FISHING_COST)).append("南瓜比索。");
+                isInFishingProcessFlag.add(event.getSender().getId());
             } else {
                 event.getSubject().sendMessage(mcb.append("您的南瓜比索数量不够，请检查。").asMessageChain());
                 return;
