@@ -183,9 +183,7 @@ public class GroupConfigManager {
     }
 
     @SuppressWarnings("RedundantIfStatement")
-    public static void changeGroupConfig(GroupMessageEvent event){
-
-        String message = event.getMessage().contentToString().toLowerCase();
+    public static void changeGroupConfig(GroupMessageEvent event,String message){
 
         if(!message.startsWith("/close")&&!message.startsWith("/open")) return;
         if(event.getSender().getPermission().equals(MemberPermission.MEMBER)&&(!IdentityUtil.isAdmin(event))) return;
@@ -242,8 +240,8 @@ public class GroupConfigManager {
 
     }
 
-    public static void resetGroupConfig(GroupMessageEvent event){
-        if(!event.getMessage().contentToString().equals("/default")) return;
+    public static void resetGroupConfig(GroupMessageEvent event,String message){
+        if(!message.equalsIgnoreCase("/default")) return;
         if(event.getSender().getPermission().equals(MemberPermission.MEMBER)&&(!IdentityUtil.isAdmin(event))) return;
         if(containsGroup(event.getGroup().getId())){
             getINSTANCE().groupConfigs.groupConfigList.remove(Objects.requireNonNull(getGroupIndex(event.getGroup().getId())).intValue());
@@ -285,9 +283,9 @@ public class GroupConfigManager {
         return getINSTANCE().groupConfigs.groupConfigList.get(getGroupIndex(event.getGroup().getId())).isGame();
     }
 
-    static void addBlockedUser(GroupMessageEvent event){
+    static void addBlockedUser(GroupMessageEvent event,String message){
         if(event.getSender().getPermission().equals(MemberPermission.MEMBER)&&!IdentityUtil.isAdmin(event)) return;
-        if(!event.getMessage().contentToString().toLowerCase().startsWith("/blockmember")) return;
+        if(!message.startsWith("/blockmember")) return;
 
         executor.schedule(new BlockUserAndSendNotice(event),1, TimeUnit.SECONDS);
 
@@ -295,17 +293,18 @@ public class GroupConfigManager {
 
     }
 
-    static void deleteBlockedUser(GroupMessageEvent event){
+    static void deleteBlockedUser(GroupMessageEvent event,String message){
         if(event.getSender().getPermission().equals(MemberPermission.MEMBER)&&!IdentityUtil.isAdmin(event)) return;
-        if(!event.getMessage().contentToString().toLowerCase().startsWith("/unblockmember")) return;
+        if(!message.startsWith("/unblockmember")) return;
 
         List<Long> deletedUser = new ArrayList<>();
 
         for(SingleMessage sm:event.getMessage()){
 
-            if(sm.contentToString().startsWith("@")){
+            String SMM = sm.contentToString();
+            if(SMM.startsWith("@")){
 
-                Long ID = Long.parseLong(sm.contentToString().replace("@",""));
+                Long ID = Long.parseLong(SMM.replace("@",""));
 
                 if(isBlockedUser(event.getGroup().getId(),ID)){
                     getINSTANCE().groupConfigs.groupConfigList.get(getGroupIndex(event.getGroup().getId())).getBlockedUser().remove(ID);
@@ -352,9 +351,11 @@ public class GroupConfigManager {
 
             for(SingleMessage sm:event.getMessage()){
 
-                if(sm.contentToString().startsWith("@")){
+                String SMM = sm.contentToString();
 
-                    Long ID = Long.parseLong(sm.contentToString().replace("@",""));
+                if(SMM.startsWith("@")){
+
+                    Long ID = Long.parseLong(SMM.replace("@",""));
 
                     if(event.getGroup().getOrFail(ID).getPermission().equals(MemberPermission.OWNER)||event.getGroup().getOrFail(ID).getPermission().equals(MemberPermission.ADMINISTRATOR)){
                         blockedGroupAdminMember.add(ID);
@@ -419,10 +420,11 @@ public class GroupConfigManager {
     }
 
     public static void handle(GroupMessageEvent event){
-        resetGroupConfig(event);
-        changeGroupConfig(event);
-        addBlockedUser(event);
-        deleteBlockedUser(event);
+        String message = event.getMessage().contentToString().toLowerCase();
+        resetGroupConfig(event,message);
+        changeGroupConfig(event,message);
+        addBlockedUser(event,message);
+        deleteBlockedUser(event,message);
     }
 
     public void ini(){

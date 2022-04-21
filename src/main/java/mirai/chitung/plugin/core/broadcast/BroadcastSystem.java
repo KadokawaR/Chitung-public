@@ -71,7 +71,9 @@ public class BroadcastSystem {
     }
 
     static void broadcast(MessageEvent event){
+
         if(!IdentityUtil.isAdmin(event)) return;
+        String message = event.getMessage().contentToString();
 
         //在广播模式中
         if(isInBroadcastMode(event)){
@@ -97,8 +99,8 @@ public class BroadcastSystem {
 
         } else {
 
-            if(event.getMessage().contentToString().toLowerCase().contains("/broadcast")){
-                enterBroadcastMode(event);
+            if(message.toLowerCase().contains("/broadcast")){
+                enterBroadcastMode(event,message);
             }
 
         }
@@ -132,7 +134,8 @@ public class BroadcastSystem {
         MessageChainBuilder result = new MessageChainBuilder();
         for(SingleMessage sm:rawMessage){
             if(sm instanceof PlainText){
-                if(sm.contentToString().toLowerCase().contains("@admin")||sm.contentToString().toLowerCase().contains("@owner")){
+                String str = sm.contentToString().toLowerCase();
+                if(str.contains("@admin")||str.contains("@owner")){
                     result.add(addAt(group,sm));
                     continue;
                 }
@@ -142,9 +145,9 @@ public class BroadcastSystem {
         return result.asMessageChain();
     }
 
-    static void enterBroadcastMode(MessageEvent event){
+    static void enterBroadcastMode(MessageEvent event,String message){
 
-        String rawString = event.getMessage().contentToString().toLowerCase().replace("/broadcast", "").replace(" ", "").replace("-", "");
+        String rawString = message.toLowerCase().replace("/broadcast", "").replace(" ", "").replace("-", "");
 
         switch (rawString) {
             case "f":

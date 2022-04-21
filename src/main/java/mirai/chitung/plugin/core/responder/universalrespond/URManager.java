@@ -201,17 +201,17 @@ public class URManager {
         return false;
     }
 
-    static boolean kindMatch(MessageEvent event, UniversalResponder ur){
+    static boolean kindMatch(UniversalResponder ur){
         if(ur.getMessageKind().equals(MessageKind.Any)) return true;
         if(ur.getListResponceKind().equals(MessageKind.Any)) return true;
         return (ur.getMessageKind().equals(ur.getListResponceKind()));
     }
 
-    static void respond(MessageEvent event){
+    static void respond(MessageEvent event,String message){
         for(UniversalResponder ur:getINSTANCE().urList.universalRespondList) {
 
-            if(!kindMatch(event,ur)) continue;
-            if(!contentMatch(event.getMessage().contentToString(),ur)) continue;
+            if(!kindMatch(ur)) continue;
+            if(!contentMatch(message,ur)) continue;
             if(!IDMatch(event,ur)) continue;
 
             Random random = new Random();
@@ -223,17 +223,18 @@ public class URManager {
         }
     }
 
-    static void reset(MessageEvent event){
+    static void reset(MessageEvent event,String message){
         if(!IdentityUtil.isAdmin(event)) return;
-        if(event.getMessage().contentToString().toLowerCase().contains("/reset")&&(event.getMessage().contentToString().toLowerCase().contains("ur"))){
+        if(message.toLowerCase().contains("/reset")&&(message.toLowerCase().contains("ur"))){
             getINSTANCE().urList=readRecord();
             event.getSubject().sendMessage("已经重置 Universal Responder 的配置文件。");
         }
     }
 
     public static void handle(MessageEvent event){
-        reset(event);
-        respond(event);
+        String message = event.getMessage().contentToString();
+        reset(event,message);
+        respond(event,message);
     }
 
     public void ini(){

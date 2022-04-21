@@ -147,15 +147,15 @@ public class ImageResponder {
         return images[new Random().nextInt(images.length)];
     }
 
-    public static ImageResponderData triggeredWordData(MessageEvent event){
+    public static ImageResponderData triggeredWordData(String message){
         for(ImageResponderData ird:getINSTANCE().dataListClass.dataList){
             for(String keyword: ird.keyword){
                 switch(ird.triggerType){
                     case Contain:
-                        if(event.getMessage().contentToString().contains(keyword)) return ird;
+                        if(message.contains(keyword)) return ird;
                         break;
                     case Equal:
-                        if(event.getMessage().contentToString().equals(keyword)) return ird;
+                        if(message.equals(keyword)) return ird;
                         break;
                 }
             }
@@ -178,19 +178,21 @@ public class ImageResponder {
         return false;
     }
 
-    static void reset(MessageEvent event){
+    static void reset(MessageEvent event,String message){
         if(!IdentityUtil.isAdmin(event)) return;
-        if(event.getMessage().contentToString().toLowerCase().contains("/reset ir")){
+        if(message.toLowerCase().contains("/reset ir")){
             getINSTANCE().dataListClass=readRecord();
             event.getSubject().sendMessage("已经重置 Image Responder 的配置文件。");
         }
     }
 
     public static void handle(MessageEvent event){
-        ImageResponderData ird = triggeredWordData(event);
+
+        String message = event.getMessage().contentToString();
+        ImageResponderData ird = triggeredWordData(message);
 
         //管理员入口
-        reset(event);
+        reset(event,message);
 
         if(!isTriggered(ird,event)) return;
 

@@ -33,7 +33,7 @@ public class PlayDice implements MessageResponder<MessageEvent> {
 
     @Override
     public RespondTask handle(MessageEvent event) {
-        return RespondTask.of(event, executeDiceCommand(event), this);
+        return RespondTask.of(event, executeDiceCommand(event,event.getMessage().contentToString()), this);
     }
 
     @NotNull
@@ -43,14 +43,14 @@ public class PlayDice implements MessageResponder<MessageEvent> {
     }
 
 
-    static String executeDiceCommand(MessageEvent event) {
-        if (PATTERN_COMMON_COMMAND.matcher(event.getMessage().contentToString()).matches()) {
-            return DiceFactory.getCustomDice(captureFromPatternCommon(event.getMessage().contentToString()), 1).buildMessage();
+    static String executeDiceCommand(MessageEvent event,String message) {
+        if (PATTERN_COMMON_COMMAND.matcher(message).matches()) {
+            return DiceFactory.getCustomDice(captureFromPatternCommon(message), 1).buildMessage();
         } else {
-            if (PATTERN_DND.matcher(event.getMessage().contentToString()).matches()) {
-                return DiceFactory.getCustomDice(captureFromPatternDND(event.getMessage().contentToString()).get(1), captureFromPatternDND(event.getMessage().contentToString()).get(0)).buildMessage();
-            } else if (PATTERN_DND_SINGLE_ROLL.matcher(event.getMessage().contentToString()).matches()) {
-                return DiceFactory.getCustomDice(captureFromPatternDNDSingleRoll(event.getMessage().contentToString()), 1).buildMessage();
+            if (PATTERN_DND.matcher(message).matches()) {
+                return DiceFactory.getCustomDice(captureFromPatternDND(message).get(1), captureFromPatternDND(message).get(0)).buildMessage();
+            } else if (PATTERN_DND_SINGLE_ROLL.matcher(message).matches()) {
+                return DiceFactory.getCustomDice(captureFromPatternDNDSingleRoll(message), 1).buildMessage();
             }
         }
         throw new NoHandlerMethodMatchException("匹配骰子", event);
