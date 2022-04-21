@@ -12,7 +12,9 @@ public class Repeater {
     public static void handle(GroupMessageEvent event){
 
         if(event.getMessage().serializeToMiraiCode().contains("mirai")) {
-            messageContainer.get(event.getGroup().getId()).clear();
+            if(messageContainer.containsKey(event.getGroup().getId())) {
+                messageContainer.get(event.getGroup().getId()).clear();
+            }
             return;
         }
 

@@ -227,6 +227,7 @@ public class GroupConfigManager {
                 break;
             default:
                 event.getSubject().sendMessage("群设置指示词使用错误，请使用 /close 或者 /open 加上 空格 加上 global、game、casino、responder、fish 或者 lottery 来开关相应内容。");
+                Harbor.count(event);
                 return;
         }
 
