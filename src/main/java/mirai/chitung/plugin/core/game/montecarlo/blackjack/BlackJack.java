@@ -167,7 +167,9 @@ public class BlackJack extends BlackJackUtils {
                 }
             }
             try {
-                getINSTANCE().globalGroupData.remove((int) indexInTheList(event));
+                if(indexInTheList(event)!=null) {
+                    getINSTANCE().globalGroupData.remove((int) indexInTheList(event));
+                }
                 getINSTANCE().isInBetProcess.remove(event.getSubject().getId());
             } catch(Exception e){
                 e.printStackTrace();
@@ -181,7 +183,9 @@ public class BlackJack extends BlackJackUtils {
                 }
             }
             try {
-                getINSTANCE().globalFriendData.remove((int) indexInTheList(event));
+                if(indexInTheList(event)!=null) {
+                    getINSTANCE().globalFriendData.remove((int) indexInTheList(event));
+                }
             } catch (Exception e){
                 e.printStackTrace();
             }
