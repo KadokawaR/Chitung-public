@@ -184,17 +184,21 @@ public class GroupConfigManager {
 
     @SuppressWarnings("RedundantIfStatement")
     public static void changeGroupConfig(GroupMessageEvent event){
-        if(!event.getMessage().contentToString().toLowerCase().contains("/close")&&!event.getMessage().contentToString().toLowerCase().contains("/open")) return;
+
+        String message = event.getMessage().contentToString().toLowerCase();
+
+        if(!message.startsWith("/close")&&!message.startsWith("/open")) return;
         if(event.getSender().getPermission().equals(MemberPermission.MEMBER)&&(!IdentityUtil.isAdmin(event))) return;
         if(!containsGroup(event.getGroup().getId())) addGroupConfig(event.getGroup().getId());
+
         boolean operation;
-        if(event.getMessage().contentToString().contains("/close")){
+
+        if(message.startsWith("/close")){
             operation = false;
         } else {
             operation = true;
         }
-        String message = event.getMessage().contentToString();
-        message = message.toLowerCase();
+
         message = message.replace("/close","").replace("/open","").replace(" ","");
 
         Integer index = getGroupIndex(event.getGroup().getId());
