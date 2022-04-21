@@ -27,7 +27,7 @@ public class PumpkinPesoWindow {
             return;
         }
 
-        if(event instanceof GroupMessageEvent) {
+        if (event instanceof GroupMessageEvent) {
             if (event.getMessage().contentToString().toLowerCase().startsWith("/bank") && event.getMessage().contentToString().contains("@")) {
                 if (IdentityUtil.isAdmin(event)) {
                     for (SingleMessage sm : event.getMessage()) {
@@ -68,27 +68,41 @@ public class PumpkinPesoWindow {
 
     public static void moneyLaundry(MessageEvent event) {
         if (!IdentityUtil.isAdmin(event)) return;
-        if (event.getMessage().contentToString().contains("/laundry ")) {
+
+        String message = event.getMessage().contentToString();
+
+        if (message.startsWith("/laundry ")) {
             //如果有负号就是扣钱了
-            if (event.getMessage().contentToString().contains("-")) {
-                String amount = event.getMessage().contentToString().replace("/laundry -", "");
+            if (message.contains("-")) {
+                String amount = message.replace("/laundry -", "");
                 BigDecimal amountBD = new BigDecimal(amount);
                 minusMoney(event.getSender().getId(), amountBD);
                 //不然就是加钱
             } else {
-                String amount = event.getMessage().contentToString().replace("/laundry ", "");
+                String amount = message.replace("/laundry ", "");
                 BigDecimal amountBD = new BigDecimal(amount);
                 addMoney(event.getSender().getId(), amountBD);
             }
+            return;
         }
 
-        if (event.getMessage().contentToString().contains("/set ")) {
-            String message = event.getMessage().contentToString();
-            String[] messageSplit = message.split(" ");
+        if (message.toLowerCase().startsWith("/set")) {
+
+            if(message.contains(" @")) message = message.replace(" @","@");
+
+            String[] messageSplit = message.split(" |@");
+
             if (messageSplit.length != 3) {
                 event.getSubject().sendMessage("设置金额失败。");
                 return;
             }
+
+            if (event instanceof GroupMessageEvent) {
+                if (message.contains("@")) {
+                    setMoney(Long.parseLong(messageSplit[1].replace("@","")), new BigDecimal(messageSplit[2]));
+                }
+            }
+
             setMoney(Long.parseLong(messageSplit[1]), new BigDecimal(messageSplit[2]));
             event.getSubject().sendMessage("已设置成功。");
         }
