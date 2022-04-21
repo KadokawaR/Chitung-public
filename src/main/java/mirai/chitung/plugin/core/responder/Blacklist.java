@@ -106,15 +106,15 @@ public class Blacklist {
     }
 
     //太奇怪了这个操作
-    static void blockGroupInGroup(GroupMessageEvent event){
+    static void blockGroupInGroup(GroupMessageEvent event,String message){
         if(!IdentityUtil.isAdmin(event)) return;
-        if(event.getMessage().contentToString().equalsIgnoreCase("/block")) addBlock(event.getGroup().getId(),BlockKind.Group);
+        if(message.equalsIgnoreCase("/block")) addBlock(event.getGroup().getId(),BlockKind.Group);
     }
 
-    static void block(MessageEvent event){
+    static void block(MessageEvent event,String message){
         if(!IdentityUtil.isAdmin(event)) return;
-        if(!event.getMessage().contentToString().toLowerCase().contains("/block ")&&!event.getMessage().contentToString().toLowerCase().contains("/block-")) return;
-        String rawString = event.getMessage().contentToString().toLowerCase().replace("/block","").replace(" ","").replace("-","");
+        if(!message.toLowerCase().contains("/block ")&&!message.toLowerCase().contains("/block-")) return;
+        String rawString = message.toLowerCase().replace("/block","").replace(" ","").replace("-","");
         String strID = Pattern.compile("[^0-9]").matcher(rawString).replaceAll(" ").trim();
 
         Long ID=null;
@@ -160,10 +160,10 @@ public class Blacklist {
 
     }
 
-    static void unblock(MessageEvent event){
+    static void unblock(MessageEvent event,String message){
         if(!IdentityUtil.isAdmin(event)) return;
-        if(!event.getMessage().contentToString().toLowerCase().contains("/unblock ")&&!event.getMessage().contentToString().toLowerCase().contains("/unblock-")) return;
-        String rawString = event.getMessage().contentToString().toLowerCase().replace("/unblock","").replace(" ","").replace("-","");
+        if(!message.toLowerCase().contains("/unblock ")&&!message.toLowerCase().contains("/unblock-")) return;
+        String rawString = message.toLowerCase().replace("/unblock","").replace(" ","").replace("-","");
         String strID = Pattern.compile("[^0-9]").matcher(rawString).replaceAll(" ").trim();
 
         Long ID=null;
@@ -228,11 +228,12 @@ public class Blacklist {
     }
 
     public static void operation(MessageEvent event){
+        String message = event.getMessage().contentToString();
         if(event instanceof GroupMessageEvent){
-            blockGroupInGroup((GroupMessageEvent) event);
+            blockGroupInGroup((GroupMessageEvent) event,message);
         }
-        block(event);
-        unblock(event);
+        block(event,message);
+        unblock(event,message);
     }
 
     public void ini(){
