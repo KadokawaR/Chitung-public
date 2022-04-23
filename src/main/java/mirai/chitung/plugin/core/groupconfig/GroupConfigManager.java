@@ -228,7 +228,7 @@ public class GroupConfigManager {
                 event.getSubject().sendMessage("已设置C4和Bummer功能的响应状态为"+operation);
                 break;
             default:
-                event.getSubject().sendMessage("群设置指示词使用错误，请使用 /close 或者 /open 加上 空格 加上 global、game、casino、responder、fish 或者 lottery 来开关相应内容。");
+                event.getSubject().sendMessage("群设置指示词使用错误，使用/close或者/open加上空格加上global、game、casino、responder、fish或者lottery来开关相应内容。");
                 Harbor.count(event);
                 return;
         }
@@ -419,12 +419,67 @@ public class GroupConfigManager {
         return readGroupConfig(groupID).getBlockedUser().contains(memberID);
     }
 
+    static void groupConfigCheck(GroupMessageEvent event, String message){
+        if(message.equalsIgnoreCase("/groupconfig -c")||message.equalsIgnoreCase("/gc -c")||message.equals("查看群设置")) {
+            MessageChainBuilder mcb = new MessageChainBuilder();
+            GroupConfig gc = getINSTANCE().groupConfigs.groupConfigList.get(getGroupIndex(event.getGroup().getId()));
+            mcb.append("本群的群设置状态为：")
+                    .append("\n全局：").append(String.valueOf(gc.isGlobal()))
+                    .append("\n关键词触发功能：").append(String.valueOf(gc.isResponder()))
+                    .append("\n游戏功能：").append(String.valueOf(gc.isGame()))
+                    .append("\nCasino功能：").append(String.valueOf(gc.isCasino()))
+                    .append("\n钓鱼功能：").append(String.valueOf(gc.isFish()))
+                    .append("\n群内抽奖功能：").append(String.valueOf(gc.isLottery()));
+            event.getSubject().sendMessage(mcb.asMessageChain());
+        }
+    }
+
+    static void groupConfigHelp(GroupMessageEvent event, String message){
+        if(message.equalsIgnoreCase("/groupconfig -h")||message.equalsIgnoreCase("/gc")||message.equals("群管理帮助")) {
+            event.getSubject().sendMessage("使用/close或者/open加上空格加上global（全局）、game（游戏）、casino、responder（关键词触发）、fish（钓鱼）或者lottery（群内抽奖）来开关相应内容。\n" +
+                    "使用/default恢复所有初始设置。" +
+                    "使用/blockmember并@成员来屏蔽该成员，使用/unblockmember并@成员来解除屏蔽。" +
+                    "使用/blocklist查询被屏蔽的用户列表，如果不需要返回结果@用户请使用/blocklist -m。");
+        }
+    }
+
+    static void getBlockList(GroupMessageEvent event, String message){
+
+        if(message.toLowerCase().startsWith("/blocklist -m")){
+            StringBuilder sb = new StringBuilder();
+            sb.append("本群的屏蔽名单有：");
+            for(long ID:getINSTANCE().groupConfigs.groupConfigList.get(getGroupIndex(event.getGroup().getId())).getBlockedUser()){
+                if(event.getGroup().getMembers().contains(ID)){
+                    sb.append(ID).append(" ");
+                }
+
+            }
+            event.getSubject().sendMessage(sb.toString().trim());
+            return;
+        }
+
+        if(message.equalsIgnoreCase("/blocklist")){
+            MessageChainBuilder mcb = new MessageChainBuilder();
+            mcb.append("本群的屏蔽名单有：");
+            for(long ID:getINSTANCE().groupConfigs.groupConfigList.get(getGroupIndex(event.getGroup().getId())).getBlockedUser()){
+                if(event.getGroup().getMembers().contains(ID)){
+                    mcb.append(new At(ID));
+                }
+            }
+            event.getSubject().sendMessage(mcb.asMessageChain());
+        }
+    }
+
     public static void handle(GroupMessageEvent event){
+        if(event.getSender().getPermission()==MemberPermission.MEMBER&&!IdentityUtil.isAdmin(event)) return;
         String message = event.getMessage().contentToString().toLowerCase();
         resetGroupConfig(event,message);
         changeGroupConfig(event,message);
         addBlockedUser(event,message);
         deleteBlockedUser(event,message);
+        groupConfigCheck(event,message);
+        getBlockList(event,message);
+        groupConfigHelp(event,message);
     }
 
     public void ini(){
