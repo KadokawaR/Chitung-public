@@ -196,7 +196,6 @@ public class Fishing extends FishingUtil{
             if(PumpkinPesoWindow.hasEnoughMoney(event,FISHING_COST)){
                 PumpkinPesoWindow.minusMoney(event.getSender().getId(),FISHING_COST);
                 mcb.append("已收到您的捕鱼费用").append(String.valueOf(FISHING_COST)).append("南瓜比索。");
-                isInFishingProcessFlag.add(event.getSender().getId());
             } else {
                 event.getSubject().sendMessage(mcb.append("您的南瓜比索数量不够，请检查。").asMessageChain());
                 return;
@@ -209,6 +208,7 @@ public class Fishing extends FishingUtil{
         int itemNumber = 3+random.nextInt(2);
 
         getINSTANCE().fishRecord.add(new Date());
+        isInFishingProcessFlag.add(event.getSender().getId());
 
         mcb.append("本次钓鱼预计时间为").append(String.valueOf(time)).append("分钟。");
         if(event instanceof GroupMessageEvent) mcb.append("麦氏渔业公司提醒您使用/fishhelp查询钓鱼功能的相关信息，如果长时间钓鱼未收杆，请使用/endfish 强制停止钓鱼。");
