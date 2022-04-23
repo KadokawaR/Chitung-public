@@ -108,11 +108,14 @@ public final class JavaPluginMain extends JavaPlugin {
 
             if(IdentityUtil.isBot(event)) return;
 
-            if(!GroupConfigManager.globalConfig(event)) return;
-            if(GroupConfigManager.isBlockedUser(event)) return;
-
             if(Blacklist.isBlocked(event.getSender().getId(), Blacklist.BlockKind.Friend)) return;
             if(Blacklist.isBlocked(event.getGroup().getId(), Blacklist.BlockKind.Group)) return;
+
+            //群管理功能
+            GroupConfigManager.handle(event);
+
+            if(!GroupConfigManager.globalConfig(event)) return;
+            if(GroupConfigManager.isBlockedUser(event)) return;
 
             //GameCenter
             GameCenter.handle(event);
@@ -122,7 +125,6 @@ public final class JavaPluginMain extends JavaPlugin {
             //ResponderCenter
             if(GroupConfigManager.responderConfig(event) && ConfigHandler.getINSTANCE().config.getGroupFC().isResponder()){
 
-                NewHelp.handle(event);
                 Nudge.mentionNudge(event);
                 ResponderCenter.getINSTANCE().handleMessage(event);
                 ImageResponder.handle(event);
@@ -132,8 +134,6 @@ public final class JavaPluginMain extends JavaPlugin {
                 Fishing.go(event);
                 //Universal Responder
                 URManager.handle(event);
-                //群管理功能
-                GroupConfigManager.handle(event);
             }
 
         });
@@ -172,7 +172,6 @@ public final class JavaPluginMain extends JavaPlugin {
 
             //ResponderCenter
             if(ConfigHandler.getINSTANCE().config.getFriendFC().isResponder()) {
-                NewHelp.handle(event);
                 ResponderCenter.getINSTANCE().handleMessage(event);
                 URManager.handle(event);
                 ImageResponder.handle(event);
