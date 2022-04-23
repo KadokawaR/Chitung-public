@@ -5,6 +5,7 @@ import net.mamoe.mirai.message.data.*;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class Repeater {
 
@@ -12,11 +13,12 @@ public class Repeater {
 
     public static void handle(GroupMessageEvent event) {
         if (isValidMessage(event.getMessage())) {
+            MessageChain messages = MessageUtils.newChain(event.getMessage().stream().filter(singleMessage -> !(singleMessage instanceof MessageSource)).collect(Collectors.toList()));
             long id = event.getGroup().getId();
             if (!messageContainer.containsKey(id)) {
-                messageContainer.put(id, new MessageHolder(event.getMessage(), 1));
+                messageContainer.put(id, new MessageHolder(messages, 1));
             } else {
-                if (event.getMessage().equals(messageContainer.get(id).messages)) {
+                if (messages.equals(messageContainer.get(id).messages)) {
                     messageContainer.get(id).count++;
                     if (messageContainer.get(id).count == 3) {
                         event.getGroup().sendMessage(messageContainer.get(id).messages);
@@ -36,11 +38,12 @@ public class Repeater {
             return false;
         }
         for (Message message : chain) {
-            if (!(message instanceof PlainText || message instanceof At || message instanceof Image || message instanceof Face || message instanceof MarketFace))
+            if (!(message instanceof MessageSource ||message instanceof PlainText || message instanceof At || message instanceof Image || message instanceof Face || message instanceof MarketFace))
                 return false;
         }
         return true;
     }
+
 
     static class MessageHolder {
         MessageChain messages;
