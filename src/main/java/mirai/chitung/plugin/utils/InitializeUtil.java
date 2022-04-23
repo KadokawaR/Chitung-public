@@ -27,12 +27,12 @@ public class InitializeUtil {
 
     public static void initialize(){
         GroupPolice.getINSTANCE().ini();
-        ResponderManager.getINSTANCE().ini();
         ConfigHandler.getINSTANCE().ini();
         GroupConfigManager.getINSTANCE().ini();
         URManager.getINSTANCE().ini();
         Blacklist.getINSTANCE().ini();
         ImageResponder.getINSTANCE().ini();
+        ResponderManager.getINSTANCE().ini();
         System.out.println(WELCOME_TEXT);
     }
 }

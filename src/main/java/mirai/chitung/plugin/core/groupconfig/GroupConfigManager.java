@@ -252,7 +252,8 @@ public class GroupConfigManager {
     public static boolean globalConfig(GroupMessageEvent event){
         if(readGroupConfig(event.getGroup().getId())==null) addGroupConfig(event.getGroup().getId());
         if(!getINSTANCE().groupConfigs.groupConfigList.get(getGroupIndex(event.getGroup().getId())).isGlobal()){
-            return IdentityUtil.isAdmin(event);
+            if(IdentityUtil.isAdmin(event)) return true;
+            return !event.getSender().getPermission().equals(MemberPermission.MEMBER);
         }
         return true;
     }
@@ -419,6 +420,10 @@ public class GroupConfigManager {
         return readGroupConfig(groupID).getBlockedUser().contains(memberID);
     }
 
+    public static GroupConfig getGroupConfig(long groupID){
+        return getINSTANCE().groupConfigs.groupConfigList.get(getGroupIndex(groupID));
+    }
+
     static void groupConfigCheck(GroupMessageEvent event, String message){
         if(message.equalsIgnoreCase("/groupconfig -c")||message.equalsIgnoreCase("/gc -c")||message.equals("查看群设置")) {
             MessageChainBuilder mcb = new MessageChainBuilder();
@@ -459,9 +464,15 @@ public class GroupConfigManager {
         }
 
         if(message.equalsIgnoreCase("/blocklist")){
+
+            List<Long> blocklist = getINSTANCE().groupConfigs.groupConfigList.get(getGroupIndex(event.getGroup().getId())).getBlockedUser();
+            if(blocklist.size()==0){
+                event.getGroup().sendMessage("本群暂无被屏蔽成员。");
+                return;
+            }
             MessageChainBuilder mcb = new MessageChainBuilder();
             mcb.append("本群的屏蔽名单有：");
-            for(long ID:getINSTANCE().groupConfigs.groupConfigList.get(getGroupIndex(event.getGroup().getId())).getBlockedUser()){
+            for(long ID:blocklist){
                 if(event.getGroup().getMembers().contains(ID)){
                     mcb.append(new At(ID));
                 }
