@@ -3,61 +3,52 @@ package mirai.chitung.plugin.core.responder.repeater;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
 import net.mamoe.mirai.message.data.*;
 
-import java.util.*;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Repeater {
 
-    static Map<Long,List<String>> messageContainer = new HashMap<>();
+    static Map<Long, MessageHolder> messageContainer = new ConcurrentHashMap<>();
 
-    public static void handle(GroupMessageEvent event){
-
-        if(event.getMessage().serializeToMiraiCode().contains("mirai")) {
-            if(messageContainer.containsKey(event.getGroup().getId())) {
-                messageContainer.get(event.getGroup().getId()).clear();
+    public static void handle(GroupMessageEvent event) {
+        if (isValidMessage(event.getMessage())) {
+            long id = event.getGroup().getId();
+            if (!messageContainer.containsKey(id)) {
+                messageContainer.put(id, new MessageHolder(event.getMessage(), 1));
+            } else {
+                if (event.getMessage().equals(messageContainer.get(id).messages)) {
+                    messageContainer.get(id).count++;
+                    if (messageContainer.get(id).count == 3) {
+                        event.getGroup().sendMessage(messageContainer.get(id).messages);
+                    }
+                } else {
+                    messageContainer.remove(event.getGroup().getId());
+                }
             }
-            return;
-        }
-
-        String message = event.getMessage().contentToString();
-
-        if(message.equals("")){
-            messageContainer.get(event.getGroup().getId()).clear();
-            return;
-        }
-
-        if(!messageContainer.containsKey(event.getGroup().getId())){
-            List<String> temp = new ArrayList<String>() {{add(message);}};
-            messageContainer.put(event.getGroup().getId(),temp);
-            return;
-        }
-
-        if(messageContainer.get(event.getGroup().getId()).size()==0){
-            messageContainer.get(event.getGroup().getId()).add(message);
-            return;
-        }
-
-        if(messageContainer.get(event.getGroup().getId()).size()==1){
-            if(!messageContainer.get(event.getGroup().getId()).get(0).equals(message)){
-                messageContainer.get(event.getGroup().getId()).clear();
-            }
-            messageContainer.get(event.getGroup().getId()).add(message);
-            return;
-        }
-
-        if(messageContainer.get(event.getGroup().getId()).size()==2){
-            String m1 = messageContainer.get(event.getGroup().getId()).get(0);
-            String m2 = messageContainer.get(event.getGroup().getId()).get(1);
-
-            if(m1.equals(m2)&&m2.equals(message)){
-                event.getGroup().sendMessage(message);
-            }
-            messageContainer.get(event.getGroup().getId()).clear();
-            return;
-        }
-
-        if(messageContainer.get(event.getGroup().getId()).size()>2){
-            messageContainer.get(event.getGroup().getId()).clear();
+        } else {
+            messageContainer.remove(event.getGroup().getId());
         }
     }
 
+    // 判断消息是否仅由文字，图片，At，官方表情，商城表情构成，且不包含引用回复
+    private static boolean isValidMessage(MessageChain chain) {
+        if (chain.contains(QuoteReply.Key)) {
+            return false;
+        }
+        for (Message message : chain) {
+            if (!(message instanceof PlainText || message instanceof At || message instanceof Image || message instanceof Face || message instanceof MarketFace))
+                return false;
+        }
+        return true;
+    }
+
+    static class MessageHolder {
+        MessageChain messages;
+        int count;
+
+        public MessageHolder(MessageChain messages, int count) {
+            this.messages = messages;
+            this.count = count;
+        }
+    }
 }
