@@ -32,13 +32,13 @@ public class Repeater {
         }
     }
 
-    // 判断消息是否仅由文字，图片，At，官方表情，商城表情构成，且不包含引用回复
+    // 判断消息是否仅由文字，图片，At构成，且不包含引用回复
     private static boolean isValidMessage(MessageChain chain) {
         if (chain.contains(QuoteReply.Key)) {
             return false;
         }
         for (Message message : chain) {
-            if (!(message instanceof MessageSource ||message instanceof PlainText || message instanceof At || message instanceof Image || message instanceof Face || message instanceof MarketFace))
+            if (!(message instanceof MessageSource ||message instanceof PlainText || message instanceof At || message instanceof Image))
                 return false;
         }
         return true;
