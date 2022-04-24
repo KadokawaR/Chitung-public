@@ -104,7 +104,7 @@ public class Fishing extends FishingUtil{
             if(!ConfigHandler.getINSTANCE().config.getFriendFC().isFish()) return;
         }
 
-        if(message.toLowerCase().equals("/fishhelp")){
+        if(message.equalsIgnoreCase("/fishhelp")){
 
             try (InputStream img = Fishing.class.getResourceAsStream(FISH_INFO_PATH)) {
                 assert img != null;
@@ -146,7 +146,7 @@ public class Fishing extends FishingUtil{
             return;
         }
 
-        if (message.toLowerCase().contains("/fish")){
+        if (message.toLowerCase().startsWith("/fish")){
             if (!isInFishingProcessFlag.contains(event.getSender().getId())){
 
                 getFish(event,getWater(message));
