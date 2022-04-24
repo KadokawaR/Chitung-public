@@ -9,6 +9,7 @@ import mirai.chitung.plugin.utils.fileutils.Touch;
 import mirai.chitung.plugin.utils.fileutils.Write;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
 import net.mamoe.mirai.event.events.MessageEvent;
+import net.mamoe.mirai.message.data.MessageChainBuilder;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -231,10 +232,32 @@ public class URManager {
         }
     }
 
+    public static void check(MessageEvent event,String message){
+        if(message.equalsIgnoreCase("/check ur")||message.equalsIgnoreCase("/check -ur")||message.equalsIgnoreCase("查看通用响应")){
+            MessageChainBuilder mcb = new MessageChainBuilder().append("通用响应关键词：\n");
+            for(int i=0;i<getINSTANCE().urList.universalRespondList.size();i++){
+                UniversalResponder ur = getINSTANCE().urList.universalRespondList.get(i);
+                mcb.append("关键词：");
+                StringBuilder sb = new StringBuilder();
+                for(String s:ur.getPattern()){
+                    sb.append(s);
+                    sb.append(" ");
+                }
+                mcb.append(sb.toString().trim()).append("\n").append("响应模式：").append(String.valueOf(ur.getTriggerKind())).append("\n");
+                mcb.append("当前环境响应状态：").append(String.valueOf(IDMatch(event,ur)));
+                if(i!=getINSTANCE().urList.universalRespondList.size()-1){
+                    mcb.append("\n\n");
+                }
+            }
+            event.getSubject().sendMessage(mcb.asMessageChain());
+        }
+    }
+
     public static void handle(MessageEvent event){
         String message = event.getMessage().contentToString();
         reset(event,message);
         respond(event,message);
+        check(event,message);
     }
 
     public void ini(){
