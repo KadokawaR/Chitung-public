@@ -122,6 +122,9 @@ public final class JavaPluginMain extends JavaPlugin {
 
             if(Harbor.isReachingPortLimit(event)) return;
 
+            //钓鱼
+            Fishing.go(event);
+
             //ResponderCenter
             if(GroupConfigManager.responderConfig(event) && ConfigHandler.getINSTANCE().config.getGroupFC().isResponder()){
 
@@ -130,8 +133,6 @@ public final class JavaPluginMain extends JavaPlugin {
                 ImageResponder.handle(event);
                 Repeater.handle(event);
 
-                //钓鱼
-                Fishing.go(event);
                 //Universal Responder
                 URManager.handle(event);
             }
@@ -146,7 +147,9 @@ public final class JavaPluginMain extends JavaPlugin {
 
 
         //计数
-        GlobalEventChannel.INSTANCE.subscribeAlways(GroupMessagePostSendEvent.class, event -> {return;});
+        GlobalEventChannel.INSTANCE.subscribeAlways(GroupMessagePostSendEvent.class, event -> {
+            Repeater.flush(event.getTarget());
+        });
         GlobalEventChannel.INSTANCE.subscribeAlways(FriendMessagePostSendEvent.class, event -> {return;});
 
         //临时消息
@@ -170,12 +173,14 @@ public final class JavaPluginMain extends JavaPlugin {
 
             if(Harbor.isReachingPortLimit(event)) return;
 
+            Fishing.go(event);
+
             //ResponderCenter
             if(ConfigHandler.getINSTANCE().config.getFriendFC().isResponder()) {
                 ResponderCenter.getINSTANCE().handleMessage(event);
                 URManager.handle(event);
                 ImageResponder.handle(event);
-                Fishing.go(event);
+
             }
 
         });

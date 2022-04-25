@@ -1,5 +1,6 @@
 package mirai.chitung.plugin.core.game.mahjongriddle;
 
+import mirai.chitung.plugin.core.harbor.Harbor;
 import mirai.chitung.plugin.core.responder.mahjong.FortuneTeller;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
@@ -197,6 +198,9 @@ public class MahjongRiddle {
 
         //lock.lock();
         //try{
+
+        if(!riddleSessionHolder.containsKey(event.getGroup().getId())&& Harbor.isReachingPortLimit(event)) return;
+
         if (message.contains("猜麻将")) {
             event.getSubject().sendMessage("来猜麻将吧！\n\n七筒会随机生成5张麻将牌（只含筒牌、条牌和万字牌），猜中最后一张的会是赢家！" +
                     "\n请注意，只有形式诸如“三条”、“五筒”、“七万”的答案会触发判定。\n如果没有人猜中，本轮游戏会在180秒内自动关闭。");

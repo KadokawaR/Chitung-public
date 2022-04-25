@@ -265,7 +265,6 @@ public class ImageResponder {
 
         if(!ird.text.equals("")){
             event.getSubject().sendMessage(ird.text);
-            Harbor.count(event);
         }
 
         ExternalResource er = ExternalResource.create(image);
