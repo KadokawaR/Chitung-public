@@ -1,5 +1,6 @@
 package mirai.chitung.plugin.core.responder.repeater;
 
+import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
 import net.mamoe.mirai.message.data.*;
 
@@ -30,6 +31,11 @@ public class Repeater {
         } else {
             messageContainer.remove(event.getGroup().getId());
         }
+    }
+
+    // 一旦机器人说话就清空记录
+    public static void flush(Group group) {
+        messageContainer.remove(group.getId());
     }
 
     // 判断消息是否仅由文字，图片，At构成，且不包含引用回复
