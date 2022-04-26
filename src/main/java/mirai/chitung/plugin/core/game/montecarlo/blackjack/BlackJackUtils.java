@@ -70,7 +70,7 @@ public class BlackJackUtils {
     }
 
     //返回下注的钱，不行返回null
-    public static Integer getBet(MessageEvent event,String message){
+    public static Integer getBet(String message){
         message = message.replace(" ","");
         if (message.contains("/bet")){
             message = message.replace("/bet","");

@@ -14,10 +14,7 @@ import net.mamoe.mirai.message.data.MessageChainBuilder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public class BlackJack extends BlackJackUtils {
 
@@ -34,8 +31,8 @@ public class BlackJack extends BlackJackUtils {
     static final String BLACKJACK_INTRO_PATH = "/pics/casino/blackjack.png";
     static final int GAP_SECONDS = 60;
 
-    public List<BlackJackData> globalGroupData = new ArrayList<>();
-    public List<BlackJackData> globalFriendData = new ArrayList<>();
+    public CopyOnWriteArrayList<BlackJackData> globalGroupData = new CopyOnWriteArrayList<>();
+    public CopyOnWriteArrayList<BlackJackData> globalFriendData = new CopyOnWriteArrayList<>();
 
     public ConcurrentHashMap<Long, Timer> groupBlackjackCancelTimer = new ConcurrentHashMap<>();
     public ConcurrentHashMap<Long, Timer> friendBlackjackCancelTimer = new ConcurrentHashMap<>();
@@ -45,7 +42,7 @@ public class BlackJack extends BlackJackUtils {
 
     static ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 
-    List<Long> isInBetProcess = new ArrayList<>();
+    CopyOnWriteArrayList<Long> isInBetProcess = new CopyOnWriteArrayList<>();
     ConcurrentHashMap<Date, Long> GroupResetMark = new ConcurrentHashMap<>();
     ConcurrentHashMap<Date, Long> FriendResetMark = new ConcurrentHashMap<>();
 
@@ -159,9 +156,10 @@ public class BlackJack extends BlackJackUtils {
         }
     }
 
-    static void cancelMark(MessageEvent event) {
+    public static void cancelMark(MessageEvent event) {
         if (isGroupMessage(event)) {
-            for (Date date : getINSTANCE().GroupResetMark.keySet()) {
+            List<Date> clonedKeyset = new ArrayList<>(getINSTANCE().GroupResetMark.keySet());
+            for (Date date : clonedKeyset) {
                 if (getINSTANCE().GroupResetMark.get(date) == event.getSubject().getId()) {
                     getINSTANCE().GroupResetMark.remove(date);
                     break;
@@ -177,7 +175,8 @@ public class BlackJack extends BlackJackUtils {
             }
 
         } else {
-            for (Date date : getINSTANCE().FriendResetMark.keySet()) {
+            List<Date> clonedKeyset = new ArrayList<>(getINSTANCE().FriendResetMark.keySet());
+            for (Date date : clonedKeyset) {
                 if (getINSTANCE().FriendResetMark.get(date) == event.getSubject().getId()) {
                     getINSTANCE().FriendResetMark.remove(date);
                     break;
@@ -251,7 +250,7 @@ public class BlackJack extends BlackJackUtils {
         //判定数值是否正确
         Integer bet = null;
         try {
-            bet = getBet(event,message);
+            bet = getBet(message);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1141,7 +1140,7 @@ public class BlackJack extends BlackJackUtils {
     }
 
     //BlackJackData应该是哪个MessageEvent下的data
-    public static List<BlackJackData> getGlobalData(MessageEvent event) {
+    static List<BlackJackData> getGlobalData(MessageEvent event) {
         if (isGroupMessage(event)) {
             return getINSTANCE().globalGroupData;
         }

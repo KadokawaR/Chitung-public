@@ -126,22 +126,29 @@ public class Roulette extends RouletteUtils {
             if (isGroupMessage(event)) {
                 if (getINSTANCE().GroupResetMark.containsKey(gameStartTime)) {
                     //清除标记
-                    Table<Long,Long,Integer> copyGroupBet = getINSTANCE().GroupBet;
+                    Table<Long,Long,Integer> copyGroupBet = HashBasedTable.create();
+                    copyGroupBet.putAll(getINSTANCE().GroupBet);
+
                     for (Long playerID : copyGroupBet.row(event.getSubject().getId()).keySet()) {
                         getINSTANCE().GroupBet.remove(event.getSubject().getId(), playerID);
                     }
+
                     getINSTANCE().GroupSettleAccount.remove(event.getSubject().getId());
                     getINSTANCE().GroupStatusMap.remove(event.getSubject().getId());
                     getINSTANCE().GroupResetMark.remove(gameStartTime);
                 }
+
             } else {
                 if (getINSTANCE().FriendResetMark.containsKey(gameStartTime)) {
                     //清除标记
                     getINSTANCE().FriendBet.remove(event.getSubject().getId());
-                    Table<Long,Integer,Integer> copyFriendSettleAccount = getINSTANCE().FriendSettleAccount;
+                    Table<Long,Integer,Integer> copyFriendSettleAccount  = HashBasedTable.create();
+                    copyFriendSettleAccount.putAll(getINSTANCE().FriendSettleAccount);
+
                     for (Integer integer : copyFriendSettleAccount.row(event.getSubject().getId()).keySet()) {
                         getINSTANCE().FriendSettleAccount.remove(event.getSubject().getId(), integer);
                     }
+
                     getINSTANCE().FriendStatusMap.remove(event.getSubject().getId());
                     getINSTANCE().FriendResetMark.remove(gameStartTime);
                 }
@@ -149,21 +156,27 @@ public class Roulette extends RouletteUtils {
         }
     }
 
-    static void cancelMark(MessageEvent event) {
+    public static void cancelMark(MessageEvent event) {
         if (isGroupMessage(event)) {
             //清除标记
             if(getINSTANCE().GroupBet.rowKeySet().contains(event.getSubject().getId())) {
-                Table<Long,Long,Integer> copyGroupBet = getINSTANCE().GroupBet;
+
+                Table<Long,Long,Integer> copyGroupBet = HashBasedTable.create();
+                copyGroupBet.putAll(getINSTANCE().GroupBet);
+
                 for (Long playerID : copyGroupBet.row(event.getSubject().getId()).keySet()) {
                     getINSTANCE().GroupBet.remove(event.getSubject().getId(), playerID);
                 }
+
             }
+
             getINSTANCE().GroupSettleAccount.remove(event.getSubject().getId());
             getINSTANCE().GroupStatusMap.remove(event.getSubject().getId());
-            Set<Date> copyGroupResetMark = getINSTANCE().GroupResetMark.keySet();
+
+            List<Date> copyGroupResetMark = new ArrayList<>(getINSTANCE().GroupResetMark.keySet());
 
             if(getINSTANCE().GroupResetMark.containsValue(event.getSubject().getId())){
-                for(Date date:copyGroupResetMark){
+                for(Date date : copyGroupResetMark){
                     if (getINSTANCE().GroupResetMark.get(date).equals(event.getSubject().getId())){
                         getINSTANCE().GroupResetMark.remove(date);
                     }
@@ -173,13 +186,18 @@ public class Roulette extends RouletteUtils {
         } else {
             //清除标记
             getINSTANCE().FriendBet.remove(event.getSubject().getId());
-            Table<Long,Integer,Integer> copyFriendSettleAccount = getINSTANCE().FriendSettleAccount;
+
+            Table<Long,Integer,Integer> copyFriendSettleAccount = HashBasedTable.create();
+            copyFriendSettleAccount.putAll(getINSTANCE().FriendSettleAccount);
+
             if(getINSTANCE().FriendSettleAccount.rowKeySet().contains(event.getSubject().getId())){
                 for (Integer integer : copyFriendSettleAccount.row(event.getSubject().getId()).keySet()) {
                     getINSTANCE().FriendSettleAccount.remove(event.getSubject().getId(), integer);
                 }
             }
+
             getINSTANCE().FriendStatusMap.remove(event.getSubject().getId());
+
         }
     }
 
@@ -193,19 +211,25 @@ public class Roulette extends RouletteUtils {
 
         @Override
         public void run() {
+
             boolean isStillInCallin;
+
             if (isGroupMessage(event)) {
                 isStillInCallin = getINSTANCE().GroupStatusMap.get(event.getSubject().getId()).equals(StatusType.Callin);
             } else {
                 isStillInCallin = getINSTANCE().FriendStatusMap.get(event.getSubject().getId()).equals(StatusType.Callin);
             }
+
             if (!isStillInCallin) return;
+
             event.getSubject().sendMessage(RouletteStops);
+
             if (isGroupMessage(event)) {
                 getINSTANCE().GroupStatusMap.remove(event.getSubject().getId());
             } else {
                 getINSTANCE().FriendStatusMap.remove(event.getSubject().getId());
             }
+
         }
     }
 
@@ -453,19 +477,27 @@ public class Roulette extends RouletteUtils {
         } finally {
             if (isGroupMessage(event)) {
                 //清除标记
-                for (Date date : getINSTANCE().GroupResetMark.keySet()) {
+
+                List<Date> clonedKeyset = new ArrayList<>(getINSTANCE().GroupResetMark.keySet());
+
+                for (Date date : clonedKeyset) {
                     if (getINSTANCE().GroupResetMark.get(date) == event.getSubject().getId()) {
                         getINSTANCE().GroupResetMark.remove(date);
                         break;
                     }
                 }
                 try {
-                    Table<Long,Long,Integer> copyGroupBet = getINSTANCE().GroupBet;
+
+                    Table<Long,Long,Integer> copyGroupBet = HashBasedTable.create();
+                    copyGroupBet.putAll(getINSTANCE().GroupBet);
+
                     for (Long playerID : copyGroupBet.row(event.getSubject().getId()).keySet()) {
                         getINSTANCE().GroupBet.remove(event.getSubject().getId(), playerID);
                     }
+
                     getINSTANCE().GroupSettleAccount.remove(event.getSubject().getId());
                     getINSTANCE().GroupStatusMap.remove(event.getSubject().getId());
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -473,12 +505,20 @@ public class Roulette extends RouletteUtils {
             } else {
                 //清除标记
                 getINSTANCE().FriendBet.remove(event.getSubject().getId());
-                Table<Long,Integer,Integer> copyFriendSettleAccount = getINSTANCE().FriendSettleAccount;
+
+                Table<Long,Integer,Integer> copyFriendSettleAccount = HashBasedTable.create();
+                copyFriendSettleAccount.putAll(getINSTANCE().FriendSettleAccount);
+
+
                 for (Integer integer : copyFriendSettleAccount.row(event.getSubject().getId()).keySet()) {
                     getINSTANCE().FriendSettleAccount.remove(event.getSubject().getId(), integer);
                 }
+
                 try {
-                    for (Date date : getINSTANCE().FriendResetMark.keySet()) {
+
+                    List<Date> clonedKeyset = new ArrayList<>(getINSTANCE().FriendResetMark.keySet());
+
+                    for (Date date : clonedKeyset) {
                         if (getINSTANCE().FriendResetMark.get(date) == event.getSubject().getId()) {
                             getINSTANCE().FriendResetMark.remove(date);
                             break;

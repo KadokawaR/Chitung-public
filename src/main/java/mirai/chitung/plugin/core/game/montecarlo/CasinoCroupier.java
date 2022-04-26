@@ -26,6 +26,14 @@ public class CasinoCroupier {
 
     }
 
+    //重置blackjack
+    static void flush(MessageEvent event,String message){
+        if(!message.equalsIgnoreCase("/flush")) return;
+        BlackJack.cancelMark(event);
+        Roulette.cancelMark(event);
+        event.getSubject().sendMessage("已经重置娱乐游戏。");
+    }
+
     public static int croupierStatus (MessageEvent event){
         if(BlackJack.isInGamingProcess(event)) return 1;
         if(Roulette.isInGamingProcess(event)) return 2;
