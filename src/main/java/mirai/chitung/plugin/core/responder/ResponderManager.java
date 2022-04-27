@@ -105,6 +105,7 @@ public class ResponderManager {
         register(LotteryWinnerMessageHandler::new);
         register(LotteryBummerMessageHandler::new);
         register(LotteryC4MessageHandler::new);
+        register(LotteryBummerMessageHandler::new);
         register(DrinkPicker::new);
         register(MealPicker::new);
         register(PizzaPicker::new);
