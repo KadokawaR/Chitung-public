@@ -1,19 +1,19 @@
 package mirai.chitung.plugin.core.game.montecarlo.taisai;
 
+import kotlin.jvm.Synchronized;
 import mirai.chitung.plugin.core.bank.PumpkinPesoWindow;
 import mirai.chitung.plugin.core.game.montecarlo.GeneralMonteCarloUtil;
+import mirai.chitung.plugin.core.game.montecarlo.blackjack.BlackJack;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.event.events.MessageEvent;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.*;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
 
 public class TaiSai extends TaiSaiUtil{
@@ -24,9 +24,15 @@ public class TaiSai extends TaiSaiUtil{
     static CopyOnWriteArrayList<Contact> isInFunctionList = new CopyOnWriteArrayList<>();
     static CopyOnWriteArrayList<TaiSaiUserData> data = new CopyOnWriteArrayList<>();
 
+    static final String TAISAI_PATH = "/pics/casino/taisai.png";
+
 
     public static void handle(MessageEvent event){
         String content = event.getMessage().contentToString();
+        if(matchTaiSai(content)) process(event,content);
+    }
+
+    public static void process(MessageEvent event,String content){
         start(content, event);
         bet(content, event);
         function(content, event);
@@ -69,16 +75,27 @@ public class TaiSai extends TaiSaiUtil{
     }
 
     static void start(String content,MessageEvent event){
+
         if(!matchStart(content)) return;
         if(hasStarted(event.getSubject())||subjectIsInGamingProcess(event.getSubject())) return;
+
         executorService.schedule(new Start(event.getSubject()),GapTime,TimeUnit.SECONDS);
-        event.getSubject().sendMessage(TaiSaiRules);
+
+        MessageChainBuilder mcb = new MessageChainBuilder().append(TaiSaiRules);
+        InputStream img = BlackJack.class.getResourceAsStream(TAISAI_PATH);
+        assert img != null;
+
+        mcb.append("\n\n").append(Contact.uploadImage(event.getSubject(), img));
+        event.getSubject().sendMessage(mcb.asMessageChain());
+
         startBetList.add(event.getSubject());
     }
 
     public static void function(String content,MessageEvent event){
 
         if(!isInFunctionList.contains(event.getSubject())) return;
+
+        if(!senderIsInGamingProcess(event)) return;
 
         List<TaiSaiData> functions = new ArrayList<>();
 
@@ -120,12 +137,12 @@ public class TaiSai extends TaiSaiUtil{
                 continue;
             }
 
-            if (element.equals("买大")||element.equals("big")||element.equals("大")){
+            if (element.equals("买大")||element.equalsIgnoreCase("big")||element.equals("大")){
                 functions.add(new TaiSaiData(-1,TaiSaiBetType.Big));
                 continue;
             }
 
-            if (element.equals("买小")||element.equals("small")||element.equals("小")){
+            if (element.equals("买小")||element.equalsIgnoreCase("small")||element.equals("小")){
                 functions.add(new TaiSaiData(-1,TaiSaiBetType.Small));
                 continue;
             }
@@ -188,22 +205,22 @@ public class TaiSai extends TaiSaiUtil{
 
             switch (tsd.type) {
                 case AllTriple:
-                    sb.append("全围 ");
+                    sb.append("全围（").append(getTimes(tsd)).append("） ");
                     break;
                 case Triple:
-                    sb.append("围").append(fromArabicNumberToHanzi(tsd.specificNumber)).append(" ");
+                    sb.append("围").append(fromArabicNumberToHanzi(tsd.specificNumber)).append("（").append(getTimes(tsd)).append("） ");
                     break;
                 case Double:
-                    sb.append("对").append(fromArabicNumberToHanzi(tsd.specificNumber)).append(" ");
+                    sb.append("对").append(fromArabicNumberToHanzi(tsd.specificNumber)).append("（").append(getTimes(tsd)).append("） ");
                     break;
                 case Small:
-                    sb.append("买小 ");
+                    sb.append("买小（").append(getTimes(tsd)).append("） ");
                     break;
                 case Big:
-                    sb.append("买大 ");
+                    sb.append("买大（").append(getTimes(tsd)).append("） ");
                     break;
                 case Number:
-                    sb.append(tsd.specificNumber).append("点 ");
+                    sb.append(tsd.specificNumber).append("点（").append(getTimes(tsd)).append("） ");
                     break;
             }
 

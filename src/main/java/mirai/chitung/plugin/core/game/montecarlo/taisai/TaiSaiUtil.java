@@ -2,12 +2,15 @@ package mirai.chitung.plugin.core.game.montecarlo.taisai;
 
 import com.google.common.collect.ImmutableSet;
 import mirai.chitung.plugin.core.bank.PumpkinPesoWindow;
+import mirai.chitung.plugin.utils.image.ImageCreater;
+import mirai.chitung.plugin.utils.image.ImageSender;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
 import net.mamoe.mirai.event.events.MessageEvent;
 import net.mamoe.mirai.message.data.At;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 
+import java.awt.image.BufferedImage;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -26,8 +29,7 @@ public class TaiSaiUtil {
     static final String StartOperateNotice = "现在可以进行操作，请在60秒之内完成。功能列表请参考说明书。如有多重下注，请使用空格隔开。";
     static final String EndGameNotice = "本局游戏已经结束，里格斯公司感谢您的参与。如下为本局玩家获得的南瓜比索：";
 
-    static final int GapTime = 25;
-    static Lock lock = new ReentrantLock();
+    static final int GapTime = 15;
 
     static List<String> HanziNumber = Arrays.asList("十","一","二","三","四","五","六","七","八","九");
 
@@ -74,7 +76,7 @@ public class TaiSaiUtil {
     }
 
     static boolean matchStart(String content){
-        return content.equalsIgnoreCase("/taisai")||content.equals("骰宝")||content.equals("买大小");
+        return content.equalsIgnoreCase("/taisai")||content.equals("骰宝")||content.equals("买大小")||content.equals("/sicbo");
     }
 
     static boolean matchBet(String content){
@@ -151,7 +153,54 @@ public class TaiSaiUtil {
         TaiSai.isInFunctionList.remove(subject);
     }
 
-    static long calculator(int[] result,TaiSaiUserData tsud){
+    static String getTimes(TaiSaiData tsd){
+        return "×"+String.format("%.2f", getTimesAsDouble(tsd));
+    }
+
+    static double getTimesAsDouble(TaiSaiData tsd) {
+        switch (tsd.type) {
+            case Number:
+                switch (tsd.specificNumber) {
+                    case 3:
+                    case 18:
+                        return 216;
+                    case 4:
+                    case 17:
+                        return 72;
+                    case 5:
+                    case 16:
+                        return 36;
+                    case 6:
+                    case 15:
+                        return 21.6;
+                    case 7:
+                    case 14:
+                        return 14.4;
+                    case 8:
+                    case 13:
+                        return 10.2;
+                    case 9:
+                    case 12:
+                        return 8.6;
+                    case 10:
+                    case 11:
+                        return 8;
+                }
+            case Big:
+                return 2;
+            case Small:
+                return 2;
+            case Double:
+                return 13.5;
+            case Triple:
+                return 216;
+            case AllTriple:
+                return 36;
+        }
+        return 0;
+    }
+
+    static double calculator(int[] result,TaiSaiUserData tsud){
 
         long times = 0;
         int total = result[0]+result[1]+result[2];
@@ -184,11 +233,11 @@ public class TaiSaiUtil {
                                 break;
                             case 8:
                             case 13:
-                                times+=10.285;
+                                times+=10.2;
                                 break;
                             case 9:
                             case 12:
-                                times+=8.64;
+                                times+=8.6;
                                 break;
                             case 10:
                             case 11:
@@ -275,6 +324,7 @@ public class TaiSaiUtil {
             TaiSai.isInFunctionList.add(subject);
             subject.sendMessage(EndBetNotice+StartOperateNotice);
             TaiSai.executorService.schedule(new EndFunction(subject),GapTime,TimeUnit.SECONDS);
+            System.out.println("has scheduled endFunction activity");
         }
     }
 
@@ -289,13 +339,25 @@ public class TaiSaiUtil {
         @Override
         public void run(){
 
+            TaiSai.isInFunctionList.remove(subject);
+
             int[] result = new int[3];
 
             for(int i=0;i<3;i++){
                 result[i] = new Random().nextInt(6)+1;
             }
 
-            subject.sendMessage(result[0]+" "+result[1]+" "+result[2]);
+            System.out.println(Arrays.toString(result));
+
+            try {
+
+                BufferedImage image = createImage(result);
+                System.out.println("succeed to create image");
+                ImageSender.sendImageFromBufferedImage(subject, image);
+
+            } catch(Exception e){
+                e.printStackTrace();
+            }
 
             MessageChainBuilder mcb = new MessageChainBuilder().append(EndGameNotice).append("\n");
 
@@ -308,9 +370,10 @@ public class TaiSaiUtil {
                 } else {
                     mcb.append("\n您");
                 }
-                int money = Math.toIntExact(calculator(result, tsud) * tsud.bet);
+                double times = calculator(result, tsud);
+                int money = (int) (calculator(result, tsud) * tsud.bet);
                 PumpkinPesoWindow.addMoney(tsud.sender.getId(),money);
-                mcb.append("获得了").append(String.valueOf(money)).append("南瓜比索");
+                mcb.append("获得了").append(String.valueOf(money)).append("南瓜比索，总倍率为×").append(String.format("%.2f", times)).append("。");
             }
 
             subject.sendMessage(mcb.asMessageChain());
@@ -318,6 +381,20 @@ public class TaiSaiUtil {
             clear(subject);
 
         }
+    }
+
+    static boolean matchTaiSai(String content){
+        return matchBet(content)||matchStart(content)||matchFunction(content);
+    }
+
+    static BufferedImage createImage(int[] nums){
+        String path = "/pics/casino/taisai/";
+        BufferedImage[] bufferedImages = new BufferedImage[nums.length];
+        for(int i=0;i<nums.length;i++){
+            bufferedImages[i] = ImageCreater.getImageFromResource(path+nums[i]+".png");
+        }
+
+        return ImageCreater.addImagesVertically(bufferedImages);
     }
 
 }
