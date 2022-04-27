@@ -3,6 +3,7 @@ package mirai.chitung.plugin.core.responder.fursona;
 import com.google.gson.Gson;
 import mirai.chitung.plugin.core.responder.RespondTask;
 import mirai.chitung.plugin.core.responder.MessageResponder;
+import net.mamoe.mirai.event.events.GroupMessageEvent;
 import net.mamoe.mirai.event.events.MessageEvent;
 import net.mamoe.mirai.message.data.At;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class FursonaPunk implements MessageResponder<MessageEvent> {
-    static final List<MessageResponder.MessageType> TYPES = new ArrayList<>(Collections.singletonList(MessageResponder.MessageType.GROUP));
+    static final List<MessageType> TYPES = new ArrayList<>(Arrays.asList(MessageType.FRIEND, MessageType.GROUP));
     static final Fursona FURSONA_COMPONENTS;
     static final String FURSONA_PATH = "/cluster/fursona.json";
 
@@ -33,7 +34,11 @@ public class FursonaPunk implements MessageResponder<MessageEvent> {
 
     @Override
     public RespondTask handle(MessageEvent event) {
-        return RespondTask.of(event, new At(event.getSender().getId()).plus(createFurryFucker(FURSONA_COMPONENTS, event)), this);
+        if(event instanceof GroupMessageEvent) {
+            return RespondTask.of(event, new At(event.getSender().getId()).plus(createFurryFucker(event)), this);
+        } else {
+            return RespondTask.of(event,"您"+createFurryFucker(event), this);
+        }
     }
 
     @NotNull
@@ -48,41 +53,41 @@ public class FursonaPunk implements MessageResponder<MessageEvent> {
 
     //30%概率什么都不戴
 
-    static String getRandomHats(Fursona furfur, Random random) {
+    static String getRandomHats(Random random) {
         boolean isWearingHats = (random.nextInt(10) < 7);
-        boolean isHats = (random.nextInt(furfur.Hats.length + furfur.Bags.length) < furfur.Hats.length);
+        boolean isHats = (random.nextInt(FursonaPunk.FURSONA_COMPONENTS.Hats.length + FursonaPunk.FURSONA_COMPONENTS.Bags.length) < FursonaPunk.FURSONA_COMPONENTS.Hats.length);
         if (isWearingHats) {
             if (isHats) {
-                return "戴着" + furfur.Adjective1[random.nextInt(furfur.Adjective1.length)] + "的" + furfur.Hats[random.nextInt(furfur.Hats.length)] + "，";
+                return "戴着" + FursonaPunk.FURSONA_COMPONENTS.Adjective1[random.nextInt(FursonaPunk.FURSONA_COMPONENTS.Adjective1.length)] + "的" + FursonaPunk.FURSONA_COMPONENTS.Hats[random.nextInt(FursonaPunk.FURSONA_COMPONENTS.Hats.length)] + "，";
             } else {
-                return "背着" + furfur.Adjective1[random.nextInt(furfur.Adjective1.length)] + "的" + furfur.Bags[random.nextInt(furfur.Bags.length)] + "，";
+                return "背着" + FursonaPunk.FURSONA_COMPONENTS.Adjective1[random.nextInt(FursonaPunk.FURSONA_COMPONENTS.Adjective1.length)] + "的" + FursonaPunk.FURSONA_COMPONENTS.Bags[random.nextInt(FursonaPunk.FURSONA_COMPONENTS.Bags.length)] + "，";
             }
         } else {
             return "";
         }
     }
 
-    static String getRandomClothes(Fursona furfur, Random random) {
+    static String getRandomClothes(Random random) {
         boolean isNaked = (random.nextInt(25) < 1);
         boolean topNaked = (random.nextInt(10) < 3);
         boolean bottomNaked = (random.nextInt(10) < 4);
-        boolean isSuits = (random.nextInt(furfur.Suits.length + furfur.Tops.length + furfur.Bottoms.length) < furfur.Suits.length);
+        boolean isSuits = (random.nextInt(FursonaPunk.FURSONA_COMPONENTS.Suits.length + FursonaPunk.FURSONA_COMPONENTS.Tops.length + FursonaPunk.FURSONA_COMPONENTS.Bottoms.length) < FursonaPunk.FURSONA_COMPONENTS.Suits.length);
         String randomClothes = "";
         if ((isNaked) || (topNaked && bottomNaked)) {
             return "全身一丝不挂的，";
         }
         if (isSuits) {
-            randomClothes = "身穿" + furfur.Adjective1[random.nextInt(furfur.Adjective1.length)] + "的" + furfur.Color[random.nextInt(furfur.Color.length)] + furfur.Suits[random.nextInt(furfur.Suits.length)] + "，";
+            randomClothes = "身穿" + FursonaPunk.FURSONA_COMPONENTS.Adjective1[random.nextInt(FursonaPunk.FURSONA_COMPONENTS.Adjective1.length)] + "的" + FursonaPunk.FURSONA_COMPONENTS.Color[random.nextInt(FursonaPunk.FURSONA_COMPONENTS.Color.length)] + FursonaPunk.FURSONA_COMPONENTS.Suits[random.nextInt(FursonaPunk.FURSONA_COMPONENTS.Suits.length)] + "，";
         } else {
             if (topNaked) {
                 randomClothes = "赤裸上身，";
             } else {
-                randomClothes = "身穿" + furfur.Adjective1[random.nextInt(furfur.Adjective1.length)] + "的" + furfur.Color[random.nextInt(furfur.Color.length)] + furfur.Tops[random.nextInt(furfur.Tops.length)] + "，";
+                randomClothes = "身穿" + FursonaPunk.FURSONA_COMPONENTS.Adjective1[random.nextInt(FursonaPunk.FURSONA_COMPONENTS.Adjective1.length)] + "的" + FursonaPunk.FURSONA_COMPONENTS.Color[random.nextInt(FursonaPunk.FURSONA_COMPONENTS.Color.length)] + FursonaPunk.FURSONA_COMPONENTS.Tops[random.nextInt(FursonaPunk.FURSONA_COMPONENTS.Tops.length)] + "，";
             }
             if (bottomNaked) {
                 randomClothes = randomClothes + "下半身一丝不挂，";
             } else {
-                randomClothes = randomClothes + "腿穿" + furfur.Adjective1[random.nextInt(furfur.Adjective1.length)] + "的" + furfur.Color[random.nextInt(furfur.Color.length)] + furfur.Bottoms[random.nextInt(furfur.Bottoms.length)] + "，";
+                randomClothes = randomClothes + "腿穿" + FursonaPunk.FURSONA_COMPONENTS.Adjective1[random.nextInt(FursonaPunk.FURSONA_COMPONENTS.Adjective1.length)] + "的" + FursonaPunk.FURSONA_COMPONENTS.Color[random.nextInt(FursonaPunk.FURSONA_COMPONENTS.Color.length)] + FursonaPunk.FURSONA_COMPONENTS.Bottoms[random.nextInt(FursonaPunk.FURSONA_COMPONENTS.Bottoms.length)] + "，";
             }
         }
         return randomClothes;
@@ -102,11 +107,11 @@ public class FursonaPunk implements MessageResponder<MessageEvent> {
     //13,13,13,13,13,7,7,7,3,3,(8)分配给剩下的物种
     //json里面存储的是剩下的物种
 
-    static String getSpecies(Fursona furfur, Random random) {
+    static String getSpecies(Random random) {
         int speciesRandom = random.nextInt(100);
         String species = "";
         if (speciesRandom < 13) {
-            return furfur.Color[random.nextInt(furfur.Color.length)] + "犬";
+            return FursonaPunk.FURSONA_COMPONENTS.Color[random.nextInt(FursonaPunk.FURSONA_COMPONENTS.Color.length)] + "犬";
         } else if (speciesRandom < 26) {
             int wolfRandom = random.nextInt(100);
             if (wolfRandom < 30) {
@@ -116,7 +121,7 @@ public class FursonaPunk implements MessageResponder<MessageEvent> {
             } else if (wolfRandom < 75) {
                 return "白狼";
             } else {
-                return furfur.Color[random.nextInt(furfur.Color.length)] + "狼";
+                return FursonaPunk.FURSONA_COMPONENTS.Color[random.nextInt(FursonaPunk.FURSONA_COMPONENTS.Color.length)] + "狼";
             }
         } else if (speciesRandom < 39) {
             int bearRandom = random.nextInt(100);
@@ -127,21 +132,21 @@ public class FursonaPunk implements MessageResponder<MessageEvent> {
             } else if (bearRandom < 75) {
                 return "黑熊";
             } else {
-                return furfur.Color[random.nextInt(furfur.Color.length)] + "熊";
+                return FursonaPunk.FURSONA_COMPONENTS.Color[random.nextInt(FursonaPunk.FURSONA_COMPONENTS.Color.length)] + "熊";
             }
         } else if (speciesRandom < 52) {
             int lionRandom = random.nextInt(10);
             if (lionRandom < 2) {
                 return "狮";
             } else {
-                return furfur.Color[random.nextInt(furfur.Color.length)] + "狮";
+                return FursonaPunk.FURSONA_COMPONENTS.Color[random.nextInt(FursonaPunk.FURSONA_COMPONENTS.Color.length)] + "狮";
             }
         } else if (speciesRandom < 65) {
             int tigerRandom = random.nextInt(10);
             if (tigerRandom < 7) {
                 return "虎";
             } else {
-                return furfur.Color[random.nextInt(furfur.Color.length)] + "虎";
+                return FursonaPunk.FURSONA_COMPONENTS.Color[random.nextInt(FursonaPunk.FURSONA_COMPONENTS.Color.length)] + "虎";
             }
         } else if (speciesRandom < 72) {
             int jeopardRandom = random.nextInt(10);
@@ -150,17 +155,17 @@ public class FursonaPunk implements MessageResponder<MessageEvent> {
             } else if (jeopardRandom < 8) {
                 return "黑豹";
             } else {
-                return furfur.Color[random.nextInt(furfur.Color.length)] + "豹";
+                return FursonaPunk.FURSONA_COMPONENTS.Color[random.nextInt(FursonaPunk.FURSONA_COMPONENTS.Color.length)] + "豹";
             }
 
         } else if (speciesRandom < 79) {
-            return furfur.Color[random.nextInt(furfur.Color.length)] + "龙";
+            return FursonaPunk.FURSONA_COMPONENTS.Color[random.nextInt(FursonaPunk.FURSONA_COMPONENTS.Color.length)] + "龙";
         } else if (speciesRandom < 86) {
             int pandaRandom = random.nextInt(10);
             if (pandaRandom < 8) {
                 return "熊猫";
             } else {
-                return furfur.Color[random.nextInt(furfur.Color.length)] + "熊猫";
+                return FursonaPunk.FURSONA_COMPONENTS.Color[random.nextInt(FursonaPunk.FURSONA_COMPONENTS.Color.length)] + "熊猫";
             }
         } else if (speciesRandom < 89) {
             int foxRandom = random.nextInt(10);
@@ -169,7 +174,7 @@ public class FursonaPunk implements MessageResponder<MessageEvent> {
             } else if (foxRandom < 6) {
                 return "狐狸";
             } else {
-                return furfur.Color[random.nextInt(furfur.Color.length)] + "狐狸";
+                return FursonaPunk.FURSONA_COMPONENTS.Color[random.nextInt(FursonaPunk.FURSONA_COMPONENTS.Color.length)] + "狐狸";
             }
         } else if (speciesRandom < 92) {
             int catRandom = random.nextInt(10);
@@ -178,35 +183,35 @@ public class FursonaPunk implements MessageResponder<MessageEvent> {
             } else if (catRandom < 6) {
                 return "花猫";
             } else {
-                return furfur.Color[random.nextInt(furfur.Color.length)] + "猫";
+                return FursonaPunk.FURSONA_COMPONENTS.Color[random.nextInt(FursonaPunk.FURSONA_COMPONENTS.Color.length)] + "猫";
             }
         } else {
-            return furfur.Color[random.nextInt(furfur.Color.length)] + furfur.Species[random.nextInt(furfur.Species.length)];
+            return FursonaPunk.FURSONA_COMPONENTS.Color[random.nextInt(FursonaPunk.FURSONA_COMPONENTS.Color.length)] + FursonaPunk.FURSONA_COMPONENTS.Species[random.nextInt(FursonaPunk.FURSONA_COMPONENTS.Species.length)];
         }
     }
     //@用户 的兽设是: 在[蒸汽朋克下]的[必胜客]，[冥王星人建立了戴森球]。
     //因为[孟姜女哭塌了长城]，[计划着去殖民英仙座]的，戴着[黑色][针织帽]，
     //身穿[ADJ1][ADJ2非常暴露]的[灰色][西装大衣]，手握[茶颜悦色]的[彩虹色][狐狸]兽人。
 
-    static String createFurryFucker(Fursona furfur, MessageEvent event) {
+    static String createFurryFucker(MessageEvent event) {
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH) + 1;
         int date = calendar.get(Calendar.DATE);
         long datetime = year * 1000L + month * 100 + date;
         Random random = new Random(event.getSender().getId() + datetime);
-        String era = furfur.Era[random.nextInt(furfur.Era.length)];
-        String location = furfur.Location[random.nextInt(furfur.Location.length)];
-        int random1 = random.nextInt(furfur.Reason.length);
+        String era = FursonaPunk.FURSONA_COMPONENTS.Era[random.nextInt(FursonaPunk.FURSONA_COMPONENTS.Era.length)];
+        String location = FursonaPunk.FURSONA_COMPONENTS.Location[random.nextInt(FursonaPunk.FURSONA_COMPONENTS.Location.length)];
+        int random1 = random.nextInt(FursonaPunk.FURSONA_COMPONENTS.Reason.length);
         int random2 = random1;
         while (random1 == random2) {
-            random2 = random.nextInt(furfur.Reason.length);
+            random2 = random.nextInt(FursonaPunk.FURSONA_COMPONENTS.Reason.length);
         }
-        String reason1 = furfur.Reason[random1];
-        String reason2 = furfur.Reason[random2];
-        String action = furfur.Action[random.nextInt(furfur.Action.length)];
-        String items = furfur.Items[random.nextInt(furfur.Items.length)];
-        return "的兽设是：在" + era + "的" + location + "，" + reason1 + "。因为" + reason2 + '，' + action + "的，" + getRandomHats(furfur, random) + getRandomClothes(furfur, random) + "手握" + items + "的" + getSpecies(furfur, random) + "兽人。";
+        String reason1 = FursonaPunk.FURSONA_COMPONENTS.Reason[random1];
+        String reason2 = FursonaPunk.FURSONA_COMPONENTS.Reason[random2];
+        String action = FursonaPunk.FURSONA_COMPONENTS.Action[random.nextInt(FursonaPunk.FURSONA_COMPONENTS.Action.length)];
+        String items = FursonaPunk.FURSONA_COMPONENTS.Items[random.nextInt(FursonaPunk.FURSONA_COMPONENTS.Items.length)];
+        return "的今日兽设是：在" + era + "的" + location + "，" + reason1 + "。因为" + reason2 + '，' + action + "的，" + getRandomHats(random) + getRandomClothes(random) + "手握" + items + "的" + getSpecies(random) + "兽人。";
     }
 
     @Override
