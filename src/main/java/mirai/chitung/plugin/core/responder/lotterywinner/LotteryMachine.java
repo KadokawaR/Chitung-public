@@ -1,27 +1,26 @@
 package mirai.chitung.plugin.core.responder.lotterywinner;
 
+import com.google.common.collect.HashBasedTable;
 import mirai.chitung.plugin.administration.config.ConfigHandler;
 import mirai.chitung.plugin.core.groupconfig.GroupConfigManager;
 import mirai.chitung.plugin.core.responder.RespondTask;
 import mirai.chitung.plugin.utils.IdentityUtil;
 import mirai.chitung.plugin.utils.StandardTimeUtil;
 import mirai.chitung.plugin.utils.image.ImageCreater;
-import net.mamoe.mirai.contact.MemberPermission;
-import net.mamoe.mirai.contact.NormalMember;
+import net.mamoe.mirai.contact.*;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
 import net.mamoe.mirai.message.data.At;
 import net.mamoe.mirai.message.data.PlainText;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 public class LotteryMachine {
     static final Timer TIMER = new Timer(true);
-    static final Map<Long, Boolean> C4_ACTIVATION_FLAGS = new HashMap<>();
+    static final ConcurrentHashMap<Long, Boolean> C4_ACTIVATION_FLAGS = new ConcurrentHashMap<>();
+    static final HashBasedTable<Long,Long,Boolean> BUMMER_ACTIVATION_FLAG = HashBasedTable.create();
     static final ScheduledExecutorService EXECUTOR = Executors.newScheduledThreadPool(10);
     static final Random rand = new Random();
 
@@ -45,24 +44,41 @@ public class LotteryMachine {
         return ((event.getSender().getPermission().equals(MemberPermission.ADMINISTRATOR)) || (event.getSender().getPermission().equals(MemberPermission.OWNER)));
     }
 
+    public static boolean sessionChecker(GroupMessageEvent event){
+        return BUMMER_ACTIVATION_FLAG.rowKeySet().contains(event.getGroup().getId())&&BUMMER_ACTIVATION_FLAG.row(event.getGroup().getId()).containsKey(event.getSender().getId());
+    }
+
     public static RespondTask okBummer(GroupMessageEvent event, RespondTask.Builder builder) {
+
+        if(LotteryBummerExclusion.getINSTANCE().exclusionClass.userList.contains(event.getSender().getId())) {
+            builder.addMessage(new At(event.getSender().getId()).plus("您已经开启Bummer保护。"));
+            return builder.build();
+        }
+
         if(!GroupConfigManager.lotteryConfig(event)) {
-            builder.addMessage("本群暂未开启 Bummer 功能。");
+            builder.addMessage("本群暂未开启Bummer功能。");
             builder.addNote("群 " + event.getGroup().getId() + " 尝试发起Bummer功能，但该群未开启该功能。");
             return builder.build();
         }
 
         if(!ConfigHandler.getINSTANCE().config.getGroupFC().isLottery()) {
-            builder.addMessage("机器人暂未开启C4功能。");
-            builder.addNote("机器人未开启C4功能。");
+            builder.addMessage("机器人暂未开启Bummer功能。");
+            builder.addNote("机器人未开启Bummer功能。");
             return builder.build();
         }
 
         if (botPermissionChecker(event)) {
+
+            if(sessionChecker(event)) return builder.build();
+
             //抽取倒霉蛋
-            List<NormalMember> candidates = event.getGroup().getMembers().stream().filter(member -> member.getPermission().equals(MemberPermission.MEMBER)).collect(Collectors.toList());
+            List<NormalMember> candidates = event.getGroup().getMembers().stream().filter(member -> (
+                    member.getPermission().equals(MemberPermission.MEMBER))
+                    &&
+                    !LotteryBummerExclusion.getINSTANCE().exclusionClass.userList.contains(event.getSender().getId())
+                    ).collect(Collectors.toList());
             if(candidates.isEmpty()){
-                builder.addMessage("全都是管理员的群你让我抽一个普通成员禁言？别闹。");
+                builder.addMessage("要么都是管理员要么都没有人玩Bummer了？别闹。");
                 return builder.build();
             } else {
                 //排除官方Bot，最好不要戳到这群“正规军”
@@ -98,6 +114,8 @@ public class LotteryMachine {
                         .plus(new PlainText(" 以自己为代价随机带走了 "))
                         .plus(new At(victim.getId())));
             }
+            BUMMER_ACTIVATION_FLAG.put(event.getGroup().getId(),event.getSender().getId(),true);
+            builder.addTask(() -> EXECUTOR.schedule(() -> BUMMER_ACTIVATION_FLAG.remove(event.getGroup().getId(),event.getSender().getId()), StandardTimeUtil.getPeriodLengthInMS(0, 0, 2, 0), TimeUnit.MILLISECONDS));
             return builder.build();
         } else {
             builder.addMessage("七筒目前还没有管理员权限，请授予七筒权限解锁更多功能。");
