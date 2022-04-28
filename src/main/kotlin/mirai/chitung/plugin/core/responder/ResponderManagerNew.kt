@@ -72,10 +72,9 @@ object ResponderManagerNew {
             else{
                 println("[Error]: Responder $c 既没有提供主构建方法，也不是Object! 注册失败!")
             }
-            for(e in map.entries){
-                println("${e.value.name} 触发类型:${e.value.from} 优先级:${e.value.priority}")
-            }
-
+        }
+        for(e in map.entries){
+            println("Responder ${e.value.name} 注册成功!")
         }
     }
 

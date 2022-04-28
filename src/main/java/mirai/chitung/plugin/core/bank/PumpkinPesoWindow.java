@@ -20,9 +20,6 @@ public class PumpkinPesoWindow {
 
             mcb.append("您的余额为");
             mcb.append(" ").append(String.valueOf(SenoritaCounter.getDisplayNumber(event.getSender().getId(), Currencies.PUMPKIN_PESO))).append(" 南瓜比索");
-            //mcb.append("Akaoni：").append(String.valueOf(getDisplayNumber(event.getSender().getId(), Currencies.AKAONI))).append("\n");
-            //mcb.append("Antoninianus：").append(String.valueOf(getDisplayNumber(event.getSender().getId(), Currencies.ANTONINIANUS))).append("\n");
-            //mcb.append("Adventurer's：").append(String.valueOf(getDisplayNumber(event.getSender().getId(), Currencies.ADVENTURER_S)));
             event.getSubject().sendMessage(mcb.asMessageChain());
             return;
         }

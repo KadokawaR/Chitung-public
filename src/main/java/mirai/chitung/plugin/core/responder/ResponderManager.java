@@ -1,10 +1,5 @@
 package mirai.chitung.plugin.core.responder;
 
-
-import mirai.chitung.plugin.core.responder.basic.AntiDirtyWord;
-import mirai.chitung.plugin.core.responder.basic.AntiOverwatch;
-import mirai.chitung.plugin.core.responder.basic.Goodbye;
-import mirai.chitung.plugin.core.responder.basic.Greeting;
 import mirai.chitung.plugin.core.responder.dice.PlayDice;
 import mirai.chitung.plugin.core.responder.feastinghelper.dinnerpicker.MealPicker;
 import mirai.chitung.plugin.core.responder.feastinghelper.dinnerpicker.PizzaPicker;
@@ -115,10 +110,6 @@ public class ResponderManager {
         register(PizzaPicker::new);
         register(FortuneTeller::new);
         register(PlayDice::new);
-        register(Goodbye::new);
-        register(AntiOverwatch::new);
-        register(AntiDirtyWord::new);
-        register(Greeting::new);
         register(HeroLinesSelector::new);
         register(Function::new);
         register(FeedBack::new);
