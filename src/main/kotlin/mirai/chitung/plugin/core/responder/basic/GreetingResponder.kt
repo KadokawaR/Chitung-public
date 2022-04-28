@@ -13,7 +13,7 @@ object GreetingResponder:Responder {
         if(reg.matches(event.rawText)){
             runBlocking {
                 launch {
-                    event.event.sender.sendMessage(replies.random())
+                    event.event.subject.sendMessage(replies.random())
                 }
             }
             return true

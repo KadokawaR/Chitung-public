@@ -9,6 +9,7 @@ import mirai.chitung.plugin.core.harbor.Harbor;
 import mirai.chitung.plugin.core.responder.Blacklist;
 import mirai.chitung.plugin.core.responder.ResponderCenter;
 import mirai.chitung.plugin.core.responder.ResponderManager;
+import mirai.chitung.plugin.core.responder.ResponderManagerNew;
 import mirai.chitung.plugin.core.responder.repeater.Repeater;
 import mirai.chitung.plugin.core.responder.imageresponder.ImageResponder;
 import mirai.chitung.plugin.core.responder.universalrespond.URManager;
@@ -49,6 +50,8 @@ public final class JavaPluginMain extends JavaPlugin {
         getLogger().info("日志");
 
         InitializeUtil.initialize();
+
+        ResponderManagerNew.INSTANCE.setup();
 
         // 上线事件
         GlobalEventChannel.INSTANCE.subscribeAlways(BotOnlineEvent.class, event -> {
@@ -127,7 +130,7 @@ public final class JavaPluginMain extends JavaPlugin {
             if(GroupConfigManager.responderConfig(event) && ConfigHandler.getINSTANCE().config.getGroupFC().isResponder()){
 
                 Nudge.mentionNudge(event);
-                ResponderCenter.getINSTANCE().handleMessage(event);
+                ResponderManagerNew.INSTANCE.sendToResponderManager(event);
                 ImageResponder.handle(event);
                 Repeater.handle(event);
 
@@ -148,11 +151,11 @@ public final class JavaPluginMain extends JavaPlugin {
         GlobalEventChannel.INSTANCE.subscribeAlways(GroupMessagePostSendEvent.class, event -> {
             Repeater.flush(event.getTarget());
         });
-        GlobalEventChannel.INSTANCE.subscribeAlways(FriendMessagePostSendEvent.class, event -> {return;});
+        GlobalEventChannel.INSTANCE.subscribeAlways(FriendMessagePostSendEvent.class, event -> {});
 
         //临时消息
-        GlobalEventChannel.INSTANCE.subscribeAlways(StrangerMessageEvent.class, event -> {return;});
-        GlobalEventChannel.INSTANCE.subscribeAlways(GroupTempMessageEvent.class, event -> {return;});
+        GlobalEventChannel.INSTANCE.subscribeAlways(StrangerMessageEvent.class, event -> {});
+        GlobalEventChannel.INSTANCE.subscribeAlways(GroupTempMessageEvent.class, event -> {});
 
         //好友消息
         GlobalEventChannel.INSTANCE.subscribeAlways(FriendMessageEvent.class, event -> {
@@ -175,7 +178,7 @@ public final class JavaPluginMain extends JavaPlugin {
 
             //ResponderCenter
             if(ConfigHandler.getINSTANCE().config.getFriendFC().isResponder()) {
-                ResponderCenter.getINSTANCE().handleMessage(event);
+                ResponderManagerNew.INSTANCE.sendToResponderManager(event);
                 URManager.handle(event);
                 ImageResponder.handle(event);
 

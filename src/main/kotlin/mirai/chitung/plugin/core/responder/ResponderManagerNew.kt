@@ -56,11 +56,11 @@ object ResponderManagerNew {
         val classes = reflection.getTypesAnnotatedWith(ResponderAutoRegistry::class.java).map { clazz -> clazz.kotlin }
         for(c in classes){
             if(!c.isSubclassOf(Responder::class)){
-                println("[Error]: $c 不是一个 Responder! 注册失败!")
+                println("[Error]: Responder $c 不是一个 Responder! 注册失败!")
             }
             if(c.primaryConstructor!=null){
                 if(c.primaryConstructor!!.parameters.isNotEmpty()){
-                    println("[Error]: $c 的主构建方法方法! 注册失败!")
+                    println("[Error]: Responder $c 的主构建方法方法! 注册失败!")
                 }
                 else{
                     map[c.primaryConstructor!!.call() as Responder] = c.annotations.find { annotation -> annotation is ResponderAutoRegistry }!! as ResponderAutoRegistry
@@ -70,7 +70,7 @@ object ResponderManagerNew {
                 map[c.objectInstance!! as Responder] = c.annotations.find { annotation -> annotation is ResponderAutoRegistry }!! as ResponderAutoRegistry
             }
             else{
-                println("[Error]: $c 既没有提供主构建方法，也不是Object! 注册失败!")
+                println("[Error]: Responder $c 既没有提供主构建方法，也不是Object! 注册失败!")
             }
             for(e in map.entries){
                 println("${e.value.name} 触发类型:${e.value.from} 优先级:${e.value.priority}")
