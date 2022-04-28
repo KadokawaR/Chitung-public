@@ -1,5 +1,5 @@
 plugins {
-    val kotlinVersion = "1.5.10"
+    val kotlinVersion = "1.6.21"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
     id("net.mamoe.mirai-console") version "2.7.0"
@@ -28,6 +28,11 @@ dependencies{
     implementation("junit:junit:4.13.2")
 
     implementation ("org.jsoup:jsoup:1.14.3")
+
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.21")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
+
+    implementation("org.reflections:reflections:0.10.2")
 }
 
 tasks.test {
@@ -38,11 +43,6 @@ tasks.test {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
-}
-
-configure<JavaPluginConvention> {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
 }

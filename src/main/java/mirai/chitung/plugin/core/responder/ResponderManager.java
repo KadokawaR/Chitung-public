@@ -12,7 +12,6 @@ import mirai.chitung.plugin.core.responder.feastinghelper.drinkpicker.DrinkPicke
 import mirai.chitung.plugin.core.responder.feedback.FeedBack;
 import mirai.chitung.plugin.core.responder.fursona.FursonaPunk;
 import mirai.chitung.plugin.core.responder.help.Function;
-import mirai.chitung.plugin.core.responder.help.NewHelp;
 import mirai.chitung.plugin.core.responder.lotterywinner.LotteryBummerMessageHandler;
 import mirai.chitung.plugin.core.responder.lotterywinner.LotteryC4MessageHandler;
 import mirai.chitung.plugin.core.responder.lotterywinner.LotteryWinnerMessageHandler;
