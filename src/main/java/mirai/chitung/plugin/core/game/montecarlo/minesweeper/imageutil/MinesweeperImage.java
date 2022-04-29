@@ -137,9 +137,6 @@ public class MinesweeperImage {
         drawElement(image, MinesweeperSheet.getElement(MinesweeperSheetType.TitleBox), MinesweeperImageType.TitleBox,true,blockNumX,blockNumY);
         drawElement(image, MinesweeperSheet.getElement(MinesweeperSheetType.Title), MinesweeperImageType.Title);
 
-        //drawElement(image, ImageUtil.createPoolWithAllButtons(blockNumX,blockNumY),ImageType.Pool);
-        //drawElement(image,ImageUtil.createTransparentPool(MineFactory.randomMine(blockNumX,blockNumY,blockNumX*blockNumY/10)),ImageType.Pool);
-
         return image;
     }
 
@@ -154,11 +151,13 @@ public class MinesweeperImage {
                 break;
             case TransparentPool:
                 drawElement(image, MinesweeperImageUtil.createTransparentPool(mines), MinesweeperImageType.Pool);
+                break;
         }
 
         return image;
 
     }
+
 
 
 }

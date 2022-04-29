@@ -163,8 +163,6 @@ public class MinesweeperImageUtil {
         }
 
         g2d.dispose();
-
-        MinesweeperImage.saveImage(image,"backgroundImage");
         return image;
 
     }
@@ -181,9 +179,41 @@ public class MinesweeperImageUtil {
 
         Graphics2D g2d = bi.createGraphics();
         g2d.drawImage(buttons,0,0,null);
+        g2d.drawImage(createExplodedMines(mines,checklist),0,0,null);
 
         g2d.dispose();
         return bi;
+
+    }
+
+    public static BufferedImage createExplodedMines(int[][]mines, int[][] checklist){
+        int[][] exploded = MineFactory.getExplodedMines(mines,checklist);
+
+        int x = mines.length;
+        int y = mines[0].length;
+
+        int poolWidth = MinesweeperConstant.TinyBlockSize * x + MinesweeperConstant.PoolGap * (x-1);
+        int poolHeight = MinesweeperConstant.TinyBlockSize * y + MinesweeperConstant.PoolGap * (y-1);
+
+        BufferedImage image = new BufferedImage(poolWidth,poolHeight,BufferedImage.TYPE_INT_ARGB_PRE);
+
+        Graphics2D g2d = image.createGraphics();
+
+        for(int i=0;i<x;i++){
+
+            for(int j=0;j<y;j++){
+
+                int positionX = MinesweeperConstant.PoolGap + (MinesweeperConstant.PoolGap + MinesweeperConstant.TinyBlockSize) * i;
+                int positionY = MinesweeperConstant.PoolGap + (MinesweeperConstant.PoolGap + MinesweeperConstant.TinyBlockSize) * j;
+
+                if(exploded[i][j]==1){
+                    g2d.drawImage(MinesweeperSheet.getElement(MinesweeperSheetType.Mine,4),positionX, positionY,null);
+                }
+            }
+        }
+
+        g2d.dispose();
+        return image;
 
     }
 
@@ -213,8 +243,6 @@ public class MinesweeperImageUtil {
         }
 
         g2d.dispose();
-
-        MinesweeperImage.saveImage(image,"buttons");
         return image;
 
     }

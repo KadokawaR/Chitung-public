@@ -1,6 +1,7 @@
 package mirai.chitung.plugin.core.game.montecarlo.taisai;
 
 import com.google.common.collect.ImmutableSet;
+import mirai.chitung.plugin.core.game.montecarlo.minesweeper.Minesweeper;
 import mirai.chitung.plugin.utils.image.ImageCreater;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.event.events.MessageEvent;
@@ -19,7 +20,7 @@ public class TaiSaiUtil {
     static final String StartOperateNotice = "现在可以进行操作，请在60秒之内完成。功能列表请参考说明书。如有多重下注，请使用空格隔开。";
     static final String EndGameNotice = "本局游戏已经结束，里格斯公司感谢您的参与。如下为本局玩家获得的南瓜比索：";
 
-    static final int GapTime = 15;
+    static final int GapTime = 60;
 
     static List<String> HanziNumber = Arrays.asList("十","一","二","三","四","五","六","七","八","九");
 
@@ -109,19 +110,17 @@ public class TaiSaiUtil {
     }
 
     static void deleteAllSubject(Contact subject){
-        List<TaiSaiUserData> clonedList = new ArrayList<>(TaiSai.data);
-        for(TaiSaiUserData tsud:clonedList){
-            if(tsud.subject.getId()==subject.getId()) TaiSai.data.remove(tsud);
-        }
+        TaiSai.data.removeIf(data -> data.subject.getId() == subject.getId());
     }
 
-    static List<TaiSaiUserData> getTaiSaiUserList(Contact subject){
+    static List<TaiSaiUserData> getUserList(Contact subject){
         return TaiSai.data.stream().filter(userData -> userData.subject.getId()==subject.getId()).collect(Collectors.toList());
     }
 
     static void clear(Contact subject){
         deleteAllSubject(subject);
         TaiSai.startBetList.remove(subject);
+        TaiSai.isInBetList.remove(subject);
         TaiSai.isInFunctionList.remove(subject);
     }
 

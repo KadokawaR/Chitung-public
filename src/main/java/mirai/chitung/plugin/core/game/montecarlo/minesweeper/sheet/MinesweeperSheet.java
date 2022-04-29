@@ -64,7 +64,7 @@ public class MinesweeperSheet {
         return Sheet.getSubimage(0,sd.contentStartY,sd.elementX,sd.elementY);
     }
 
-    public static BufferedImage getElement(MinesweeperSheetType type, int number/*��ͼƬ�еڼ�������1��ʼ*/){
+    public static BufferedImage getElement(MinesweeperSheetType type, int number/*即图片中第几个，从1开始*/){
         SheetData sd = data.get(type);
         return Sheet.getSubimage((number-1)*sd.elementX,sd.contentStartY,sd.elementX,sd.elementY);
     }

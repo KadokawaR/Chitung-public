@@ -1,6 +1,5 @@
 package mirai.chitung.plugin.core.game.montecarlo.taisai;
 
-import kotlin.jvm.Synchronized;
 import mirai.chitung.plugin.core.bank.PumpkinPesoWindow;
 import mirai.chitung.plugin.core.game.montecarlo.GeneralMonteCarloUtil;
 import mirai.chitung.plugin.core.game.montecarlo.MonteCarloGame;
@@ -10,7 +9,6 @@ import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.event.events.MessageEvent;
 import net.mamoe.mirai.message.data.At;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
-import org.jetbrains.annotations.NotNull;
 
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
@@ -244,7 +242,6 @@ public class TaiSai implements MonteCarloGame<MessageEvent> {
     @Override
     public boolean matchStart(String message) {
         return message.equalsIgnoreCase("/taisai")||message.equals("骰宝")||message.equals("买大小")||message.equals("/sicbo");
-
     }
 
     @Override
@@ -337,7 +334,7 @@ public class TaiSai implements MonteCarloGame<MessageEvent> {
 
             MessageChainBuilder mcb = new MessageChainBuilder().append(TaiSaiUtil.EndGameNotice).append("\n");
 
-            for(TaiSaiUserData tsud:TaiSaiUtil.getTaiSaiUserList(subject)){
+            for(TaiSaiUserData tsud:TaiSaiUtil.getUserList(subject)){
 
                 if(tsud.betList.size()==0) continue;
 
