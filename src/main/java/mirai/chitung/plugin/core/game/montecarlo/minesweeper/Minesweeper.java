@@ -1,20 +1,14 @@
 package mirai.chitung.plugin.core.game.montecarlo.minesweeper;
 
-import mirai.chitung.plugin.core.bank.PumpkinPesoWindow;
 import mirai.chitung.plugin.core.game.montecarlo.GeneralMonteCarloUtil;
 import mirai.chitung.plugin.core.game.montecarlo.MonteCarloGame;
-import mirai.chitung.plugin.core.game.montecarlo.taisai.TaiSai;
-import mirai.chitung.plugin.core.game.montecarlo.taisai.TaiSaiUserData;
 import mirai.chitung.plugin.core.game.montecarlo.taisai.TaiSaiUtil;
-import mirai.chitung.plugin.utils.image.ImageSender;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.event.events.MessageEvent;
 import net.mamoe.mirai.message.data.At;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 
-import java.awt.image.BufferedImage;
 import java.util.Objects;
-import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -28,6 +22,8 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
     static CopyOnWriteArrayList<Contact> isInFunctionList = new CopyOnWriteArrayList<>();
     static CopyOnWriteArrayList<MineUserData> data = new CopyOnWriteArrayList<>();
 
+    static MineUtil mineUtil = new MineUtil();
+    
     @Override
     public void handle(MessageEvent event) {
         String message = event.getMessage().contentToString();
@@ -44,9 +40,9 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
     @Override
     public void start(MessageEvent event, String message) {
         if(!matchStart(message)) return;
-        if(MineUtil.hasStarted(event.getSubject())||MineUtil.subjectIsInGamingProcess(event.getSubject())) return;
+        if(mineUtil.hasStarted(event.getSubject())||mineUtil.subjectIsInGamingProcess(event.getSubject())) return;
 
-        executorService.schedule(new Start(event.getSubject()),MineUtil.GapTime, TimeUnit.SECONDS);
+        executorService.schedule(new Start(event.getSubject()), MineUtil.GapTime, TimeUnit.SECONDS);
 
         MessageChainBuilder mcb = new MessageChainBuilder().append(MineUtil.Rules);
         event.getSubject().sendMessage(mcb.asMessageChain());
@@ -69,11 +65,11 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
 
         if(!startBetList.contains(event.getSubject())&&!isInBetList.contains(event.getSubject())) return;
 
-        if(!GeneralMonteCarloUtil.checkBet(event,message,MineUtil.getBet(event.getSender(),event.getSubject()))) return;
+        if(!GeneralMonteCarloUtil.checkBet(event,message,mineUtil.getBet(event.getSender(),event.getSubject()))) return;
 
         if(startBetList.contains(event.getSubject())){
             event.getSubject().sendMessage(MineUtil.StartBetNotice);
-            executorService.schedule(new EndBet(event.getSubject()),MineUtil.GapTime, TimeUnit.SECONDS);
+            executorService.schedule(new EndBet(event.getSubject()), MineUtil.GapTime, TimeUnit.SECONDS);
             startBetList.remove(event.getSubject());
             isInBetList.add(event.getSubject());
         }
@@ -89,8 +85,8 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
         } else {
 
             int bet = Objects.requireNonNull(GeneralMonteCarloUtil.getBet(message));
-            MineUtil.addBet(event.getSender(),bet);
-            MessageChainBuilder mcb = GeneralMonteCarloUtil.mcbProcessor(event).append("您总共下注").append(String.valueOf(MineUtil.getBet(event.getSender(),event.getSubject()))).append("南瓜比索。");
+            mineUtil.addBet(event.getSender(),bet);
+            MessageChainBuilder mcb = GeneralMonteCarloUtil.mcbProcessor(event).append("您总共下注").append(String.valueOf(mineUtil.getBet(event.getSender(),event.getSubject()))).append("南瓜比索。");
             event.getSubject().sendMessage(mcb.asMessageChain());
 
         }
@@ -108,7 +104,7 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
 
     @Override
     public boolean matchFunction(String message) {
-        for(String keywords:MineUtil.functionKeyWords){
+        for(String keywords: MineUtil.functionKeyWords){
             if(message.toLowerCase().contains(keywords)) return true;
         }
         return false;
@@ -121,7 +117,7 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
 
     @Override
     public boolean isInGamingProcess(MessageEvent event) {
-        return MineUtil.subjectIsInGamingProcess(event.getSubject())||MineUtil.hasStarted(event.getSubject());
+        return mineUtil.subjectIsInGamingProcess(event.getSubject())||mineUtil.hasStarted(event.getSubject());
     }
 
     static class Start implements Runnable{
@@ -137,7 +133,7 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
 
             if(startBetList.contains(subject)){
                 startBetList.remove(subject);
-                MineUtil.deleteAllSubject(subject);
+                mineUtil.deleteAllSubject(subject);
                 subject.sendMessage(MineUtil.Stops);
             }
         }
@@ -155,8 +151,8 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
         public void run(){
             isInBetList.remove(subject);
             isInFunctionList.add(subject);
-            subject.sendMessage(MineUtil.EndBetNotice+MineUtil.StartOperateNotice);
-            executorService.schedule(new EndFunction(subject),MineUtil.GapTime,TimeUnit.SECONDS);
+            subject.sendMessage(MineUtil.EndBetNotice + MineUtil.StartOperateNotice);
+            executorService.schedule(new EndFunction(subject), MineUtil.GapTime,TimeUnit.SECONDS);
         }
     }
 
@@ -186,7 +182,7 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
 
             MessageChainBuilder mcb = new MessageChainBuilder().append(MineUtil.EndGameNotice).append("\n");
 
-            for(MineUserData data:MineUtil.getUserList(subject)){
+            for(MineUserData data:mineUtil.getUserList(subject)){
 
                 if(data.betList.size()==0) continue;
 
@@ -205,7 +201,7 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
 
             subject.sendMessage(mcb.asMessageChain());
 
-            MineUtil.clear(subject);
+            mineUtil.clear(subject);
 
         }
     }

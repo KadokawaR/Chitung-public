@@ -1,8 +1,7 @@
 package mirai.chitung.plugin.core.game.montecarlo.minesweeper;
 
 import com.google.common.collect.ImmutableSet;
-import mirai.chitung.plugin.core.game.montecarlo.taisai.TaiSai;
-import mirai.chitung.plugin.core.game.montecarlo.taisai.TaiSaiUserData;
+import mirai.chitung.plugin.core.game.montecarlo.MonteCarloUtil;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.event.events.MessageEvent;
 
@@ -11,7 +10,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class MineUtil {
+public class MineUtil implements MonteCarloUtil<MineUserData> {
 
     static final String Rules = "里格斯公司邀请您参与本局扫雷，请在60秒之内输入 /bet+数字 参与游戏。";
     static final String Stops = "本局扫雷已经取消。";
@@ -25,11 +24,12 @@ public class MineUtil {
 
     static Set<String> functionKeyWords = ImmutableSet.of(
 
+        //todo 功能关键词
 
     );
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public static boolean senderIsInGamingProcess(MessageEvent event){
+    public boolean senderIsInGamingProcess(MessageEvent event){
         for (MineUserData data: Minesweeper.data){
             if(data.sender.getId()==event.getSender().getId() && data.subject.getId()==event.getSubject().getId()) return true;
             if(hasStarted(event.getSubject())) return true;
@@ -37,49 +37,57 @@ public class MineUtil {
         return false;
     }
 
-    static boolean subjectIsInGamingProcess(Contact subject){
+    @Override
+    public boolean subjectIsInGamingProcess(Contact subject){
         for (MineUserData data: Minesweeper.data){
             if(data.subject.getId()==subject.getId()) return true;
         }
         return false;
     }
 
-    static boolean hasStarted(Contact subject){
+    @Override
+    public boolean hasStarted(Contact subject){
         for(Contact c:Minesweeper.startBetList){
             if(c.getId()==subject.getId()) return true;
         }
         return false;
     }
 
-    static int getBet(Contact sender,Contact subject){
+    @Override
+    public int getBet(Contact sender,Contact subject){
         for (MineUserData data: Minesweeper.data){
             if(data.sender.getId()==sender.getId()&&data.subject.getId()==subject.getId()) return data.bet;
         }
         return 0;
     }
 
-    static void addBet(Contact sender,int bet){
+    @Override
+    public void addBet(Contact sender,int bet){
         for (MineUserData data: Minesweeper.data){
             if(data.sender.getId()==sender.getId()) data.addBetAmount(bet);
         }
     }
 
-    static MineUserData getData(Contact sender){
+    @Override
+    public MineUserData getData(Contact sender){
         for (MineUserData data: Minesweeper.data){
             if(data.sender.getId()==sender.getId()) return data;
         }
         return null;
     }
 
-    static void deleteAllSubject(Contact subject){
+    @Override
+    public void deleteAllSubject(Contact subject){
         Minesweeper.data.removeIf(data -> data.subject.getId() == subject.getId());
     }
 
-    static List<MineUserData> getUserList(Contact subject){
+    @Override
+    public List<MineUserData> getUserList(Contact subject){
         return Minesweeper.data.stream().filter(userData -> userData.subject.getId()==subject.getId()).collect(Collectors.toList());
     }
 
-    static void clear(Contact subject){
+    @Override
+    public  void clear(Contact subject){
         deleteAllSubject(subject);
         Minesweeper.startBetList.remove(subject);
         Minesweeper.isInBetList.remove(subject);

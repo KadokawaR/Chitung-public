@@ -23,6 +23,8 @@ public class TaiSai implements MonteCarloGame<MessageEvent> {
     static CopyOnWriteArrayList<Contact> isInBetList = new CopyOnWriteArrayList<>();
     static CopyOnWriteArrayList<Contact> isInFunctionList = new CopyOnWriteArrayList<>();
     static CopyOnWriteArrayList<TaiSaiUserData> data = new CopyOnWriteArrayList<>();
+    
+    static TaiSaiUtil util = new TaiSaiUtil();
 
     static final String TAISAI_PATH = "/pics/casino/taisai.png";
 
@@ -46,9 +48,9 @@ public class TaiSai implements MonteCarloGame<MessageEvent> {
     @Override
     public void start(MessageEvent event, String message) {
         if(!matchStart(message)) return;
-        if(TaiSaiUtil.hasStarted(event.getSubject())||TaiSaiUtil.subjectIsInGamingProcess(event.getSubject())) return;
+        if(util.hasStarted(event.getSubject())||util.subjectIsInGamingProcess(event.getSubject())) return;
 
-        executorService.schedule(new Start(event.getSubject()),TaiSaiUtil.GapTime,TimeUnit.SECONDS);
+        executorService.schedule(new Start(event.getSubject()), TaiSaiUtil.GapTime,TimeUnit.SECONDS);
 
         MessageChainBuilder mcb = new MessageChainBuilder().append(TaiSaiUtil.TaiSaiRules);
         InputStream img = BlackJack.class.getResourceAsStream(TAISAI_PATH);
@@ -65,7 +67,7 @@ public class TaiSai implements MonteCarloGame<MessageEvent> {
 
         if(!isInFunctionList.contains(event.getSubject())) return;
 
-        if(!TaiSaiUtil.senderIsInGamingProcess(event)) return;
+        if(!util.senderIsInGamingProcess(event)) return;
 
         List<TaiSaiData> functions = new ArrayList<>();
 
@@ -153,7 +155,7 @@ public class TaiSai implements MonteCarloGame<MessageEvent> {
             return;
         }
 
-        int totalAmount = TaiSaiUtil.getBet(event.getSender(),event.getSubject())*functions.size();
+        int totalAmount = util.getBet(event.getSender(),event.getSubject())*functions.size();
 
         if(!GeneralMonteCarloUtil.hasEnoughMoney(event,totalAmount)){
             mcb.append(TaiSaiUtil.YouDontHaveEnoughMoney).append("请尝试减少单次的下注数量。");
@@ -161,7 +163,7 @@ public class TaiSai implements MonteCarloGame<MessageEvent> {
             return;
         }
 
-        if(TaiSaiUtil.getData(event.getSender())!=null) Objects.requireNonNull(TaiSaiUtil.getData(event.getSender())).addBet(functions);
+        if(util.getData(event.getSender())!=null) Objects.requireNonNull(util.getData(event.getSender())).addBet(functions);
 
         PumpkinPesoWindow.minusMoney(event.getSender().getId(),totalAmount);
 
@@ -212,16 +214,16 @@ public class TaiSai implements MonteCarloGame<MessageEvent> {
 
         if(!startBetList.contains(event.getSubject())&&!isInBetList.contains(event.getSubject())) return;
 
-        if(!GeneralMonteCarloUtil.checkBet(event,message,TaiSaiUtil.getBet(event.getSender(),event.getSubject()))) return;
+        if(!GeneralMonteCarloUtil.checkBet(event,message,util.getBet(event.getSender(),event.getSubject()))) return;
 
         if(startBetList.contains(event.getSubject())){
             event.getSubject().sendMessage(TaiSaiUtil.StartBetNotice);
-            executorService.schedule(new EndBet(event.getSubject()),TaiSaiUtil.GapTime, TimeUnit.SECONDS);
+            executorService.schedule(new EndBet(event.getSubject()), TaiSaiUtil.GapTime, TimeUnit.SECONDS);
             startBetList.remove(event.getSubject());
             isInBetList.add(event.getSubject());
         }
 
-        if(!TaiSaiUtil.senderIsInGamingProcess(event)) {
+        if(!util.senderIsInGamingProcess(event)) {
 
             int bet = Objects.requireNonNull(GeneralMonteCarloUtil.getBet(message));
             MessageChainBuilder mcb = GeneralMonteCarloUtil.mcbProcessor(event).append("您已经下注").append(String.valueOf(bet)).append("南瓜比索。");
@@ -232,8 +234,8 @@ public class TaiSai implements MonteCarloGame<MessageEvent> {
         } else {
 
             int bet = Objects.requireNonNull(GeneralMonteCarloUtil.getBet(message));
-            TaiSaiUtil.addBet(event.getSender(),bet);
-            MessageChainBuilder mcb = GeneralMonteCarloUtil.mcbProcessor(event).append("您总共下注").append(String.valueOf(TaiSaiUtil.getBet(event.getSender(),event.getSubject()))).append("南瓜比索。");
+            util.addBet(event.getSender(),bet);
+            MessageChainBuilder mcb = GeneralMonteCarloUtil.mcbProcessor(event).append("您总共下注").append(String.valueOf(util.getBet(event.getSender(),event.getSubject()))).append("南瓜比索。");
             event.getSubject().sendMessage(mcb.asMessageChain());
 
         }
@@ -251,7 +253,7 @@ public class TaiSai implements MonteCarloGame<MessageEvent> {
 
     @Override
     public boolean matchFunction(String message) {
-        for(String keywords:TaiSaiUtil.functionKeyWords){
+        for(String keywords: TaiSaiUtil.functionKeyWords){
             if(message.toLowerCase().contains(keywords)) return true;
         }
         return false;
@@ -264,7 +266,7 @@ public class TaiSai implements MonteCarloGame<MessageEvent> {
 
     @Override
     public boolean isInGamingProcess(MessageEvent event) {
-        return TaiSaiUtil.subjectIsInGamingProcess(event.getSubject())||TaiSaiUtil.hasStarted(event.getSubject());
+        return util.subjectIsInGamingProcess(event.getSubject())||util.hasStarted(event.getSubject());
     }
 
     static class Start implements Runnable{
@@ -280,7 +282,7 @@ public class TaiSai implements MonteCarloGame<MessageEvent> {
 
             if(TaiSai.startBetList.contains(subject)){
                 TaiSai.startBetList.remove(subject);
-                TaiSaiUtil.deleteAllSubject(subject);
+                util.deleteAllSubject(subject);
                 subject.sendMessage(TaiSaiUtil.TaiSaiStops);
             }
         }
@@ -298,8 +300,8 @@ public class TaiSai implements MonteCarloGame<MessageEvent> {
         public void run(){
             TaiSai.isInBetList.remove(subject);
             TaiSai.isInFunctionList.add(subject);
-            subject.sendMessage(TaiSaiUtil.EndBetNotice+TaiSaiUtil.StartOperateNotice);
-            TaiSai.executorService.schedule(new EndFunction(subject),TaiSaiUtil.GapTime,TimeUnit.SECONDS);
+            subject.sendMessage(TaiSaiUtil.EndBetNotice + TaiSaiUtil.StartOperateNotice);
+            TaiSai.executorService.schedule(new EndFunction(subject), TaiSaiUtil.GapTime,TimeUnit.SECONDS);
         }
     }
 
@@ -334,7 +336,7 @@ public class TaiSai implements MonteCarloGame<MessageEvent> {
 
             MessageChainBuilder mcb = new MessageChainBuilder().append(TaiSaiUtil.EndGameNotice).append("\n");
 
-            for(TaiSaiUserData tsud:TaiSaiUtil.getUserList(subject)){
+            for(TaiSaiUserData tsud:util.getUserList(subject)){
 
                 if(tsud.betList.size()==0) continue;
 
@@ -351,7 +353,7 @@ public class TaiSai implements MonteCarloGame<MessageEvent> {
 
             subject.sendMessage(mcb.asMessageChain());
 
-            TaiSaiUtil.clear(subject);
+            util.clear(subject);
 
         }
     }

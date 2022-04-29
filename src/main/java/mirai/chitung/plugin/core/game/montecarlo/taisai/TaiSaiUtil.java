@@ -1,6 +1,7 @@
 package mirai.chitung.plugin.core.game.montecarlo.taisai;
 
 import com.google.common.collect.ImmutableSet;
+import mirai.chitung.plugin.core.game.montecarlo.MonteCarloUtil;
 import mirai.chitung.plugin.core.game.montecarlo.minesweeper.Minesweeper;
 import mirai.chitung.plugin.utils.image.ImageCreater;
 import net.mamoe.mirai.contact.Contact;
@@ -10,7 +11,7 @@ import java.awt.image.BufferedImage;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class TaiSaiUtil {
+public class TaiSaiUtil implements MonteCarloUtil<TaiSaiUserData> {
 
     static final String TaiSaiRules = "里格斯公司邀请您参与本局骰宝，请在60秒之内输入 /bet+数字 参与游戏。";
     static final String TaiSaiStops = "本局骰宝已经取消。";
@@ -66,8 +67,9 @@ public class TaiSaiUtil {
         return content;
     }
 
+    @Override
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public static boolean senderIsInGamingProcess(MessageEvent event){
+    public boolean senderIsInGamingProcess(MessageEvent event){
         for (TaiSaiUserData tsud:TaiSai.data){
             if(tsud.sender.getId()==event.getSender().getId() && tsud.subject.getId()==event.getSubject().getId()) return true;
             if(hasStarted(event.getSubject())) return true;
@@ -75,49 +77,57 @@ public class TaiSaiUtil {
         return false;
     }
 
-    static boolean subjectIsInGamingProcess(Contact subject){
+        @Override
+        public boolean subjectIsInGamingProcess(Contact subject){
         for (TaiSaiUserData tsud:TaiSai.data){
             if(tsud.subject.getId()==subject.getId()) return true;
         }
         return false;
     }
 
-    static boolean hasStarted(Contact subject){
+    @Override
+    public  boolean hasStarted(Contact subject){
         for(Contact c:TaiSai.startBetList){
             if(c.getId()==subject.getId()) return true;
         }
         return false;
     }
 
-    static int getBet(Contact sender,Contact subject){
+    @Override
+    public  int getBet(Contact sender,Contact subject){
         for (TaiSaiUserData tsud:TaiSai.data){
             if(tsud.sender.getId()==sender.getId()&&tsud.subject.getId()==subject.getId()) return tsud.bet;
         }
         return 0;
     }
 
-    static void addBet(Contact sender,int bet){
+    @Override
+    public  void addBet(Contact sender,int bet){
         for (TaiSaiUserData tsud:TaiSai.data){
             if(tsud.sender.getId()==sender.getId()) tsud.addBetAmount(bet);
         }
     }
 
-    static TaiSaiUserData getData(Contact sender){
+    @Override
+    public  TaiSaiUserData getData(Contact sender){
         for (TaiSaiUserData tsud:TaiSai.data){
             if(tsud.sender.getId()==sender.getId()) return tsud;
         }
         return null;
     }
 
-    static void deleteAllSubject(Contact subject){
+    @Override
+    public  void deleteAllSubject(Contact subject){
         TaiSai.data.removeIf(data -> data.subject.getId() == subject.getId());
     }
 
-    static List<TaiSaiUserData> getUserList(Contact subject){
+    @Override
+    public  List<TaiSaiUserData> getUserList(Contact subject){
         return TaiSai.data.stream().filter(userData -> userData.subject.getId()==subject.getId()).collect(Collectors.toList());
     }
 
-    static void clear(Contact subject){
+    @Override
+    public  void clear(Contact subject){
         deleteAllSubject(subject);
         TaiSai.startBetList.remove(subject);
         TaiSai.isInBetList.remove(subject);
