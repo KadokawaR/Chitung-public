@@ -21,7 +21,7 @@ dependencies{
     //runtimeOnly("net.mamoe:mirai-login-solver-selenium:1.0-dev-15")
 
     //Gson
-    implementation("com.google.code.gson:gson:2.8.9")
+    implementation("com.google.code.gson:gson:2.9.0")
     implementation("com.google.guava:guava:31.0.1-jre")
 
     //Junit

@@ -1,10 +1,12 @@
-package mirai.chitung.plugin.core.responder.basic
+package mirai.chitung.plugin.core.responder.basicreply
+
 import com.google.gson.Gson
-import mirai.chitung.plugin.utils.fromResourceReadText
+import mirai.chitung.plugin.utils.readTextFromResource
 import java.util.*
 
-object BasicReplyCluster{
-    var dataHolder: DataHolder = Gson().fromJson("/cluster/autoreply.json".fromResourceReadText()!!, DataHolder::class.java)
+object BasicReplyCluster {
+    var dataHolder: DataHolder =
+        Gson().fromJson("/cluster/autoreply.json".readTextFromResource()!!, DataHolder::class.java)
 
     private fun pickReply(type: BasicReplyType): String {
         val selectedLines: TreeMap<Double, String> = when (type) {
@@ -26,6 +28,10 @@ enum class BasicReplyType {
     AntiOverWatch, AntiDirtyWord, GoodBye
 }
 
-data class DataHolder(var goodbyeReplyLines: TreeMap<Double, String>, var antiDirtyWordsReplyLines: TreeMap<Double, String>, var antiOverwatchGameReplyLines: TreeMap<Double, String>)
+data class DataHolder(
+    var goodbyeReplyLines: TreeMap<Double, String>,
+    var antiDirtyWordsReplyLines: TreeMap<Double, String>,
+    var antiOverwatchGameReplyLines: TreeMap<Double, String>
+)
 
 

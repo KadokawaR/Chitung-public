@@ -1,28 +1,32 @@
 package mirai.chitung.plugin.core.responder
 
+import mirai.chitung.plugin.core.harbor.Harbor.count
 import mirai.chitung.plugin.core.harbor.Harbor.isReachingPortLimit
 import mirai.chitung.plugin.core.harbor.PortRequestInfos
+import net.mamoe.mirai.contact.Group
 import net.mamoe.mirai.event.events.FriendMessageEvent
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.event.events.MessageEvent
 import org.reflections.Reflections
 import org.reflections.scanners.Scanners
 import org.reflections.util.ConfigurationBuilder
-import java.util.concurrent.ConcurrentHashMap
 import kotlin.experimental.and
-import kotlin.reflect.full.*
+import kotlin.reflect.full.isSubclassOf
+import kotlin.reflect.full.primaryConstructor
 
 
 object ResponderManagerNew {
-    private var map: MutableMap<Responder,ResponderAutoRegistry> = ConcurrentHashMap()
+    private var list: MutableList<BoxedResponder> = ArrayList()
 
-    fun MessageEvent.sendToResponderManager(){
+    @Synchronized
+    fun MessageEvent.sendToResponderManager() {
         if (this.isQualifiedForResponder()) {
             PreprocessedMessageEvent(this).handle()
         }
     }
 
-    private fun MessageEvent.isQualifiedForResponder(): Boolean{
+    private fun MessageEvent.isQualifiedForResponder(): Boolean {
+        //TODO 加入筛去卡片消息的内容
         return when {
             reachLimit(this) -> false
             this is GroupMessageEvent -> true
@@ -32,51 +36,68 @@ object ResponderManagerNew {
     }
 
     private fun reachLimit(event: MessageEvent): Boolean {
-        if (isReachingPortLimit(PortRequestInfos.TOTAL_DAILY, 0L)) return true
-        if (event is GroupMessageEvent) {
-            if (isReachingPortLimit(PortRequestInfos.GROUP_MINUTE, event.subject.id)) return true
+        return when {
+            isReachingPortLimit(PortRequestInfos.TOTAL_DAILY, 0L) -> true
+            event is GroupMessageEvent && isReachingPortLimit(PortRequestInfos.GROUP_MINUTE, event.subject.id) -> true
+            isReachingPortLimit(PortRequestInfos.PERSONAL, event.subject.id) -> true
+            else -> false
         }
-        return isReachingPortLimit(PortRequestInfos.PERSONAL, event.subject.id)
     }
 
-    private fun PreprocessedMessageEvent.handle(){
-        for((k,v) in map){
-            if (v.from.typeBit.and(this.typeBitMask)>0){
-                if(k.receive(this)){
+    private fun PreprocessedMessageEvent.handle() {
+        for (r in list) {
+            if (r.info.from.typeBit.and(this.typeBitMask) > 0) {
+                if (r.responder.receive(this)) {
+                    this.acknowledgeHarbor()
                     break
                 }
             }
         }
     }
 
-    fun setup(){
-        val reflection = Reflections(ConfigurationBuilder()
-            .forPackage("mirai.chitung")
-            .setScanners(Scanners.TypesAnnotated))
+    private fun PreprocessedMessageEvent.acknowledgeHarbor() {
+        if (this.body.subject is Group)
+            count(PortRequestInfos.GROUP_MINUTE, this.body.subject.id)
+        count(PortRequestInfos.PERSONAL, this.body.sender.id)
+        count(PortRequestInfos.TOTAL_DAILY, 0L)
+    }
+
+    fun setup() {
+        val reflection = Reflections(
+            ConfigurationBuilder()
+                .forPackage("mirai.chitung")
+                .setScanners(Scanners.TypesAnnotated)
+        )
         val classes = reflection.getTypesAnnotatedWith(ResponderAutoRegistry::class.java).map { clazz -> clazz.kotlin }
-        for(c in classes){
-            if(!c.isSubclassOf(Responder::class)){
+        for (c in classes) {
+            if (!c.isSubclassOf(Responder::class)) {
                 println("[Error]: Responder $c 不是一个 Responder! 注册失败!")
             }
-            if(c.primaryConstructor!=null){
-                if(c.primaryConstructor!!.parameters.isNotEmpty()){
+            if (c.primaryConstructor != null) {
+                if (c.primaryConstructor!!.parameters.isNotEmpty()) {
                     println("[Error]: Responder $c 的主构建方法方法! 注册失败!")
+                } else {
+                    list.add(
+                        BoxedResponder(
+                            c.primaryConstructor!!.call() as Responder,
+                            c.annotations.find { annotation -> annotation is ResponderAutoRegistry }!! as ResponderAutoRegistry
+                        )
+                    )
                 }
-                else{
-                    map[c.primaryConstructor!!.call() as Responder] = c.annotations.find { annotation -> annotation is ResponderAutoRegistry }!! as ResponderAutoRegistry
-                }
-            }
-            else if(c.objectInstance!=null){
-                map[c.objectInstance!! as Responder] = c.annotations.find { annotation -> annotation is ResponderAutoRegistry }!! as ResponderAutoRegistry
-            }
-            else{
+            } else if (c.objectInstance != null) {
+                list.add(
+                    BoxedResponder(
+                        c.objectInstance!! as Responder,
+                        c.annotations.find { annotation -> annotation is ResponderAutoRegistry }!! as ResponderAutoRegistry
+                    )
+                )
+            } else {
                 println("[Error]: Responder $c 既没有提供主构建方法，也不是Object! 注册失败!")
             }
         }
-        for(e in map.entries){
-            println("Responder ${e.value.name} 注册成功!")
+        list.sortWith { r1, r2 -> r2.info.priority.i - r1.info.priority.i }
+        for (r in list) {
+            println("Responder ${r.info.name} 注册成功!")
         }
     }
-
-
 }

@@ -1,17 +1,11 @@
 package mirai.chitung.plugin.core.responder;
 
 import mirai.chitung.plugin.core.responder.dice.PlayDice;
-import mirai.chitung.plugin.core.responder.feastinghelper.dinnerpicker.MealPicker;
-import mirai.chitung.plugin.core.responder.feastinghelper.dinnerpicker.PizzaPicker;
-import mirai.chitung.plugin.core.responder.feastinghelper.drinkpicker.DrinkPicker;
-import mirai.chitung.plugin.core.responder.feedback.FeedBack;
-import mirai.chitung.plugin.core.responder.fursona.FursonaPunk;
 import mirai.chitung.plugin.core.responder.help.Function;
 import mirai.chitung.plugin.core.responder.lotterywinner.LotteryBummerMessageHandler;
 import mirai.chitung.plugin.core.responder.lotterywinner.LotteryC4MessageHandler;
 import mirai.chitung.plugin.core.responder.lotterywinner.LotteryWinnerMessageHandler;
 import mirai.chitung.plugin.core.responder.mahjong.FortuneTeller;
-import mirai.chitung.plugin.core.responder.overwatch.HeroLinesSelector;
 import mirai.chitung.plugin.utils.exception.MessageEventTypeException;
 import mirai.chitung.plugin.utils.MessageUtil;
 import mirai.chitung.plugin.utils.StandardTimeUtil;
@@ -101,19 +95,13 @@ public class ResponderManager {
      * 初始化该管理器类。必须在插件启动时调用。
      */
     public void ini() {
-        register(FursonaPunk::new);
         register(LotteryWinnerMessageHandler::new);
         register(LotteryBummerMessageHandler::new);
         register(LotteryC4MessageHandler::new);
         register(LotteryBummerMessageHandler::new);
-        register(DrinkPicker::new);
-        register(MealPicker::new);
-        register(PizzaPicker::new);
         register(FortuneTeller::new);
         register(PlayDice::new);
-        register(HeroLinesSelector::new);
         register(Function::new);
-        register(FeedBack::new);
         System.out.println("Initialize Responder Manager");
     }
 
