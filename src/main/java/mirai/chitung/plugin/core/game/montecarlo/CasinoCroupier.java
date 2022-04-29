@@ -9,13 +9,15 @@ import net.mamoe.mirai.event.events.MessageEvent;
 
 public class CasinoCroupier {
 
+    static TaiSai taisai = new TaiSai();
+
     public static void handle(MessageEvent event){
         switch(croupierStatus(event)){
             case 0:
                 if(Harbor.isReachingPortLimit(event)) return;
                 BlackJack.go(event);
                 Roulette.go(event);
-                TaiSai.handle(event);
+                taisai.handle(event);
                 return;
 
             case 1:
@@ -27,7 +29,7 @@ public class CasinoCroupier {
                 return;
 
             case 3:
-                TaiSai.handle(event);
+                taisai.handle(event);
                 return;
 
         }
@@ -45,7 +47,7 @@ public class CasinoCroupier {
     public static int croupierStatus (MessageEvent event){
         if(BlackJack.isInGamingProcess(event)) return 1;
         if(Roulette.isInGamingProcess(event)) return 2;
-        if(TaiSai.isInGamingProcess(event)) return 3;
+        if(taisai.isInGamingProcess(event)) return 3;
         return 0;
     }
 }

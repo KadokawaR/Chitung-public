@@ -1,28 +1,18 @@
 package mirai.chitung.plugin.core.game.montecarlo.taisai;
 
 import com.google.common.collect.ImmutableSet;
-import mirai.chitung.plugin.core.bank.PumpkinPesoWindow;
 import mirai.chitung.plugin.utils.image.ImageCreater;
-import mirai.chitung.plugin.utils.image.ImageSender;
 import net.mamoe.mirai.contact.Contact;
-import net.mamoe.mirai.event.events.GroupMessageEvent;
 import net.mamoe.mirai.event.events.MessageEvent;
-import net.mamoe.mirai.message.data.At;
-import net.mamoe.mirai.message.data.MessageChainBuilder;
 
 import java.awt.image.BufferedImage;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 public class TaiSaiUtil {
 
     static final String TaiSaiRules = "里格斯公司邀请您参与本局骰宝，请在60秒之内输入 /bet+数字 参与游戏。";
     static final String TaiSaiStops = "本局骰宝已经取消。";
-    static final String NotRightBetNumber = "/bet 指令不正确，请重新再尝试";
     static final String YouDontHaveEnoughMoney = "操作失败，请检查您的南瓜比索数量。";
     static final String StartBetNotice = "Bet 阶段已经开始，预计在60秒之内结束。可以通过/bet+金额反复追加 bet。\n在这一阶段不会向您收取南瓜比索。由于骰宝可以多重下注，因此不建议设置过大的 bet。";
     static final String EndBetNotice = "Bet 阶段已经结束。";
@@ -75,25 +65,7 @@ public class TaiSaiUtil {
         return content;
     }
 
-    static boolean matchStart(String content){
-        return content.equalsIgnoreCase("/taisai")||content.equals("骰宝")||content.equals("买大小")||content.equals("/sicbo");
-    }
-
-    static boolean matchBet(String content){
-        return content.toLowerCase().startsWith("/bet")||content.startsWith("下注");
-    }
-
-    static boolean matchFunction(String content){
-        for(String keywords:functionKeyWords){
-            if(content.toLowerCase().contains(keywords)) return true;
-        }
-        return false;
-    }
-
-    public static boolean isInGamingProcess(MessageEvent event){
-        return subjectIsInGamingProcess(event.getSubject())||hasStarted(event.getSubject());
-    }
-
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean senderIsInGamingProcess(MessageEvent event){
         for (TaiSaiUserData tsud:TaiSai.data){
             if(tsud.sender.getId()==event.getSender().getId() && tsud.subject.getId()==event.getSubject().getId()) return true;
@@ -154,7 +126,7 @@ public class TaiSaiUtil {
     }
 
     static String getTimes(TaiSaiData tsd){
-        return "×"+String.format("%.2f", getTimesAsDouble(tsd));
+        return "×"+String.format("%.1f", getTimesAsDouble(tsd));
     }
 
     static double getTimesAsDouble(TaiSaiData tsd) {
@@ -289,102 +261,6 @@ public class TaiSaiUtil {
 
         return times;
 
-    }
-
-    static class Start implements Runnable{
-
-        private final Contact subject;
-
-        Start(Contact subject){
-            this.subject=subject;
-        }
-
-        @Override
-        public void run(){
-
-            if(TaiSai.startBetList.contains(subject)){
-                TaiSai.startBetList.remove(subject);
-                deleteAllSubject(subject);
-                subject.sendMessage(TaiSaiStops);
-            }
-        }
-    }
-
-    static class EndBet implements Runnable{
-
-        private final Contact subject;
-
-        EndBet(Contact subject){
-            this.subject=subject;
-        }
-
-        @Override
-        public void run(){
-            TaiSai.isInBetList.remove(subject);
-            TaiSai.isInFunctionList.add(subject);
-            subject.sendMessage(EndBetNotice+StartOperateNotice);
-            TaiSai.executorService.schedule(new EndFunction(subject),GapTime,TimeUnit.SECONDS);
-            System.out.println("has scheduled endFunction activity");
-        }
-    }
-
-    static class EndFunction implements Runnable{
-
-        private final Contact subject;
-
-        EndFunction(Contact subject){
-            this.subject=subject;
-        }
-
-        @Override
-        public void run(){
-
-            TaiSai.isInFunctionList.remove(subject);
-
-            int[] result = new int[3];
-
-            for(int i=0;i<3;i++){
-                result[i] = new Random().nextInt(6)+1;
-            }
-
-            System.out.println(Arrays.toString(result));
-
-            try {
-
-                BufferedImage image = createImage(result);
-                System.out.println("succeed to create image");
-                ImageSender.sendImageFromBufferedImage(subject, image);
-
-            } catch(Exception e){
-                e.printStackTrace();
-            }
-
-            MessageChainBuilder mcb = new MessageChainBuilder().append(EndGameNotice).append("\n");
-
-            for(TaiSaiUserData tsud:getTaiSaiUserList(subject)){
-
-                if(tsud.betList.size()==0) continue;
-
-                if(tsud.isGroup()){
-                    mcb.append("\n").append(new At(tsud.sender.getId()));
-                } else {
-                    mcb.append("\n您");
-                }
-                double times = calculator(result, tsud);
-                int money = (int) (calculator(result, tsud) * tsud.bet);
-                PumpkinPesoWindow.addMoney(tsud.sender.getId(),money);
-                mcb.append("获得了").append(String.valueOf(money)).append("南瓜比索，总倍率为×").append(String.format("%.2f", times)).append("。");
-            }
-
-            subject.sendMessage(mcb.asMessageChain());
-
-            clear(subject);
-
-        }
-    }
-
-    static boolean matchTaiSai(String content){
-        return matchBet(content)||matchStart(content)||matchFunction(content);
     }
 
     static BufferedImage createImage(int[] nums){
