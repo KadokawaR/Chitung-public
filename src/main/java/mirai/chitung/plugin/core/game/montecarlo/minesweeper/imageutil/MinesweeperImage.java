@@ -159,6 +159,6 @@ public class MinesweeperImage {
         return image;
 
     }
-    
+
 
 }
