@@ -148,6 +148,7 @@ public class ImageCreater {
         return imgNew;
     }
 
+    //水平方向并列加图
     public static BufferedImage addImagesVertically(BufferedImage[] images) {
 
         int maxHeight = 0;
@@ -171,6 +172,32 @@ public class ImageCreater {
 
         return newImage;
     }
+
+    //垂直方向并列加图
+    public static BufferedImage addImagesHorizontally(BufferedImage[] images) {
+
+        int maxWidth = 0;
+        int totalHeight = 0;
+
+        for (BufferedImage bufferedImage : images) {
+            if (bufferedImage.getWidth() > maxWidth) maxWidth = bufferedImage.getHeight();
+            totalHeight += bufferedImage.getHeight();
+        }
+
+        BufferedImage newImage = new BufferedImage(maxWidth, totalHeight, BufferedImage.TYPE_INT_RGB);
+
+        int accumulatedHeight = 0;
+
+        for(BufferedImage image:images){
+            int[] imageArray = new int[image.getWidth()*image.getHeight()];
+            imageArray = image.getRGB(0, 0, image.getWidth(), image.getHeight(), imageArray, 0, image.getWidth());
+            newImage.setRGB(0,accumulatedHeight,image.getWidth(),image.getHeight(),imageArray,0,image.getWidth());
+            accumulatedHeight += image.getHeight();
+        }
+
+        return newImage;
+    }
+
 
     //在原图的下边加上一张等宽的新图片
     public static BufferedImage addImageAtBottom(BufferedImage imgUp, BufferedImage imgBottom) {
