@@ -1,6 +1,5 @@
 package mirai.chitung.plugin.core.responder;
 
-import mirai.chitung.plugin.core.responder.dice.PlayDice;
 import mirai.chitung.plugin.core.responder.help.Function;
 import mirai.chitung.plugin.core.responder.lotterywinner.LotteryBummerMessageHandler;
 import mirai.chitung.plugin.core.responder.lotterywinner.LotteryC4MessageHandler;
@@ -100,7 +99,6 @@ public class ResponderManager {
         register(LotteryC4MessageHandler::new);
         register(LotteryBummerMessageHandler::new);
         register(FortuneTeller::new);
-        register(PlayDice::new);
         register(Function::new);
         System.out.println("Initialize Responder Manager");
     }

@@ -5,7 +5,7 @@ import java.util.*
 import kotlin.random.Random
 
 object FoodNameCluster {
-    private val foods = "/THUOCL/THUOCL_food.txt".readLinesFromResource()!!
+    private val foods = "/THUOCL/THUOCL_food.txt".readLinesFromResource()!!.map { s -> s.split("\t")[0] }
     private val foodsWithoutPizza = foods.filter { foodStr -> !foodStr.contains("披萨") && !foodStr.contains("比萨") }
     private val drinkIngredient = DrinkIngredient(
         listOf(
