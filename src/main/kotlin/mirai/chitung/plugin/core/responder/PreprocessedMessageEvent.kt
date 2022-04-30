@@ -13,3 +13,13 @@ data class PreprocessedMessageEvent(val body: MessageEvent) {
     }
     val rawText = body.message.content
 }
+
+fun PreprocessedMessageEvent.matches(reg: Regex):Boolean = reg.matches(this.rawText)
+
+fun PreprocessedMessageEvent.contentHas(content: String):Boolean = this.rawText.contains(content)
+
+fun PreprocessedMessageEvent.contentEquals(content: String):Boolean = this.rawText == content
+
+fun PreprocessedMessageEvent.contentStartsWith(content: String):Boolean = this.rawText.startsWith(content)
+
+fun PreprocessedMessageEvent.isFromGroup():Boolean = this.body is GroupMessageEvent

@@ -50,7 +50,7 @@ public class MahjongRiddle {
     public static String[] resolveRandomTiles(int[] num) {
         String[] Tiles = new String[num.length];
         for (int i = 0; i < num.length; i++) {
-            Tiles[i] = FortuneTeller.getMahjong(num[i]);
+            Tiles[i] = FortuneTeller.INSTANCE.getMahjong(num[i]);
         }
         return Tiles;
     }
@@ -143,7 +143,7 @@ public class MahjongRiddle {
             } else if (((answerNum[i] >= 108) && (answerNum[i] < 124)) && (answerNum[i] % 4 == 0)) {
                 transformedAnswer[i] = "东风";
             } else {
-                transformedAnswer[i] = FortuneTeller.getMahjong(answerNum[i]);
+                transformedAnswer[i] = FortuneTeller.INSTANCE.getMahjong(answerNum[i]);
             }
         }
         return transformedAnswer;

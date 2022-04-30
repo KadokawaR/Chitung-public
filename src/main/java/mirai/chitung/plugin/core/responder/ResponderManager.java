@@ -4,7 +4,6 @@ import mirai.chitung.plugin.core.responder.help.Function;
 import mirai.chitung.plugin.core.responder.lotterywinner.LotteryBummerMessageHandler;
 import mirai.chitung.plugin.core.responder.lotterywinner.LotteryC4MessageHandler;
 import mirai.chitung.plugin.core.responder.lotterywinner.LotteryWinnerMessageHandler;
-import mirai.chitung.plugin.core.responder.mahjong.FortuneTeller;
 import mirai.chitung.plugin.utils.exception.MessageEventTypeException;
 import mirai.chitung.plugin.utils.MessageUtil;
 import mirai.chitung.plugin.utils.StandardTimeUtil;
@@ -98,7 +97,6 @@ public class ResponderManager {
         register(LotteryBummerMessageHandler::new);
         register(LotteryC4MessageHandler::new);
         register(LotteryBummerMessageHandler::new);
-        register(FortuneTeller::new);
         register(Function::new);
         System.out.println("Initialize Responder Manager");
     }

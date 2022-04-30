@@ -3,6 +3,7 @@ package mirai.chitung.plugin.core.responder.dice
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import mirai.chitung.plugin.core.responder.*
+import mirai.chitung.plugin.utils.sendTo
 import java.util.regex.Pattern
 
 @ResponderAutoRegistry("掷骰子", RespondFrom.GroupAndFriend, Priority.Lowest)
@@ -16,10 +17,10 @@ object DiceResponder : Responder {
     private val CAPTURE_PATTERN_DND = Pattern.compile("\\.([1-9]\\d{0,2})([dD])([1-9]\\d{0,7})")
     private val CAPTURE_PATTERN_DND_SINGLE_ROLL = Pattern.compile("\\.([dD])([1-9]\\d{0,7})")
     override fun receive(event: PreprocessedMessageEvent): Boolean {
-        if (reg.matches(event.rawText)) {
+        if (event.matches(reg)) {
             runBlocking {
                 launch {
-                    event.body.subject.sendMessage(executeDiceCommand(event.rawText)!!)
+                    executeDiceCommand(event.rawText)!!.sendTo(event)
                 }
             }
             return true

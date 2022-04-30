@@ -2,10 +2,8 @@ package mirai.chitung.plugin.core.responder.feastinghelper
 
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import mirai.chitung.plugin.core.responder.PreprocessedMessageEvent
-import mirai.chitung.plugin.core.responder.RespondFrom
-import mirai.chitung.plugin.core.responder.Responder
-import mirai.chitung.plugin.core.responder.ResponderAutoRegistry
+import mirai.chitung.plugin.core.responder.*
+import mirai.chitung.plugin.utils.sendTo
 
 @ResponderAutoRegistry("吃什么", RespondFrom.GroupAndFriend)
 object MealPicker : Responder {
@@ -13,10 +11,10 @@ object MealPicker : Responder {
         Regex("(/[Mm]eal)|(/[Dd]inner)|(/吃啥)|([oO][kK] [Mm]eal)|([oO][kK] [Dd]inner)|(((早饭)|(午饭)|(晚饭)|(夜宵)|(今天)|(今晚)|(早茶)|(宵夜))吃什么)")
 
     override fun receive(event: PreprocessedMessageEvent): Boolean {
-        if (reg.matches(event.rawText)) {
+        if (event.matches(reg)) {
             runBlocking {
                 launch {
-                    event.body.subject.sendMessage(FoodNameCluster.pick(FoodType.Common))
+                    FoodNameCluster.pick(FoodType.Common).sendTo(event)
                 }
             }
             return true
@@ -30,10 +28,10 @@ object PizzaPicker : Responder {
     private val reg = Regex("(/[Pp]izza)|([oO][kK] [Pp]izza)")
 
     override fun receive(event: PreprocessedMessageEvent): Boolean {
-        if (reg.matches(event.rawText)) {
+        if (event.matches(reg)) {
             runBlocking {
                 launch {
-                    event.body.subject.sendMessage(FoodNameCluster.pick(FoodType.Pizza))
+                    FoodNameCluster.pick(FoodType.Pizza).sendTo(event)
                 }
             }
             return true
@@ -47,10 +45,10 @@ object DrinkPicker : Responder {
     private val reg = Regex(".*((喝点什么)|(奶茶)|(喝了什么)|(喝什么)|(有点渴)|(好渴)|(来一杯)).*")
 
     override fun receive(event: PreprocessedMessageEvent): Boolean {
-        if (reg.matches(event.rawText)) {
+        if (event.matches(reg)) {
             runBlocking {
                 launch {
-                    event.body.subject.sendMessage(FoodNameCluster.pick(FoodType.Drink, event.body.sender.id))
+                    FoodNameCluster.pick(FoodType.Drink, event.body.sender.id).sendTo(event)
                 }
             }
             return true

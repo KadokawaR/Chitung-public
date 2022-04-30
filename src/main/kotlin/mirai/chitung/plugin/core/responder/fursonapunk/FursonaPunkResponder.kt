@@ -2,29 +2,21 @@ package mirai.chitung.plugin.core.responder.fursonapunk
 
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import mirai.chitung.plugin.core.responder.PreprocessedMessageEvent
-import mirai.chitung.plugin.core.responder.RespondFrom
-import mirai.chitung.plugin.core.responder.Responder
-import mirai.chitung.plugin.core.responder.ResponderAutoRegistry
+import mirai.chitung.plugin.core.responder.*
+import mirai.chitung.plugin.utils.sendTo
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.At
 
 @ResponderAutoRegistry("兽设", RespondFrom.GroupAndFriend)
 object FursonaPunkResponder : Responder {
     override fun receive(event: PreprocessedMessageEvent): Boolean {
-        if (event.rawText == "兽设") {
+        if (event.contentEquals("兽设")) {
             runBlocking {
                 launch {
-                    if (event.body is GroupMessageEvent) {
-                        event.body.subject.sendMessage(
-                            At(event.body.sender.id).plus(
-                                FursonaCluster.createFurryFucker(
-                                    event.body.sender.id
-                                )
-                            )
-                        )
+                    if (event.isFromGroup()) {
+                        At(event.body.sender.id).plus(FursonaCluster.createFurryFucker(event.body.sender.id)).sendTo(event)
                     } else {
-                        event.body.subject.sendMessage("您${FursonaCluster.createFurryFucker(event.body.sender.id)}")
+                        "您${FursonaCluster.createFurryFucker(event.body.sender.id)}".sendTo(event)
                     }
                 }
             }
