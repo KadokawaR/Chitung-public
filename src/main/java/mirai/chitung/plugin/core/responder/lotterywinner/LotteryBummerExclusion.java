@@ -2,16 +2,9 @@ package mirai.chitung.plugin.core.responder.lotterywinner;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import mirai.chitung.plugin.core.responder.Blacklist;
-import mirai.chitung.plugin.core.responder.MessageResponder;
-import mirai.chitung.plugin.core.responder.RespondTask;
 import mirai.chitung.plugin.utils.fileutils.Read;
 import mirai.chitung.plugin.utils.fileutils.Touch;
 import mirai.chitung.plugin.utils.fileutils.Write;
-import net.mamoe.mirai.event.events.GroupMessageEvent;
-import net.mamoe.mirai.event.events.MessageEvent;
-import net.mamoe.mirai.message.data.At;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -21,13 +14,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-public class LotteryBummerExclusion implements MessageResponder<MessageEvent> {
+//TODO Need reimplement in Kotlin & Test
+public class LotteryBummerExclusion {
 
     static String EXCLUSION_PATH = System.getProperty("user.dir") + File.separator + "data" + File.separator + "Chitung" + File.separator + "exclusion.json";
-    static final List<MessageType> TYPES = new ArrayList<>(Arrays.asList(MessageType.FRIEND, MessageType.GROUP));
+    //static final List<MessageType> TYPES = new ArrayList<>(Arrays.asList(MessageType.FRIEND, MessageType.GROUP));
 
     LotteryBummerExclusion(){}
 
@@ -80,13 +73,11 @@ public class LotteryBummerExclusion implements MessageResponder<MessageEvent> {
         getINSTANCE().exclusionClass=readRecord();
     }
 
-    @Override
     public boolean match(String content) {
         return content.equalsIgnoreCase("/open bummer")|| content.equalsIgnoreCase("/close bummer");
     }
 
-    @Override
-    public RespondTask handle(MessageEvent event) {
+    /*public RespondTask handle(MessageEvent event) {
 
         boolean isOpen = event.getMessage().contentToString().contains("/open");
 
@@ -117,19 +108,9 @@ public class LotteryBummerExclusion implements MessageResponder<MessageEvent> {
                 return RespondTask.of(event,"已为您关闭Bummer保护。", this);
             }
         }
+    }*/
 
-    }
-
-    @Override
     public String getName() {
         return "BummerExclusion";
     }
-
-    @NotNull
-    @Override
-    public List<MessageType> types() {
-        return TYPES;
-    }
-
-
 }

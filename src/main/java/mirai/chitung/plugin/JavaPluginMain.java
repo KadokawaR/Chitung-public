@@ -7,16 +7,13 @@ import mirai.chitung.plugin.core.game.fish.Fishing;
 import mirai.chitung.plugin.core.groupconfig.GroupConfigManager;
 import mirai.chitung.plugin.core.harbor.Harbor;
 import mirai.chitung.plugin.core.responder.Blacklist;
-import mirai.chitung.plugin.core.responder.ResponderCenter;
+import mirai.chitung.plugin.core.responder.ResponderManager;
 import mirai.chitung.plugin.core.responder.repeater.Repeater;
-import mirai.chitung.plugin.core.responder.help.NewHelp;
 import mirai.chitung.plugin.core.responder.imageresponder.ImageResponder;
 import mirai.chitung.plugin.core.responder.universalrespond.URManager;
 import mirai.chitung.plugin.utils.*;
 import mirai.chitung.plugin.core.broadcast.BroadcastSystem;
 import mirai.chitung.plugin.core.game.GameCenter;
-import mirai.chitung.plugin.core.responder.ResponderManager;
-import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.console.plugin.jvm.JavaPlugin;
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescriptionBuilder;
 import net.mamoe.mirai.contact.MemberPermission;
@@ -51,6 +48,8 @@ public final class JavaPluginMain extends JavaPlugin {
         getLogger().info("日志");
 
         InitializeUtil.initialize();
+
+        ResponderManager.INSTANCE.setup();
 
         // 上线事件
         GlobalEventChannel.INSTANCE.subscribeAlways(BotOnlineEvent.class, event -> {
@@ -129,7 +128,7 @@ public final class JavaPluginMain extends JavaPlugin {
             if(GroupConfigManager.responderConfig(event) && ConfigHandler.getINSTANCE().config.getGroupFC().isResponder()){
 
                 Nudge.mentionNudge(event);
-                ResponderCenter.getINSTANCE().handleMessage(event);
+                ResponderManager.INSTANCE.sendToResponderManager(event);
                 ImageResponder.handle(event);
                 Repeater.handle(event);
 
@@ -150,11 +149,11 @@ public final class JavaPluginMain extends JavaPlugin {
         GlobalEventChannel.INSTANCE.subscribeAlways(GroupMessagePostSendEvent.class, event -> {
             Repeater.flush(event.getTarget());
         });
-        GlobalEventChannel.INSTANCE.subscribeAlways(FriendMessagePostSendEvent.class, event -> {return;});
+        GlobalEventChannel.INSTANCE.subscribeAlways(FriendMessagePostSendEvent.class, event -> {});
 
         //临时消息
-        GlobalEventChannel.INSTANCE.subscribeAlways(StrangerMessageEvent.class, event -> {return;});
-        GlobalEventChannel.INSTANCE.subscribeAlways(GroupTempMessageEvent.class, event -> {return;});
+        GlobalEventChannel.INSTANCE.subscribeAlways(StrangerMessageEvent.class, event -> {});
+        GlobalEventChannel.INSTANCE.subscribeAlways(GroupTempMessageEvent.class, event -> {});
 
         //好友消息
         GlobalEventChannel.INSTANCE.subscribeAlways(FriendMessageEvent.class, event -> {
@@ -177,7 +176,7 @@ public final class JavaPluginMain extends JavaPlugin {
 
             //ResponderCenter
             if(ConfigHandler.getINSTANCE().config.getFriendFC().isResponder()) {
-                ResponderCenter.getINSTANCE().handleMessage(event);
+                ResponderManager.INSTANCE.sendToResponderManager(event);
                 URManager.handle(event);
                 ImageResponder.handle(event);
 
@@ -188,8 +187,6 @@ public final class JavaPluginMain extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        ResponderManager.getINSTANCE().close();
-        ResponderCenter.getINSTANCE().close();
         AdminCommandDispatcher.getInstance().close();
     }
 }
