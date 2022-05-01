@@ -1,7 +1,7 @@
 package mirai.chitung.plugin.core.responder
 
 interface Responder {
-    fun receive(event: PreprocessedMessageEvent): Boolean
+    suspend fun receive(event: PreprocessedMessageEvent): Boolean
 }
 
 @Target(AnnotationTarget.CLASS)

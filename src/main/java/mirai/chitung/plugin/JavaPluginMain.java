@@ -7,9 +7,7 @@ import mirai.chitung.plugin.core.game.fish.Fishing;
 import mirai.chitung.plugin.core.groupconfig.GroupConfigManager;
 import mirai.chitung.plugin.core.harbor.Harbor;
 import mirai.chitung.plugin.core.responder.Blacklist;
-import mirai.chitung.plugin.core.responder.ResponderCenter;
 import mirai.chitung.plugin.core.responder.ResponderManager;
-import mirai.chitung.plugin.core.responder.ResponderManagerNew;
 import mirai.chitung.plugin.core.responder.repeater.Repeater;
 import mirai.chitung.plugin.core.responder.imageresponder.ImageResponder;
 import mirai.chitung.plugin.core.responder.universalrespond.URManager;
@@ -51,7 +49,7 @@ public final class JavaPluginMain extends JavaPlugin {
 
         InitializeUtil.initialize();
 
-        ResponderManagerNew.INSTANCE.setup();
+        ResponderManager.INSTANCE.setup();
 
         // 上线事件
         GlobalEventChannel.INSTANCE.subscribeAlways(BotOnlineEvent.class, event -> {
@@ -130,7 +128,7 @@ public final class JavaPluginMain extends JavaPlugin {
             if(GroupConfigManager.responderConfig(event) && ConfigHandler.getINSTANCE().config.getGroupFC().isResponder()){
 
                 Nudge.mentionNudge(event);
-                ResponderManagerNew.INSTANCE.sendToResponderManager(event);
+                ResponderManager.INSTANCE.sendToResponderManager(event);
                 ImageResponder.handle(event);
                 Repeater.handle(event);
 
@@ -178,7 +176,7 @@ public final class JavaPluginMain extends JavaPlugin {
 
             //ResponderCenter
             if(ConfigHandler.getINSTANCE().config.getFriendFC().isResponder()) {
-                ResponderManagerNew.INSTANCE.sendToResponderManager(event);
+                ResponderManager.INSTANCE.sendToResponderManager(event);
                 URManager.handle(event);
                 ImageResponder.handle(event);
 
@@ -189,8 +187,6 @@ public final class JavaPluginMain extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        ResponderManager.getINSTANCE().close();
-        ResponderCenter.getINSTANCE().close();
         AdminCommandDispatcher.getInstance().close();
     }
 }

@@ -1,7 +1,7 @@
 package mirai.chitung.plugin.core.responder.basicreply
 
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import mirai.chitung.plugin.core.responder.*
 import mirai.chitung.plugin.utils.sendTo
 
@@ -10,9 +10,9 @@ object Greeting : Responder {
     private val reg = Regex("[Hh]((ello)|(i))")
     private val replies = listOf("Hi", "Hello", "Hey")
 
-    override fun receive(event: PreprocessedMessageEvent): Boolean {
+    override suspend fun receive(event: PreprocessedMessageEvent): Boolean {
         if (event.matches(reg)) {
-            runBlocking {
+            coroutineScope {
                 launch {
                     replies.random().sendTo(event)
                 }
@@ -27,9 +27,9 @@ object Greeting : Responder {
 object Goodbye : Responder {
     private val reg = Regex(".*((下线了)|(我走了)|(拜拜)).*")
 
-    override fun receive(event: PreprocessedMessageEvent): Boolean {
+    override suspend fun receive(event: PreprocessedMessageEvent): Boolean {
         if (event.matches(reg)) {
-            runBlocking {
+            coroutineScope {
                 launch {
                     BasicReplyCluster.reply(BasicReplyType.GoodBye).sendTo(event)
                 }
@@ -45,9 +45,9 @@ object AntiDirtyWord : Responder {
     private val reg =
         Regex(".*((([日干操艹草滚槽曹糙])([你尼泥腻妮])([妈马麻码吗玛]))|(([Mm])otherfucker)|(([Ff])uck ([Yy])ou)|(([Ff])(Uu)(Cc)(Kk))|(野爹)).*")
 
-    override fun receive(event: PreprocessedMessageEvent): Boolean {
+    override suspend fun receive(event: PreprocessedMessageEvent): Boolean {
         if (event.matches(reg)) {
-            runBlocking {
+            coroutineScope {
                 launch {
                     BasicReplyCluster.reply(BasicReplyType.AntiDirtyWord).sendTo(event)
                 }
@@ -62,9 +62,9 @@ object AntiDirtyWord : Responder {
 object AntiOverWatch : Responder {
     private val reg = Regex(".*((([Oo])ver[Ww]atch)|(守望((先锋)|(屁股)))|(([玩打])((OW)|(ow)))).*")
 
-    override fun receive(event: PreprocessedMessageEvent): Boolean {
+    override suspend fun receive(event: PreprocessedMessageEvent): Boolean {
         if (event.matches(reg)) {
-            runBlocking {
+            coroutineScope {
                 launch {
                     BasicReplyCluster.reply(BasicReplyType.AntiOverWatch).sendTo(event)
                 }

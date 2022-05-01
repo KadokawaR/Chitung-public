@@ -1,7 +1,7 @@
 package mirai.chitung.plugin.core.responder.dice
 
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import mirai.chitung.plugin.core.responder.*
 import mirai.chitung.plugin.utils.sendTo
 import java.util.regex.Pattern
@@ -16,9 +16,9 @@ object DiceResponder : Responder {
     private val CAPTURE_PATTERN_COMMON_COMMAND = Pattern.compile("(/dice|/d|/Dice|/D)\\s?([1-9]\\d{0,7})")
     private val CAPTURE_PATTERN_DND = Pattern.compile("\\.([1-9]\\d{0,2})([dD])([1-9]\\d{0,7})")
     private val CAPTURE_PATTERN_DND_SINGLE_ROLL = Pattern.compile("\\.([dD])([1-9]\\d{0,7})")
-    override fun receive(event: PreprocessedMessageEvent): Boolean {
+    override suspend fun receive(event: PreprocessedMessageEvent): Boolean {
         if (event.matches(reg)) {
-            runBlocking {
+            coroutineScope {
                 launch {
                     executeDiceCommand(event.rawText)!!.sendTo(event)
                 }

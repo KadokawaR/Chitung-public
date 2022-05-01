@@ -1,5 +1,8 @@
 package mirai.chitung.plugin.core.responder
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import mirai.chitung.plugin.core.harbor.Harbor.count
 import mirai.chitung.plugin.core.harbor.Harbor.isReachingPortLimit
 import mirai.chitung.plugin.core.harbor.PortRequestInfos
@@ -15,13 +18,15 @@ import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.primaryConstructor
 
 
-object ResponderManagerNew {
+object ResponderManager {
     private var list: MutableList<BoxedResponder> = ArrayList()
 
     @Synchronized
     fun MessageEvent.sendToResponderManager() {
         if (this.isQualifiedForResponder()) {
-            PreprocessedMessageEvent(this).handle()
+            CoroutineScope(Dispatchers.Default).launch {
+                PreprocessedMessageEvent(this@sendToResponderManager).handle()
+            }
         }
     }
 
@@ -44,7 +49,7 @@ object ResponderManagerNew {
         }
     }
 
-    private fun PreprocessedMessageEvent.handle() {
+    private suspend fun PreprocessedMessageEvent.handle() {
         for (r in list) {
             if (r.info.from.typeBit.and(this.typeBitMask) > 0) {
                 if (r.responder.receive(this)) {

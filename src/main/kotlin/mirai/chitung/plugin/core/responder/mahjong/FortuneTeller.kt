@@ -1,7 +1,7 @@
 package mirai.chitung.plugin.core.responder.mahjong
 
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import mirai.chitung.plugin.core.responder.*
 import mirai.chitung.plugin.utils.getResourceByStream
 import mirai.chitung.plugin.utils.sendTo
@@ -11,7 +11,7 @@ import net.mamoe.mirai.message.data.MessageChainBuilder
 import java.util.*
 
 @ResponderAutoRegistry("掷骰子", RespondFrom.GroupAndFriend, Priority.Highest)
-object FortuneTeller: Responder {
+object FortuneTeller : Responder {
     private val luck = ArrayList(
         listOf(
             "大凶",  //一筒
@@ -105,9 +105,9 @@ object FortuneTeller: Responder {
         )
     )
 
-    override fun receive(event: PreprocessedMessageEvent): Boolean {
-        if (event.contentEquals("求签")||event.contentEquals("麻将")) {
-            runBlocking {
+    override suspend fun receive(event: PreprocessedMessageEvent): Boolean {
+        if (event.contentEquals("求签") || event.contentEquals("麻将")) {
+            coroutineScope {
                 launch {
                     var mahjongPicPath = "/pics/mahjong/"
                     mahjongPicPath += if (Random().nextBoolean()) {
@@ -116,7 +116,7 @@ object FortuneTeller: Responder {
                         "Yellow/"
                     }
                     mahjongPicPath += getMahjong(getMahjongOfTheDay(event.body.sender.id)) + ".png"
-                    if(event.isFromGroup()){
+                    if (event.isFromGroup()) {
                         MessageChainBuilder()
                             .append(At(event.body.sender.id))
                             .append("\n")
@@ -124,8 +124,7 @@ object FortuneTeller: Responder {
                             .append("\n")
                             .append(event.body.subject.uploadImage(mahjongPicPath.getResourceByStream()!!))
                             .build().sendTo(event)
-                    }
-                    else{
+                    } else {
                         MessageChainBuilder()
                             .append(whatDoesMahjongSay(event.body.sender.id))
                             .append("\n")
@@ -139,7 +138,7 @@ object FortuneTeller: Responder {
         return false
     }
 
-    private fun getMahjongOfTheDay(id:Long): Int {
+    private fun getMahjongOfTheDay(id: Long): Int {
         //获取当日幸运数字
         val calendar = Calendar.getInstance()
         val year = calendar[Calendar.YEAR]
@@ -193,7 +192,7 @@ object FortuneTeller: Responder {
         }
     }
 
-    private fun whatDoesMahjongSay(id:Long): String {
+    private fun whatDoesMahjongSay(id: Long): String {
         val mahjongOfTheDay = getMahjongOfTheDay(id)
         val mahjongNumero: Int = if (mahjongOfTheDay < 36) {
             mahjongOfTheDay % 9

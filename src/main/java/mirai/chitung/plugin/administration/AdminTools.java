@@ -22,10 +22,6 @@ public class AdminTools {
 
         String message = event.getMessage().contentToString();
 
-        if (message .equalsIgnoreCase("/optimize")) {
-            optimizeManually(event);
-        }
-
         if (message .equalsIgnoreCase("/coverage")) {
             getCoverage(event);
         }
@@ -38,13 +34,6 @@ public class AdminTools {
             getGroupNum(event);
         }
 
-    }
-
-    void optimizeManually(MessageEvent event) {
-        MessageChainBuilder messages = new MessageChainBuilder();
-        String result = ResponderManager.getINSTANCE().optimizeHandlerSequence(false);
-        messages.append(result);
-        event.getSubject().sendMessage(messages.build());
     }
 
     void getFriendNum(MessageEvent event) {
