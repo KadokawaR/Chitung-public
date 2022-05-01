@@ -1,6 +1,5 @@
 package mirai.chitung.plugin.utils.image;
 
-import mirai.chitung.plugin.core.responder.help.Function;
 import mirai.chitung.plugin.utils.json.JsonFile;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
