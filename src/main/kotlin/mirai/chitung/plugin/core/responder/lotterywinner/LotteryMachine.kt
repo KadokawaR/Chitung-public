@@ -17,6 +17,7 @@ import net.mamoe.mirai.message.data.PlainText
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.stream.Collectors
+import kotlin.math.sqrt
 import kotlin.random.Random
 
 object LotteryMachine {
@@ -37,13 +38,13 @@ object LotteryMachine {
         )
     }
 
-    fun botPermissionChecker(event: GroupMessageEvent): Boolean =
+    private fun botPermissionChecker(event: GroupMessageEvent): Boolean =
         event.group.botPermission == MemberPermission.ADMINISTRATOR || event.group.botPermission == MemberPermission.OWNER
 
-    fun senderPermissionChecker(event: GroupMessageEvent): Boolean =
+    private fun senderPermissionChecker(event: GroupMessageEvent): Boolean =
         event.sender.permission == MemberPermission.ADMINISTRATOR || event.sender.permission == MemberPermission.OWNER
 
-    fun sessionChecker(event: GroupMessageEvent): Boolean =
+    private fun sessionChecker(event: GroupMessageEvent): Boolean =
         bummerActivationTable.rowKeySet().contains(event.group.id) && bummerActivationTable.row(event.group.id)
             .containsKey(event.sender.id)
 
@@ -142,7 +143,7 @@ object LotteryMachine {
         }
         if (botPermissionChecker(event.body)) {
             if (!c4ActivationMap.getOrDefault(event.group()!!.id, false)) {
-                val ratio = 1.0 / Math.sqrt(event.group()!!.members.size.toDouble())
+                val ratio = 1.0 / sqrt(event.group()!!.members.size.toDouble())
                 if (Random.nextDouble() < ratio) {
                     event.group()!!.settings.isMuteAll = true
                     "中咧！".sendTo(event)
