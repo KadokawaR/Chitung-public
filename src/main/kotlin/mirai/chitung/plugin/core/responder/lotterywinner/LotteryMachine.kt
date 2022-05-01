@@ -49,7 +49,7 @@ object LotteryMachine {
             .containsKey(event.sender.id)
 
     suspend fun okBummer(event: PreprocessedMessageEvent) {
-        if (LotteryBummerExclusion.getINSTANCE().exclusionClass.userList.contains(event.sender().id)) {
+        if (LotteryBummerExclusion.userList.contains(event.sender().id)) {
             event.createAt().plus("您已经开启Bummer保护。").sendTo(event)
         }
         if (!GroupConfigManager.lotteryConfig(event.body as GroupMessageEvent)) {
@@ -64,7 +64,7 @@ object LotteryMachine {
             var candidates = event.group()!!.members.stream().filter { member: NormalMember ->
                 (((member.permission == MemberPermission.MEMBER))
                         &&
-                        !LotteryBummerExclusion.getINSTANCE().exclusionClass.userList.contains(event.sender().id))
+                        !LotteryBummerExclusion.userList.contains(event.sender().id))
             }.collect(Collectors.toList())
             if (candidates.isEmpty()) {
                 "要么都是管理员要么都没有人玩Bummer了？别闹。".sendTo(event)
