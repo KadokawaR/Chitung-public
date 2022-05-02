@@ -152,6 +152,7 @@ public class TaiSai implements MonteCarloGame<MessageEvent> {
 
         if(functions.size()==0){
             mcb.append("未收到任何有效下注，").append("存在").append(String.valueOf(illegalIndicator)).append("处指示器使用错误，请仔细阅读说明书。");
+            event.getSubject().sendMessage(mcb.asMessageChain());
             return;
         }
 
@@ -323,7 +324,6 @@ public class TaiSai implements MonteCarloGame<MessageEvent> {
             for(int i=0;i<3;i++){
                 result[i] = new Random().nextInt(6)+1;
             }
-
 
             try {
 

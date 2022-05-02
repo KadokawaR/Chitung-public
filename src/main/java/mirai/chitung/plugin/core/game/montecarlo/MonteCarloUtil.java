@@ -1,17 +1,13 @@
 package mirai.chitung.plugin.core.game.montecarlo;
 
-import com.google.common.collect.ImmutableSet;
-import mirai.chitung.plugin.core.game.montecarlo.minesweeper.MineUserData;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.event.events.MessageEvent;
 
 import java.util.List;
-import java.util.Set;
 
 public interface MonteCarloUtil<GameUserData>{
 
-    Set<String> functionKeyWords = ImmutableSet.of();
-
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean senderIsInGamingProcess(MessageEvent event);
 
     boolean subjectIsInGamingProcess(Contact subject);
