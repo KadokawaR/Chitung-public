@@ -30,7 +30,14 @@ public class MineUserData {
     }
 
     public void addBet(List<MineData> data){
-        this.betList.addAll(data);
+
+        List<MineData> resultList = new ArrayList<>();
+
+        for(MineData md:data){
+            if(!this.betList.contains(md)) resultList.add(md);
+        }
+
+        this.betList.addAll(resultList);
     }
 
     public boolean isFriend(){

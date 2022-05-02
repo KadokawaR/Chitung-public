@@ -95,8 +95,6 @@ public class MineFactory {
 
     public static int[][] getMask(int[][] mines, int[][] checklist) {
         int[][] scan = scan(getMineNumber(mines), checklist);
-        System.out.println("scan");
-        print(scan);
         if (count(scan, 1) <= 1) return scan;
         return expandEdge(mines, scan);
 
@@ -159,7 +157,6 @@ public class MineFactory {
 
     }
 
-
     static int[][] initializeArray(int[][] array, int value) {
         for (int i = 0; i < array.length; i++) {
             for (int j = 0; j < array[0].length; j++) {
@@ -168,18 +165,6 @@ public class MineFactory {
         }
         return array;
     }
-
-    static void print(int[][] array) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < array.length; i++) {
-            for (int j = 0; j < array[0].length; j++) {
-                sb.append(array[i][j]).append(" ");
-            }
-            sb.append("\n");
-        }
-        System.out.println(sb);
-    }
-
 
     public static int[][] getExplodedMines(int[][] mines, int[][] checklist) {
         int[][] result = new int[mines.length][mines[0].length];
@@ -197,6 +182,24 @@ public class MineFactory {
         if(number<10) return new int[]{0,0,number};
         if(number<100) return new int[]{0,number/10,number%10};
         return new int[]{number/100,(number/10)%10,number%10};
+    }
+
+    public static int[] doubleToArray(double odd){
+        if(odd<0.01){
+            return new int[]{10,10,10};
+        }
+
+        if(odd<1){
+            int temp = (int) (odd*100);
+            return new int[]{0,(temp-temp%10)/10,temp%10};
+        }
+
+        if(odd<100)return new int[]{0,(int)odd/10,(int)odd%10};
+
+        if(odd>999) return new int[]{10,10,10};
+
+        return new int[]{(int)odd/100,(int)(odd/10)%10,(int)odd%10};
+
     }
 
 

@@ -1,18 +1,20 @@
 package mirai.chitung.plugin.core.game.montecarlo.minesweeper;
 
+import mirai.chitung.plugin.core.bank.PumpkinPesoWindow;
 import mirai.chitung.plugin.core.game.montecarlo.GeneralMonteCarloUtil;
 import mirai.chitung.plugin.core.game.montecarlo.MonteCarloGame;
-import mirai.chitung.plugin.core.game.montecarlo.taisai.TaiSaiUtil;
+import mirai.chitung.plugin.core.game.montecarlo.minesweeper.data.MinesweeperFace;
+import mirai.chitung.plugin.core.game.montecarlo.minesweeper.data.MinesweeperPoolType;
+import mirai.chitung.plugin.core.game.montecarlo.minesweeper.imageutil.MinesweeperImage;
+import mirai.chitung.plugin.utils.image.ImageSender;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.event.events.MessageEvent;
 import net.mamoe.mirai.message.data.At;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 
-import java.util.Objects;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.awt.image.BufferedImage;
+import java.util.*;
+import java.util.concurrent.*;
 
 public class Minesweeper implements MonteCarloGame<MessageEvent> {
 
@@ -21,6 +23,7 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
     static CopyOnWriteArrayList<Contact> isInBetList = new CopyOnWriteArrayList<>();
     static CopyOnWriteArrayList<Contact> isInFunctionList = new CopyOnWriteArrayList<>();
     static CopyOnWriteArrayList<MineUserData> data = new CopyOnWriteArrayList<>();
+    static ConcurrentHashMap<Contact,MineSetting> mines = new ConcurrentHashMap<>();
 
     static MineUtil mineUtil = new MineUtil();
     
@@ -42,19 +45,208 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
         if(!matchStart(message)) return;
         if(mineUtil.hasStarted(event.getSubject())||mineUtil.subjectIsInGamingProcess(event.getSubject())) return;
 
+        String rawString = message.replace("扫雷","").replace("/minesweeper","").trim();
+
+        boolean hasSet = false;
+
+        switch(rawString.toLowerCase().replaceAll(" ","")){
+            case "简单":
+            case "easy":
+            case "beginner":
+            case "-e":
+            case "-b":
+                mines.put(event.getSubject(), new MineSetting(9,9,10));
+                hasSet = true;
+                break;
+            case "中等":
+            case "intermediate":
+            case "middle":
+            case "-i":
+                mines.put(event.getSubject(),new MineSetting(16,16,40));
+                hasSet = true;
+                break;
+            case "高级":
+            case "advanced":
+            case "hard":
+            case "-a":
+                mines.put(event.getSubject(),new MineSetting(16,30,99));
+                hasSet = true;
+                break;
+        }
+
+        if(!hasSet){
+
+            String[] undefined = rawString.split(" ");
+
+            if(undefined.length!=3){
+                event.getSubject().sendMessage(MineUtil.WrongStartNotice);
+                return;
+            }
+
+            int x = 0;
+            int y = 0;
+            int mine = 0;
+
+            try {
+
+                x=Integer.parseInt(undefined[0]);
+                y=Integer.parseInt(undefined[1]);
+                mine=Integer.parseInt(undefined[2]);
+
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+
+            if(x*y*mine==0){
+                event.getSubject().sendMessage(MineUtil.WrongStartNotice);
+                return;
+            }
+
+            if(x<8||x>30||y<8||y>16||!MineUtil.minesNumberCheck(x,y,mine)){
+                event.getSubject().sendMessage(MineUtil.OutOfBoundaryNotice);
+                return;
+            }
+
+            mines.put(event.getSubject(), new MineSetting(x,y,mine));
+
+        }
+
         executorService.schedule(new Start(event.getSubject()), MineUtil.GapTime, TimeUnit.SECONDS);
 
         MessageChainBuilder mcb = new MessageChainBuilder().append(MineUtil.Rules);
+
+        MineSetting mineSetting = mines.get(event.getSubject());
+
+        BufferedImage bi = MinesweeperImage.assembleStructure(
+                mineSetting.x,
+                mineSetting.y,
+                MineFactory.intToArray(mineSetting.mineNumber),
+                MineFactory.doubleToArray(mineSetting.odd),
+                MinesweeperFace.Normal);
+
+        MinesweeperImage.addPool(bi,
+                mineSetting.x,
+                mineSetting.y,
+                MinesweeperPoolType.NewPool,
+                null,null);
+
+        mcb.append(Contact.uploadImage(event.getSubject(),ImageSender.getBufferedImageAsSource(bi)));
         event.getSubject().sendMessage(mcb.asMessageChain());
 
+        mines.remove(event.getSubject());
         startBetList.add(event.getSubject());
+
     }
 
     @Override
     public void function(MessageEvent event, String message) {
 
-        //todo 下注交互
+        if(!isInFunctionList.contains(event.getSubject())) return;
 
+        if(!mineUtil.senderIsInGamingProcess(event)) return;
+
+        List<MineData> positions = new ArrayList<>();
+
+        int randomCount = 0;
+
+        String[] elements = message.toLowerCase().split(" ");
+        int illegalIndicator = 0;
+
+        MineSetting mineSetting = mines.get(event.getSubject());
+
+        for (String element : elements) {
+
+            if(element.toLowerCase().contains("random")){
+
+                String number = element.replace("random","");
+                int integer = 0;
+
+                try{
+                    integer=Integer.parseInt(number);
+                } catch(Exception e){
+                    e.printStackTrace();
+                }
+
+                if(integer<1||!MineUtil.minesNumberCheck(mineSetting.x,mineSetting.y,mineSetting.mineNumber)){
+                    illegalIndicator++;
+                    continue;
+                }
+
+                //random 会覆盖额外的下注
+                int[][] randomPosition = MineFactory.randomMine(mineSetting.x, mineSetting.y, integer);
+                mineUtil.getData(event.getSender()).addBet(MineUtil.dataConvert(randomPosition,mineSetting.x,mineSetting.y));
+
+                randomCount += integer;
+
+                continue;
+
+            }
+
+            String[] position = element.split(",|，");
+
+            if(position.length!=2){
+                illegalIndicator++;
+                continue;
+            }
+
+            int x = -1;
+            int y = -1;
+
+            try{
+                x = Integer.parseInt(position[0]);
+                y = Integer.parseInt(position[1]);
+            } catch(Exception e){
+                e.printStackTrace();
+            }
+
+            if(x!=-1&&y!=-1){
+                positions.add(new MineData(x,y));
+            } else {
+                illegalIndicator++;
+            }
+
+        }
+
+        MessageChainBuilder mcb = GeneralMonteCarloUtil.mcbProcessor(event);
+
+        if(positions.size()==0 && illegalIndicator==0 && randomCount == 0){
+            mcb.append("未收到任何有效下注。请仔细阅读说明书。");
+            event.getSubject().sendMessage(mcb.asMessageChain());
+            return;
+        }
+
+        if(positions.size()==0 && randomCount==0){
+            mcb.append("未收到任何有效下注，").append("存在").append(String.valueOf(illegalIndicator)).append("处指示器使用错误，请仔细阅读说明书。");
+            event.getSubject().sendMessage(mcb.asMessageChain());
+            return;
+        }
+
+        if(mineUtil.getData(event.getSender())!=null) Objects.requireNonNull(mineUtil.getData(event.getSender())).addBet(positions);
+
+        mcb.append("已收到如下下注：\n");
+        StringBuilder sb = new StringBuilder();
+
+        if(positions.size()>0) {
+            for (MineData data : positions) {
+                sb.append("[").append(data.x).append(",").append(data.y).append("]").append(" ");
+            }
+
+            mcb.append(sb.toString().trim());
+
+        }
+
+        if(randomCount>0){
+            if(positions.size()>0) mcb.append("\n");
+            mcb.append("随机格子").append("×").append(String.valueOf(randomCount));
+        }
+
+        mcb.append("\n").append("本局当前的倍率为×").append(String.valueOf(MineUtil.calculateOdd(event.getSubject())));
+
+        if(illegalIndicator>0) {
+            mcb.append("\n存在").append(String.valueOf(illegalIndicator)).append("处指示器使用错误，请仔细阅读说明书。");
+        }
+
+        event.getSubject().sendMessage(mcb.asMessageChain());
     }
 
     @Override
@@ -74,7 +266,7 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
             isInBetList.add(event.getSubject());
         }
 
-        if(!TaiSaiUtil.senderIsInGamingProcess(event)) {
+        if(!mineUtil.senderIsInGamingProcess(event)) {
 
             int bet = Objects.requireNonNull(GeneralMonteCarloUtil.getBet(message));
             MessageChainBuilder mcb = GeneralMonteCarloUtil.mcbProcessor(event).append("您已经下注").append(String.valueOf(bet)).append("南瓜比索。");
@@ -135,6 +327,7 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
                 startBetList.remove(subject);
                 mineUtil.deleteAllSubject(subject);
                 subject.sendMessage(MineUtil.Stops);
+                mines.remove(subject);
             }
         }
     }
@@ -169,35 +362,81 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
 
             isInFunctionList.remove(subject);
 
+            int[][] resultMine = MineFactory.randomMine(
+                    mines.get(subject).x,
+                    mines.get(subject).y,
+                    mines.get(subject).mineNumber);
 
-            //todo 生成结果
+            List<MineData> resultList = MineUtil.dataConvert(resultMine,
+                            mines.get(subject).x,
+                            mines.get(subject).y);
 
-            try {
+            List<MineData> userList = MineUtil.getUserBetList(subject);
 
-                //todo 发送图片
+            boolean hasWon = true;
 
-            } catch(Exception e){
-                e.printStackTrace();
+            for(MineData md:resultList){
+                if(userList.contains(md)){
+                    hasWon = false;
+                    break;
+                }
             }
+
+            double times = MineUtil.calculateOdd(subject);
+
+            MineSetting mineSetting = mines.get(subject);
+
+            MinesweeperFace face = MinesweeperFace.Dead;
+
+            if(hasWon) face = MinesweeperFace.Cool;
+
+            BufferedImage bi = MinesweeperImage.assembleStructure(
+                    mineSetting.x,
+                    mineSetting.y,
+                    MineFactory.intToArray(mineSetting.mineNumber),
+                    MineFactory.doubleToArray(mineSetting.odd),
+                    face);
+
+            MinesweeperImage.addPool(bi,
+                    mineSetting.x,
+                    mineSetting.y,
+                    MinesweeperPoolType.TouchedPool,
+                    resultMine,
+                    MineUtil.dataConvert(
+                            userList,
+                            mineSetting.x,
+                            mineSetting.y)
+            );
+
+            ImageSender.sendImageFromBufferedImage(subject,bi);
 
             MessageChainBuilder mcb = new MessageChainBuilder().append(MineUtil.EndGameNotice).append("\n");
 
-            for(MineUserData data:mineUtil.getUserList(subject)){
+            for(MineUserData mud:mineUtil.getUserList(subject)){
 
-                if(data.betList.size()==0) continue;
+                if(mud.betList.size()==0) continue;
 
-                if(data.isGroup()){
-                    mcb.append("\n").append(new At(data.sender.getId()));
+                if(mud.isGroup()){
+                    mcb.append("\n").append(new At(mud.sender.getId()));
                 } else {
                     mcb.append("\n您");
                 }
 
-                //todo 计算倍率和钱
                 int money = 0;
-                double times = 0;
 
-                mcb.append("获得了").append(String.valueOf(money)).append("南瓜比索，总倍率为×").append(String.format("%.1f", times)).append("。");
+                if(hasWon) money = (int) (mud.bet*times);
+
+                if(money>mud.bet) {
+                    PumpkinPesoWindow.addMoney(mud.sender.getId(),money-mud.bet);
+                } else {
+                    PumpkinPesoWindow.minusMoney(mud.sender.getId(),money-mud.bet);
+                }
+
+                mcb.append("获得了").append(String.valueOf(money)).append("南瓜比索。");
+
             }
+
+            mcb.append("\n总倍率为×").append(String.format("%.1f", times));
 
             subject.sendMessage(mcb.asMessageChain());
 
