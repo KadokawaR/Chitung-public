@@ -6,6 +6,7 @@ import mirai.chitung.plugin.core.game.montecarlo.MonteCarloGame;
 import mirai.chitung.plugin.core.game.montecarlo.minesweeper.data.MinesweeperFace;
 import mirai.chitung.plugin.core.game.montecarlo.minesweeper.data.MinesweeperPoolType;
 import mirai.chitung.plugin.core.game.montecarlo.minesweeper.imageutil.MinesweeperImage;
+import mirai.chitung.plugin.core.game.montecarlo.minesweeper.imageutil.MinesweeperImageUtil;
 import mirai.chitung.plugin.utils.image.ImageSender;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.event.events.MessageEvent;
@@ -30,7 +31,7 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
     @Override
     public void handle(MessageEvent event) {
         String message = event.getMessage().contentToString();
-        if(matchFunction(message)) process(event,message);
+        if(matchGame(message)) process(event,message);
     }
 
     @Override
@@ -44,13 +45,16 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
     public void start(MessageEvent event, String message) {
         if(!matchStart(message)) return;
         if(mineUtil.hasStarted(event.getSubject())||mineUtil.subjectIsInGamingProcess(event.getSubject())) return;
+        if(message.equals("扫雷说明书")||message.equalsIgnoreCase("minesweeper introduction")||message.equalsIgnoreCase("minesweeper -h")||message.equalsIgnoreCase("扫雷 -h")) return;
 
-        String rawString = message.replace("扫雷","").replace("/minesweeper","").trim();
+
+            String rawString = message.replace("扫雷","").replace("/minesweeper","").trim();
 
         boolean hasSet = false;
 
         switch(rawString.toLowerCase().replaceAll(" ","")){
             case "简单":
+            case "初级":
             case "easy":
             case "beginner":
             case "-e":
@@ -58,7 +62,7 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
                 mines.put(event.getSubject(), new MineSetting(9,9,10));
                 hasSet = true;
                 break;
-            case "中等":
+            case "中级":
             case "intermediate":
             case "middle":
             case "-i":
@@ -69,7 +73,7 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
             case "advanced":
             case "hard":
             case "-a":
-                mines.put(event.getSubject(),new MineSetting(16,30,99));
+                mines.put(event.getSubject(),new MineSetting(30,16,99));
                 hasSet = true;
                 break;
         }
@@ -107,6 +111,7 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
                 return;
             }
 
+            mines.remove(event.getSubject());
             mines.put(event.getSubject(), new MineSetting(x,y,mine));
 
         }
@@ -130,10 +135,11 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
                 MinesweeperPoolType.NewPool,
                 null,null);
 
-        mcb.append(Contact.uploadImage(event.getSubject(),ImageSender.getBufferedImageAsSource(bi)));
+        BufferedImage result = MinesweeperImageUtil.drawPureGreenBackground(bi);
+
+        mcb.append(Contact.uploadImage(event.getSubject(),ImageSender.getBufferedImageAsSource(result)));
         event.getSubject().sendMessage(mcb.asMessageChain());
 
-        mines.remove(event.getSubject());
         startBetList.add(event.getSubject());
 
     }
@@ -156,7 +162,7 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
 
         for (String element : elements) {
 
-            if(element.toLowerCase().contains("random")){
+            if(element.toLowerCase().startsWith("random")){
 
                 String number = element.replace("random","");
                 int integer = 0;
@@ -286,7 +292,7 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
 
     @Override
     public boolean matchStart(String message) {
-        return message.equalsIgnoreCase("/minesweeper")||message.equals("扫雷");
+        return message.toLowerCase().contains("/minesweeper") || message.contains("扫雷");
     }
 
     @Override
@@ -327,7 +333,6 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
                 startBetList.remove(subject);
                 mineUtil.deleteAllSubject(subject);
                 subject.sendMessage(MineUtil.Stops);
-                mines.remove(subject);
             }
         }
     }
@@ -373,22 +378,15 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
 
             List<MineData> userList = MineUtil.getUserBetList(subject);
 
-            boolean hasWon = true;
-
-            for(MineData md:resultList){
-                if(userList.contains(md)){
-                    hasWon = false;
-                    break;
-                }
-            }
-
             double times = MineUtil.calculateOdd(subject);
 
             MineSetting mineSetting = mines.get(subject);
 
-            MinesweeperFace face = MinesweeperFace.Dead;
+            MinesweeperFace face = MinesweeperFace.Cool;
 
-            if(hasWon) face = MinesweeperFace.Cool;
+            boolean hasExploded = MineUtil.hasExploded(resultList,userList);
+
+            if(hasExploded) face = MinesweeperFace.Dead;
 
             BufferedImage bi = MinesweeperImage.assembleStructure(
                     mineSetting.x,
@@ -408,7 +406,7 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
                             mineSetting.y)
             );
 
-            ImageSender.sendImageFromBufferedImage(subject,bi);
+            BufferedImage result = MinesweeperImageUtil.drawPureGreenBackground(bi);
 
             MessageChainBuilder mcb = new MessageChainBuilder().append(MineUtil.EndGameNotice).append("\n");
 
@@ -423,8 +421,7 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
                 }
 
                 int money = 0;
-
-                if(hasWon) money = (int) (mud.bet*times);
+                if(!hasExploded) money = (int) (mud.bet * times);
 
                 if(money>mud.bet) {
                     PumpkinPesoWindow.addMoney(mud.sender.getId(),money-mud.bet);
@@ -436,10 +433,17 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
 
             }
 
-            mcb.append("\n总倍率为×").append(String.format("%.1f", times));
+            mcb.append("\n总倍率为×");
+
+            if(hasExploded) {
+                mcb.append(String.valueOf(0));
+            } else {
+                mcb.append(String.valueOf(MineUtil.calculateOdd(subject)));
+            }
+
+            mcb.append("\n").append(Contact.uploadImage(subject,ImageSender.getBufferedImageAsSource(result)));
 
             subject.sendMessage(mcb.asMessageChain());
-
             mineUtil.clear(subject);
 
         }

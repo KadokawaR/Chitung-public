@@ -8,4 +8,8 @@ public class MineData {
         this.x=x;
         this.y=y;
     }
+
+    public boolean equals(MineData data){
+        return this.x==data.x&&this.y==data.y;
+    }
 }

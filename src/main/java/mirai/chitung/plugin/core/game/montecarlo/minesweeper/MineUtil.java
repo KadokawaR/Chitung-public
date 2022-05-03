@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 public class MineUtil implements MonteCarloUtil<MineUserData> {
 
-    static final String Rules = "里格斯公司邀请您参与本局扫雷，请在60秒之内输入 /bet+数字 参与游戏。";
+    static final String Rules = "里格斯公司邀请您参与本局扫雷，请在60秒之内输入 /bet+数字 参与游戏。输入“扫雷说明书”查看具体玩法。";
     static final String Stops = "本局扫雷已经取消。";
     static final String YouDontHaveEnoughMoney = "操作失败，请检查您的南瓜比索数量。";
     static final String StartBetNotice = "Bet 阶段已经开始，预计在60秒之内结束。可以通过/bet+金额反复追加 bet。";
@@ -24,7 +24,7 @@ public class MineUtil implements MonteCarloUtil<MineUserData> {
 
     static final int GapTime = 60;
 
-    static Set<String> functionKeyWords = ImmutableSet.of(",", "，");
+    static Set<String> functionKeyWords = ImmutableSet.of(",", "，","random");
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean senderIsInGamingProcess(MessageEvent event){
@@ -117,8 +117,10 @@ public class MineUtil implements MonteCarloUtil<MineUserData> {
     }
 
     public static boolean hasExploded(List<MineData> result, List<MineData> user){
-        for(MineData data:result){
-            if(user.contains(data)) return true;
+        for(MineData data1:result){
+            for(MineData data2:user){
+                if(data1.equals(data2)) return true;
+            }
         }
         return false;
     }
@@ -136,15 +138,15 @@ public class MineUtil implements MonteCarloUtil<MineUserData> {
     }
 
     public static double calculateOdd(Contact subject){
-        List<MineData> totalBetList = getUserBetList(subject);
 
+        List<MineData> totalBetList = getUserBetList(subject);
         int betNumber = totalBetList.size();
         MineSetting mineSetting = Minesweeper.mines.get(subject);
 
         double basicOdd = (double) mineSetting.mineNumber / (double) (mineSetting.x*mineSetting.y) ;
         double odd = Math.pow(1-basicOdd,betNumber);
 
-        return ((int)(odd*100))/ (double) 100;
+        return ((int)(1/odd*100))/ (double) 100;
 
     }
 

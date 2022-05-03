@@ -4,6 +4,7 @@ import mirai.chitung.plugin.core.game.montecarlo.minesweeper.MineFactory;
 import mirai.chitung.plugin.core.game.montecarlo.minesweeper.data.MinesweeperConstant;
 import mirai.chitung.plugin.core.game.montecarlo.minesweeper.sheet.MinesweeperSheet;
 import mirai.chitung.plugin.core.game.montecarlo.minesweeper.sheet.MinesweeperSheetType;
+import org.checkerframework.checker.units.qual.C;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -11,8 +12,6 @@ import java.awt.image.BufferedImage;
 import java.util.Arrays;
 
 public class MinesweeperImageUtil {
-
-
 
     public static BufferedImage resize(BufferedImage originalImage, int targetWidth, int targetHeight) {
 
@@ -169,9 +168,6 @@ public class MinesweeperImageUtil {
 
     public static BufferedImage createCertainMoveImage(int[][] mines,int[][] checklist){
 
-        System.out.println(Arrays.deepToString(mines));
-        System.out.println(Arrays.deepToString(checklist));
-
         int[][] mask = MineFactory.getMask(mines,checklist);
 
         BufferedImage bi = createTransparentPool(mines);
@@ -268,6 +264,16 @@ public class MinesweeperImageUtil {
 
         g2d.dispose();
         return image;
+    }
+
+    public static BufferedImage drawPureGreenBackground(BufferedImage bi){
+        BufferedImage result = new BufferedImage(bi.getWidth()+240,bi.getHeight()+240,BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2d = result.createGraphics();
+        g2d.setColor(new Color(0,134,137));
+        g2d.fillRect(0,0,result.getWidth(),result.getHeight());
+        g2d.drawImage(bi,120,120,null);
+        g2d.dispose();
+        return result;
     }
 
 }
