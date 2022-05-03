@@ -113,7 +113,7 @@ public class Blacklist {
 
     static void block(MessageEvent event,String message){
         if(!IdentityUtil.isAdmin(event)) return;
-        if(!message.toLowerCase().contains("/block ")&&!message.toLowerCase().contains("/block-")) return;
+        if(!message.toLowerCase().contains("/block ")||!message.toLowerCase().contains("/block-")) return;
         String rawString = message.toLowerCase().replace("/block","").replace(" ","").replace("-","");
         String strID = Pattern.compile("[^0-9]").matcher(rawString).replaceAll(" ").trim();
 
@@ -162,7 +162,7 @@ public class Blacklist {
 
     static void unblock(MessageEvent event,String message){
         if(!IdentityUtil.isAdmin(event)) return;
-        if(!message.toLowerCase().contains("/unblock ")&&!message.toLowerCase().contains("/unblock-")) return;
+        if(!message.toLowerCase().contains("/unblock ")||!message.toLowerCase().contains("/unblock-")) return;
         String rawString = message.toLowerCase().replace("/unblock","").replace(" ","").replace("-","");
         String strID = Pattern.compile("[^0-9]").matcher(rawString).replaceAll(" ").trim();
 
