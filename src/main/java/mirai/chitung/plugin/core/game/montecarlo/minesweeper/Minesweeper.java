@@ -178,6 +178,11 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
                     continue;
                 }
 
+                if(integer>MineUtil.RandomLimit){
+                    illegalIndicator++;
+                    continue;
+                }
+
                 //random 会覆盖额外的下注
                 int[][] randomPosition = MineFactory.randomMine(mineSetting.x, mineSetting.y, integer);
                 mineUtil.getData(event.getSender()).addBet(MineUtil.dataConvert(randomPosition,mineSetting.x,mineSetting.y));
@@ -268,6 +273,7 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
         if(startBetList.contains(event.getSubject())){
             event.getSubject().sendMessage(MineUtil.StartBetNotice);
             executorService.schedule(new EndBet(event.getSubject()), MineUtil.GapTime, TimeUnit.SECONDS);
+            executorService.schedule(new EndFunction(event.getSubject()), MineUtil.GapTime*2,TimeUnit.SECONDS);
             startBetList.remove(event.getSubject());
             isInBetList.add(event.getSubject());
         }
@@ -350,7 +356,6 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
             isInBetList.remove(subject);
             isInFunctionList.add(subject);
             subject.sendMessage(MineUtil.EndBetNotice + MineUtil.StartOperateNotice);
-            executorService.schedule(new EndFunction(subject), MineUtil.GapTime,TimeUnit.SECONDS);
         }
     }
 

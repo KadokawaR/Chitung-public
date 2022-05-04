@@ -12,17 +12,18 @@ import java.util.stream.Collectors;
 
 public class MineUtil implements MonteCarloUtil<MineUserData> {
 
+    static final int GapTime = 60;
+    static final int RandomLimit = 10;
+
     static final String Rules = "里格斯公司邀请您参与本局扫雷，请在60秒之内输入 /bet+数字 参与游戏。输入“扫雷说明书”查看具体玩法。";
     static final String Stops = "本局扫雷已经取消。";
     static final String YouDontHaveEnoughMoney = "操作失败，请检查您的南瓜比索数量。";
     static final String StartBetNotice = "Bet 阶段已经开始，预计在60秒之内结束。可以通过/bet+金额反复追加 bet。";
     static final String EndBetNotice = "Bet 阶段已经结束。";
-    static final String StartOperateNotice = "现在可以进行操作，请在60秒之内完成。功能列表请参考说明书。如有多重下注，请使用空格隔开。";
+    static final String StartOperateNotice = "现在可以进行操作，请在60秒之内完成。功能列表请参考说明书。如有多重下注，请使用空格隔开。使用random下注限制在"+RandomLimit+"之内。";
     static final String EndGameNotice = "本局游戏已经结束，里格斯公司感谢您的参与。如下为本局玩家获得的南瓜比索：";
     static final String WrongStartNotice = "扫雷开局失败，请阅读扫雷说明书。";
     static final String OutOfBoundaryNotice = "扫雷数值设置超出范围，请阅读扫雷说明书。";
-
-    static final int GapTime = 60;
 
     static Set<String> functionKeyWords = ImmutableSet.of(",", "，","random");
 

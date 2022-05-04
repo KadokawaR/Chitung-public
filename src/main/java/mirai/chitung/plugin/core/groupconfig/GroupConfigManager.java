@@ -440,7 +440,7 @@ public class GroupConfigManager {
     }
 
     static void groupConfigHelp(GroupMessageEvent event, String message){
-        if(message.equalsIgnoreCase("/groupconfig -h")||message.equalsIgnoreCase("/gc")||message.equals("群管理帮助")) {
+        if(message.equalsIgnoreCase("/groupconfig -h")||message.equalsIgnoreCase("/gc -h")||message.equals("群设置帮助")) {
             event.getSubject().sendMessage("使用/close或者/open加上空格加上global（全局）、game（游戏）、casino、responder（关键词触发）、fish（钓鱼）或者lottery（群内抽奖）来开关相应内容。\n" +
                     "使用/default恢复所有初始设置。" +
                     "使用/blockmember并@成员来屏蔽该成员，使用/unblockmember并@成员来解除屏蔽。" +
