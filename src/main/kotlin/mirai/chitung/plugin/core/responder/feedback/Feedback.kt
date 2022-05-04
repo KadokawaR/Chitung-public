@@ -9,6 +9,9 @@ import mirai.chitung.plugin.utils.sendTo
 @ResponderAutoRegistry("意见反馈", RespondFrom.GroupAndFriend, Priority.Lowest)
 object Greeting : Responder {
     override suspend fun receive(event: PreprocessedMessageEvent): Boolean {
+
+        if (event.contentEquals("意见反馈")) return false
+
         if (event.contentStartsWith("意见反馈")) {
             coroutineScope {
                 launch {
