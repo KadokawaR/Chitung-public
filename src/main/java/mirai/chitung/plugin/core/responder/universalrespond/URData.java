@@ -1,33 +1,29 @@
 package mirai.chitung.plugin.core.responder.universalrespond;
 
+import mirai.chitung.plugin.core.responder.universalrespond.respondenum.MessageKind;
+import mirai.chitung.plugin.core.responder.universalrespond.respondenum.TriggerKind;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class UniversalResponder {
+public class URData {
     private MessageKind messageKind;
-    private MessageKind listResponseKind;
-    private ListKind listKind;
-    private List<Long> userList;
-
+    private List<URListData> userList;
     private TriggerKind triggerKind;
     private List<String> pattern;
     private List<String> answer;
 
-    UniversalResponder(){
+    URData(){
         this.messageKind=MessageKind.Any;
-        this.listResponseKind =MessageKind.Any;
-        this.listKind=ListKind.White;
         this.userList=new ArrayList<>();
         this.triggerKind=TriggerKind.Equal;
         this.pattern=new ArrayList<String>(){{add("早上好");add("早安");}};
         this.answer=new ArrayList<String>(){{add("早上好");add("早安");}};
     }
 
-    UniversalResponder(UniversalResponder ur){
+    URData(URData ur){
         this.messageKind=MessageKind.Any;
-        this.listResponseKind =MessageKind.Any;
-        this.listKind=ListKind.White;
-        this.userList=new ArrayList<>();
+        this.userList=ur.userList;
         this.triggerKind=ur.getTriggerKind();
         this.pattern=ur.getPattern();
         this.answer=ur.getAnswer();
@@ -39,22 +35,6 @@ public class UniversalResponder {
 
     public void setMessageKind(MessageKind messageKind) {
         this.messageKind = messageKind;
-    }
-
-    public ListKind getListKind() {
-        return listKind;
-    }
-
-    public void setListKind(ListKind listKind) {
-        this.listKind = listKind;
-    }
-
-    public List<Long> getUserList() {
-        return userList;
-    }
-
-    public void setUserList(List<Long> userList) {
-        this.userList = userList;
     }
 
     public TriggerKind getTriggerKind() {
@@ -81,11 +61,8 @@ public class UniversalResponder {
         this.answer = answer;
     }
 
-    public MessageKind getListResponceKind() {
-        return listResponseKind;
-    }
+    public List<URListData> getUserList() { return userList; }
 
-    public void setListResponceKind(MessageKind listResponceKind) {
-        this.listResponseKind = listResponceKind;
-    }
+    public void setUserList(List<URListData> userList) { this.userList = userList; }
+
 }
