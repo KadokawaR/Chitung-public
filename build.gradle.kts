@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "dev.mirai.chitung"
-version = "0.1.4"
+version = "0.1.6"
 
 repositories {
     maven{ url =uri("https://maven.aliyun.com/nexus/content/groups/public/")}

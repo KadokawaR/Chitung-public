@@ -18,14 +18,14 @@ object FunctionResponder : Responder {
     data class Position(var X: Int, var Y: Int)
 
     private var positions = arrayOf(
-        Position(788, 1352),
-        Position(34, 233),
-        Position(34, 1135),
-        Position(285, 146),
-        Position(286, 395),
-        Position(286, 933),
-        Position(536, 145),
-        Position(536, 491)
+        Position(788, 1352), //size of the background pic 0
+        Position(34, 233), //responder 1
+        Position(34, 1135), //mahjong 2
+        Position(285, 146), //ir/ur 3
+        Position(286, 395), //groupconfig 4
+        Position(286, 933), //lottery 5
+        Position(536, 145), // casino 6
+        Position(536, 491) //fish 7
     )
 
     private fun String.getImage(): BufferedImage = ImageIO.read(this.getResourceByStream()!!)
