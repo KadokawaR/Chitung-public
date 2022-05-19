@@ -58,8 +58,8 @@ public class NewHelp {
         public static String INTRO = "本机器人使用七筒开放版——一个致力于服务简体中文 Furry 社群的 QQ 机器人项目，皆在试图为群聊增加一些乐趣。请发送/funct 来了解如何使用本机器人。注意，不要和我，也不要和生活太较真。";
         public static String USAGE = "点击头像添加"+ConfigHandler.getName(Bot.getInstances().get(0)) +"为好友，并将其邀请到QQ群聊中，即可在该群聊中使用服务。" + "如果需要查看功能列表，请输入/funct。";
         public static String DISCL = "本项目由七筒开放版驱动，但并非由官方直接运营，如有任何问题请联系该机器人的运营者。如需使用该项目请查询 Github - Chitung Public，或者联系七筒项目的开发者（见/conta）。";
-        public static String CONTA = "如果需要联系"+ ConfigHandler.getName(Bot.getInstances().get(0)) +"的运营者，请直接添加"+ ConfigHandler.getName(Bot.getInstances().get(0)) +
-                "好友，并在发送消息的开头注明”意见反馈“。只有含有“意见反馈”字样的单条消息才会被接收。\n" +
+        public static String CONTA = "如果需要联系"+ ConfigHandler.getName(Bot.getInstances().get(0)) +"的运营者，请私聊或者在有七筒的群聊内发送消息，开头需注明”意见反馈“四字。"+
+                "只有含有“意见反馈”字样的单条消息才会被接收。\n" +
                 "如需要联系七筒的开发者和体验七筒功能，请添加公众聊天群：932617537。\n" +
                 "如需要获得七筒的最新消息，请添加通知群：948979109。";
     }
