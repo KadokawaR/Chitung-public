@@ -22,6 +22,7 @@ public class CasinoCroupier {
 
         String message = event.getMessage().contentToString();
         introduction(event,message);
+        flush(event,message);
 
         switch(croupierStatus(event)){
             case 0:
@@ -52,11 +53,13 @@ public class CasinoCroupier {
 
     }
 
-    //重置blackjack
+    //重置所有Casino
     static void flush(MessageEvent event,String message){
-        if(!message.equalsIgnoreCase("/flush")) return;
+        if(!message.equalsIgnoreCase("/endgame")&&!message.equalsIgnoreCase("/endcasino")) return;
         BlackJack.cancelMark(event);
         Roulette.cancelMark(event);
+        TaiSai.util.clear(event.getSubject());
+        Minesweeper.mineUtil.clear(event.getSubject());
         event.getSubject().sendMessage("已经重置娱乐游戏。");
     }
 
