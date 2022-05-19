@@ -23,8 +23,8 @@ public class TaiSai implements MonteCarloGame<MessageEvent> {
     static CopyOnWriteArrayList<Contact> isInBetList = new CopyOnWriteArrayList<>();
     static CopyOnWriteArrayList<Contact> isInFunctionList = new CopyOnWriteArrayList<>();
     static CopyOnWriteArrayList<TaiSaiUserData> data = new CopyOnWriteArrayList<>();
-    
-    static TaiSaiUtil util = new TaiSaiUtil();
+
+    public static TaiSaiUtil util = new TaiSaiUtil();
 
     static final String TAISAI_PATH = "/pics/casino/taisai.png";
 
@@ -53,7 +53,7 @@ public class TaiSai implements MonteCarloGame<MessageEvent> {
         executorService.schedule(new Start(event.getSubject()), TaiSaiUtil.GapTime,TimeUnit.SECONDS);
 
         MessageChainBuilder mcb = new MessageChainBuilder().append(TaiSaiUtil.TaiSaiRules);
-        InputStream img = BlackJack.class.getResourceAsStream(TAISAI_PATH);
+        InputStream img = TaiSai.class.getResourceAsStream(TAISAI_PATH);
         assert img != null;
 
         mcb.append("\n\n").append(Contact.uploadImage(event.getSubject(), img));
@@ -220,7 +220,7 @@ public class TaiSai implements MonteCarloGame<MessageEvent> {
         if(startBetList.contains(event.getSubject())){
             event.getSubject().sendMessage(TaiSaiUtil.StartBetNotice);
             executorService.schedule(new EndBet(event.getSubject()), TaiSaiUtil.GapTime, TimeUnit.SECONDS);
-            executorService.schedule(new EndFunction(event.getSubject()), TaiSaiUtil.GapTime*2,TimeUnit.SECONDS);
+            TaiSai.executorService.schedule(new EndFunction(event.getSubject()), TaiSaiUtil.GapTime*2,TimeUnit.SECONDS);
             startBetList.remove(event.getSubject());
             isInBetList.add(event.getSubject());
         }
@@ -282,8 +282,8 @@ public class TaiSai implements MonteCarloGame<MessageEvent> {
         @Override
         public void run(){
 
-            if(startBetList.contains(subject)){
-                startBetList.remove(subject);
+            if(TaiSai.startBetList.contains(subject)){
+                TaiSai.startBetList.remove(subject);
                 util.deleteAllSubject(subject);
                 subject.sendMessage(TaiSaiUtil.TaiSaiStops);
             }

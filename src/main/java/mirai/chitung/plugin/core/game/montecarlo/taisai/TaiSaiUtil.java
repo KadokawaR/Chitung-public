@@ -76,8 +76,8 @@ public class TaiSaiUtil implements MonteCarloUtil<TaiSaiUserData> {
         return false;
     }
 
-        @Override
-        public boolean subjectIsInGamingProcess(Contact subject){
+    @Override
+    public boolean subjectIsInGamingProcess(Contact subject){
         for (TaiSaiUserData tsud:TaiSai.data){
             if(tsud.subject.equals(subject)) return true;
         }
