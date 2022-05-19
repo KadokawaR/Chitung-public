@@ -3,6 +3,7 @@ package mirai.chitung.plugin.core.harbor
 import com.google.common.collect.Maps
 import mirai.chitung.plugin.utils.IdentityUtil
 import mirai.chitung.plugin.utils.StandardTimeUtil
+import net.mamoe.mirai.contact.Group
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.event.events.MessageEvent
 import java.util.*
@@ -55,11 +56,22 @@ object Harbor {
         return thresholds[0]!!.reachLimit(id) || thresholds[1]!!.reachLimit(id)
     }
 
+    fun isReachingPortLimit(group: Group) : Boolean{
+        if(isReachingPortLimit(PortRequestInfos.TOTAL_DAILY, 0)) return true
+        return isReachingPortLimit(PortRequestInfos.GROUP_MINUTE,group.id)
+    }
+
     @JvmStatic
     fun count(requestInfo: PortRequestInfo, id: Long) {
         val thresholds = acquire(requestInfo)
         thresholds[0]!!.count(id)
         thresholds[1]!!.count(id)
+    }
+
+    @JvmStatic
+    fun count(group: Group) {
+        count(PortRequestInfos.GROUP_MINUTE,group.id)
+        count(PortRequestInfos.TOTAL_DAILY,0)
     }
 
     @JvmStatic
