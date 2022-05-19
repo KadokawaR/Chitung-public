@@ -35,6 +35,13 @@ public class GroupPolice {
                         executor.schedule(() -> {
                             Objects.requireNonNull(bot.getGroup(group.getId())).quit();
                         }, 15, TimeUnit.SECONDS);
+
+                        try {
+                            Thread.sleep(5000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
                     }
                 }
             }
