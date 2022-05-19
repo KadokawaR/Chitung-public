@@ -14,7 +14,9 @@ import net.mamoe.mirai.message.data.At;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 
 import java.awt.image.BufferedImage;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.*;
 
 public class Minesweeper implements MonteCarloGame<MessageEvent> {
@@ -26,8 +28,8 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
     static CopyOnWriteArrayList<MineUserData> data = new CopyOnWriteArrayList<>();
     static ConcurrentHashMap<Contact,MineSetting> mines = new ConcurrentHashMap<>();
 
-    static MineUtil mineUtil = new MineUtil();
-    
+    public static MineUtil mineUtil = new MineUtil();
+
     @Override
     public void handle(MessageEvent event) {
         String message = event.getMessage().contentToString();
@@ -48,7 +50,7 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
         if(message.equals("扫雷说明书")||message.equalsIgnoreCase("minesweeper introduction")||message.equalsIgnoreCase("minesweeper -h")||message.equalsIgnoreCase("扫雷 -h")) return;
 
 
-            String rawString = message.replace("扫雷","").replace("/minesweeper","").trim();
+        String rawString = message.replace("扫雷","").replace("/minesweeper","").trim();
 
         boolean hasSet = false;
 
@@ -82,10 +84,7 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
 
             String[] undefined = rawString.split(" ");
 
-            if(undefined.length!=3){
-                event.getSubject().sendMessage(MineUtil.WrongStartNotice);
-                return;
-            }
+            if(undefined.length!=3) return;
 
             int x = 0;
             int y = 0;
@@ -101,10 +100,7 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
                 e.printStackTrace();
             }
 
-            if(x*y*mine==0){
-                event.getSubject().sendMessage(MineUtil.WrongStartNotice);
-                return;
-            }
+            if(x*y*mine==0) return;
 
             if(x<8||x>30||y<8||y>16||!MineUtil.minesNumberCheck(x,y,mine)){
                 event.getSubject().sendMessage(MineUtil.OutOfBoundaryNotice);
@@ -137,7 +133,7 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
 
         BufferedImage result = MinesweeperImageUtil.drawPureGreenBackground(bi);
 
-        mcb.append(Contact.uploadImage(event.getSubject(),ImageSender.getBufferedImageAsSource(result)));
+        mcb.append(Contact.uploadImage(event.getSubject(), ImageSender.getBufferedImageAsSource(result)));
         event.getSubject().sendMessage(mcb.asMessageChain());
 
         startBetList.add(event.getSubject());
@@ -157,6 +153,7 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
 
         String[] elements = message.toLowerCase().split(" ");
         int illegalIndicator = 0;
+        int repeatedValue = 0;
 
         MineSetting mineSetting = mines.get(event.getSubject());
 
@@ -211,7 +208,29 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
             }
 
             if(x!=-1&&y!=-1){
-                positions.add(new MineData(x,y));
+
+                boolean hasRepeatedValue = false;
+
+                for(MineData md:positions){
+                    if(md.x==x&&md.y==y){
+                        hasRepeatedValue=true;
+                        break;
+                    }
+                }
+
+                for(MineData md:mineUtil.getData(event.getSender()).betList){
+                    if(md.x==x&&md.y==y){
+                        hasRepeatedValue=true;
+                        break;
+                    }
+                }
+
+                if(!hasRepeatedValue){
+                    positions.add(new MineData(x,y));
+                } else {
+                    repeatedValue++;
+                }
+
             } else {
                 illegalIndicator++;
             }
@@ -219,6 +238,13 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
         }
 
         MessageChainBuilder mcb = GeneralMonteCarloUtil.mcbProcessor(event);
+
+        if(positions.size()==0 && randomCount == 0 &&repeatedValue>0){
+            mcb.append("未收到任何有效下注。请仔细阅读说明书。");
+            mcb.append("\n存在").append(String.valueOf(repeatedValue)).append("处重复下注。");
+            event.getSubject().sendMessage(mcb.asMessageChain());
+            return;
+        }
 
         if(positions.size()==0 && illegalIndicator==0 && randomCount == 0){
             mcb.append("未收到任何有效下注。请仔细阅读说明书。");
@@ -257,6 +283,10 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
             mcb.append("\n存在").append(String.valueOf(illegalIndicator)).append("处指示器使用错误，请仔细阅读说明书。");
         }
 
+        if(repeatedValue>0) {
+            mcb.append("\n存在").append(String.valueOf(repeatedValue)).append("处重复下注。");
+        }
+
         event.getSubject().sendMessage(mcb.asMessageChain());
     }
 
@@ -273,7 +303,6 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
         if(startBetList.contains(event.getSubject())){
             event.getSubject().sendMessage(MineUtil.StartBetNotice);
             executorService.schedule(new EndBet(event.getSubject()), MineUtil.GapTime, TimeUnit.SECONDS);
-            executorService.schedule(new EndFunction(event.getSubject()), MineUtil.GapTime*2,TimeUnit.SECONDS);
             startBetList.remove(event.getSubject());
             isInBetList.add(event.getSubject());
         }
@@ -356,6 +385,7 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
             isInBetList.remove(subject);
             isInFunctionList.add(subject);
             subject.sendMessage(MineUtil.EndBetNotice + MineUtil.StartOperateNotice);
+            executorService.schedule(new EndFunction(subject), MineUtil.GapTime,TimeUnit.SECONDS);
         }
     }
 
@@ -378,8 +408,8 @@ public class Minesweeper implements MonteCarloGame<MessageEvent> {
                     mines.get(subject).mineNumber);
 
             List<MineData> resultList = MineUtil.dataConvert(resultMine,
-                            mines.get(subject).x,
-                            mines.get(subject).y);
+                    mines.get(subject).x,
+                    mines.get(subject).y);
 
             List<MineData> userList = MineUtil.getUserBetList(subject);
 

@@ -1,5 +1,7 @@
 package mirai.chitung.plugin.core.game.montecarlo.minesweeper;
 
+import org.jetbrains.annotations.NotNull;
+
 public class MineData {
     int x;
     int y;
@@ -9,7 +11,7 @@ public class MineData {
         this.y=y;
     }
 
-    public boolean equals(MineData data){
+    public boolean hasSameValueWith(@NotNull MineData data){
         return this.x==data.x&&this.y==data.y;
     }
 }
